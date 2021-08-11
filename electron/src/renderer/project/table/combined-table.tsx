@@ -47,8 +47,8 @@ class CombinedTable extends Component<{}, TableState> {
     private selecting = false;
     private prevElement?: any; // We use any here, since the HTML element type hierarchy is too messy
     private prevDirection?: Direction;
-    private penddingRowTimeout?: number;
-    private penddingRowIndex?: number;
+    private pendingRowTimeout?: number;
+    private pendingRowIndex?: number;
 
     constructor(props: {}) {
         super(props);
@@ -248,7 +248,7 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
 
-    updateStatement(tableData?: TableData) {
+    updateStatement(tableData?: TableData, returnTableData = false) {
         const { loadedRows } = this.state;
         if (!tableData) {
             if (!this.state.tableData) {
@@ -293,7 +293,9 @@ class CombinedTable extends Component<{}, TableState> {
             }
         }
 
-        this.updateQnode(tableData);
+        tableData = this.updateQnode(tableData, true);
+        if (returnTableData) { return tableData; }
+        this.setState({ tableData })
     }
 
     updateQnode(tableData?: TableData, returnTableData = false) {
@@ -332,7 +334,7 @@ class CombinedTable extends Component<{}, TableState> {
                 }
             }
         }
-        if (returnTableData) { return this.updateQnodeCells(wikiStore.table.showQnodes, tableData, true); }
+        if (returnTableData) { return this.updateQnodeCells(wikiStore.table.showQnodes, tableData, false, true); }
         this.updateQnodeCells(wikiStore.table.showQnodes, tableData);
     }
 
@@ -514,6 +516,7 @@ class CombinedTable extends Component<{}, TableState> {
         const activeCell = tableData[selectedCell.row][selectedCell.col]
         activeCell.highlight = true;
         activeCell.active = true;
+        console.log("updateActiveCellStyle", tableData[selectedCell.row][selectedCell.col])
 
         //select related cells
         // if (statement && statement.cells) {
@@ -597,6 +600,7 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     updateSelection(selection: { selectionArea?: CellSelection, selectedBlock?: AnnotationBlock, selectedCell?: Cell }) {
+        // let { tableData } = this.state;
         this.updateSelectionStyle(selection.selectionArea);
         this.updateActiveCellStyle(selection.selectedCell);
     }
@@ -1191,13 +1195,13 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     async fetchRows(index: number) {
-        if (index === this.penddingRowIndex) { return; }
-        if (this.penddingRowTimeout) {
-            window.clearTimeout(this.penddingRowTimeout);
+        if (index === this.pendingRowIndex) { return; }
+        if (this.pendingRowTimeout) {
+            window.clearTimeout(this.pendingRowTimeout);
         }
-        this.penddingRowTimeout = window.setTimeout(async () => {
+        this.pendingRowTimeout = window.setTimeout(async () => {
             if (this.requestService) {
-                this.penddingRowIndex = index;
+                this.pendingRowIndex = index;
                 let { tableData } = this.state;
                 const { loadedRows } = this.state;
 
@@ -1206,13 +1210,10 @@ class CombinedTable extends Component<{}, TableState> {
                 // calculate the indexes to send to the backend - find the maximum range between [startIndex, endIndex]
                 let startIndex = index - 50;
                 let endIndex = index + 50;
-                let addEnd = 0; // add extra rows to the end, if the startIndex is early loaded.
-                let addStart = 0; // add extra rows on the start, if the endIndex is early loaded.
 
                 for (let i = startIndex; i < endIndex; i++) {
                     if (loadedRows.has(i)) {
                         startIndex += 1;
-                        addEnd += 1;
                     } else { // add +1 to the startIndex if it's loaded before, to start from the first index that not loaded.
                         break
                     }
@@ -1221,14 +1222,11 @@ class CombinedTable extends Component<{}, TableState> {
                 for (let i = endIndex; i > startIndex; i--) {
                     if (loadedRows.has(i)) {
                         endIndex -= 1;
-                        if (!addEnd) { addStart += 1 }
                     } else { // subtract 1 from the endIndex if it's loaded before, to end on the last index that not loaded.
                         break;
                     }
                 }
                 if (startIndex == endIndex) { return; }
-                startIndex -= addStart;
-                endIndex += addEnd;
 
                 const table = await this.requestService.getTableByRows(startIndex, endIndex) as TableDTO;
 
@@ -1248,9 +1246,9 @@ class CombinedTable extends Component<{}, TableState> {
                     loadedRows.add(i + table.firstRowIndex);
                 }
                 this.setState({ loadedRows }, () => {
-                    // this.updateStatement();
-                    tableData = this.updateQnode(tableData, true);
-                    tableData = this.setAnnotationColors(tableData, true);
+                    tableData = this.updateStatement(tableData, true);
+                    // tableData = this.updateQnode(tableData, true);
+                    // tableData = this.setAnnotationColors(tableData, true);
                     this.updateSelection(wikiStore.table.selection);
                     this.setState({ tableData })
                 })
