@@ -239,7 +239,7 @@ class CombinedTable extends Component<{}, TableState> {
         wikiStore.table.resetSelections();
         if (!table || !table.cells) {
             const loadedRows = new Set<number>();
-            this.setState({ tableData: undefined, rowCount: 0, loadedRows});
+            this.setState({ tableData: undefined, rowCount: 0, loadedRows });
             return;
         }
         const tableData = this.getClasslessTableData(table);
@@ -249,11 +249,12 @@ class CombinedTable extends Component<{}, TableState> {
 
 
     updateStatement(tableData?: TableData) {
+        const { loadedRows } = this.state;
         if (!tableData) {
             if (!this.state.tableData) {
                 return;
             }
-            const { tableData: tableDataTmp, loadedRows } = this.state;
+            const { tableData: tableDataTmp } = this.state;
             tableData = tableDataTmp;
             //if we're taking existing table data, gotta clean it:
             try {
@@ -269,11 +270,12 @@ class CombinedTable extends Component<{}, TableState> {
             }
         }
 
-        this.setAnnotationColors(tableData)
+        tableData = this.setAnnotationColors(tableData, true)
+        if (!tableData) { return; }
 
-        for (const rowIndex of Object.keys(tableData)) {
-            for (const colIndex of Object.keys(tableData[+rowIndex])) {
-                tableData[+rowIndex][+colIndex].overlay = undefined;
+        for (const indexRow of loadedRows) {
+            for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
+                tableData[indexRow][indexCol].overlay = undefined;
             }
         }
 
@@ -316,7 +318,6 @@ class CombinedTable extends Component<{}, TableState> {
                 console.log(error);
             }
         }
-
 
         const { qnode: qnodes } = wikiStore.layers;
         for (const entry of qnodes.entries) {
@@ -379,7 +380,7 @@ class CombinedTable extends Component<{}, TableState> {
                     }
                 }
             }
-            return;
+            return {};
         }
 
         const { blocks } = wikiStore.annotations;
@@ -1071,10 +1072,10 @@ class CombinedTable extends Component<{}, TableState> {
     handleOnClickHeader(event: React.MouseEvent) {
         const element = event.target as any;
         const colIndex = parseInt(element.dataset.colIndex)
-        const { tableData } = this.state;
+        const { tableData, loadedRows } = this.state;
         if (!tableData) { return; }
 
-        for (let indexRow = 0; indexRow < Object.keys(tableData).length; indexRow++) {
+        for (const indexRow of loadedRows) {
             tableData[indexRow][colIndex - 1].maxWidth = true;
         }
 
@@ -1248,8 +1249,9 @@ class CombinedTable extends Component<{}, TableState> {
                 }
                 this.setState({ loadedRows }, () => {
                     // this.updateStatement();
-                    // tableData = this.updateQnode(tableData, true);
+                    tableData = this.updateQnode(tableData, true);
                     tableData = this.setAnnotationColors(tableData, true);
+                    this.updateSelection(wikiStore.table.selection);
                     this.setState({ tableData })
                 })
             }

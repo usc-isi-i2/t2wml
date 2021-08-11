@@ -276,7 +276,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       }
       this.timeoutChangeAreaId = window.setTimeout(() => {
         if (this.state.validArea) {
-          wikiStore.table.selection.selectionArea = selection;
+          wikiStore.table.updateSelection(selection)
         }
       }, 500);
     } else {
