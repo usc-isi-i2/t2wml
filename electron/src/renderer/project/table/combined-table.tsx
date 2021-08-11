@@ -204,7 +204,8 @@ class CombinedTable extends Component<{}, TableState> {
         const { loadedRows } = this.state;
         const [numRows, numCols] = table.dims;
         const tableData: TableData = {};
-        for (let i = 0; i < Math.min(table.cells.length-table.firstRowIndex, 50); i++) {
+        const iMin = Math.min(numRows-table.firstRowIndex, 50);
+        for (let i = 0; i < iMin; i++) {
             const rowData = [];
             for (let j = 0; j < table.cells[i].length; j++) {
                 const cell: TableCell = {
@@ -223,14 +224,14 @@ class CombinedTable extends Component<{}, TableState> {
         const emptyRow: TableCell[] = [];
         while (emptyRow.length < tableData[0].length) {
            emptyRow.push({
-                content: '',
+                content: 'loading...',
                 rawContent: '',
                 classNames: [],
                 ...DEFAULT_CELL_STATE
             })
         }
 
-        for (let i = Math.min(table.cells.length, 50); i<numRows; i++){ // add rows to the display table- infinitive!!!
+        for (let i = iMin; i<numRows; i++){ // add rows to the display table- infinitive!!!
             if(i%1000==0){
             console.log("while getClasslessTableData", i)}
             tableData[i + table.firstRowIndex] = emptyRow;
