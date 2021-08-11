@@ -202,7 +202,7 @@ class CombinedTable extends Component<{}, TableState> {
 
     getClasslessTableData(table: TableDTO): TableData {
         const { loadedRows } = this.state;
-        const [numRows, numCols] = table.dims;
+        const numRows = table.dims[0];
         const tableData: TableData = {};
         const iMin = Math.min(numRows-table.firstRowIndex, 50);
         for (let i = 0; i < iMin; i++) {
