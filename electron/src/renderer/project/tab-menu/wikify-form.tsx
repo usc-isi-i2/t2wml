@@ -56,7 +56,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       data_type: "string",
     }
 
-    entityFields.is_property = field ? field === "property" : (wikiStore.table.selectedBlock?.role === 'property' ? true : false);
+    entityFields.is_property = field ? field === "property" : (wikiStore.table.selection.selectedBlock?.role === 'property' ? true : false);
 
     let customQnode = false;
     if (selected && isValidLabel(selected.label) && isValidLabel(selected.id.substring(1, selected.id.length))) {
@@ -78,14 +78,14 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       prevCell: undefined,
       entityFields: entityFields,
       customQnode: customQnode,
-      disabledIsProperty: wikiStore.table.selectedBlock?.role ? true : false
+      disabledIsProperty: wikiStore.table.selection.selectedBlock?.role ? true : false
     };
   }
 
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.wikifyQnodes.qnodes, (qnodes) => this.updateQNodes(qnodes)));
     this.disposers.push(reaction(() => wikiStore.layers.qnode, (qnodes) => this.onChangeQnodes(qnodes)));
-    this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (selectedBlock) => this.onChangeRole(selectedBlock)));
+    this.disposers.push(reaction(() => wikiStore.table.selection.selectedBlock, (selectedBlock) => this.onChangeRole(selectedBlock)));
 
   }
 
@@ -201,7 +201,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       instanceOfSearch: '',
       qnodes: [],
       entityFields: {
-        is_property: field ? field === "property" : (wikiStore.table.selectedBlock?.role === 'property' ? true : false),
+        is_property: field ? field === "property" : (wikiStore.table.selection.selectedBlock?.role === 'property' ? true : false),
         label: selectedCell.value || "",
         description: "",
         data_type: "string",

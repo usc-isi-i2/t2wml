@@ -50,7 +50,7 @@ class Output extends Component<{}, OutputComponentState> {
   private disposers: IReactionDisposer[] = [];
 
   componentDidMount() {
-    this.disposers.push(reaction(() => wikiStore.table.selectedCell, () => this.updateStateFromStore()));
+    this.disposers.push(reaction(() => wikiStore.table.selection.selectedCell, () => this.updateStateFromStore()));
     this.disposers.push(reaction(() => wikiStore.layers, () => this.updateStateFromStore()));
     this.disposers.push(reaction(() => wikiStore.layers.qnode, () => this.updateStateFromStore()));
 
@@ -69,8 +69,8 @@ class Output extends Component<{}, OutputComponentState> {
       errors: ""
     });
 
-    if (!wikiStore.table.selectedCell || !wikiStore.table.selectedCell.row) { return; } //no cell selected
-    const selectedCell = wikiStore.table.selectedCell;
+    if (!wikiStore.table.selection.selectedCell || !wikiStore.table.selection.selectedCell.row) { return; } //no cell selected
+    const selectedCell = wikiStore.table.selection.selectedCell;
     const error = wikiStore.layers.error.find(selectedCell);
     const statement = wikiStore.layers.statement.find(selectedCell);
 

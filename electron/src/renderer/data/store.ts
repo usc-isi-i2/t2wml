@@ -18,12 +18,11 @@ class TableState {
     @observable public mode: TableMode;
     @observable public table: TableDTO;
     @observable public showSpinner: boolean;
-    @observable public selectedCell?: Cell;
-    @observable public selectedBlock?: AnnotationBlock;
-    @observable public selection?: CellSelection;
 
     @observable public showCleanedData: boolean;
     @observable public showQnodes: boolean;
+
+    @observable public selection = new Selection();
 
     constructor() {
         this.mode = 'annotation';
@@ -39,15 +38,38 @@ class TableState {
         this.resetSelections();
     }
 
-    resetSelections() {
-        this.selectedCell = undefined;
-        this.selectedBlock = undefined;
-        this.selection = undefined;
+    updateSelectionAll(selection?: CellSelection, selectedBlock?: AnnotationBlock, selectedCell?: Cell){
+        // this.selectionArea = selection;
+        // this.selectedCell = selectedCell;
+        // this.selectedBlock = selectedBlock;
+        this.selection = new Selection(selection, selectedBlock, selectedCell);
+    }
+
+    updateSelection(selection?: CellSelection,selectedCell?: Cell){
+        this.selection = new Selection(selection, this.selection.selectedBlock, selectedCell);
     }
 
     selectBlock(block?: AnnotationBlock) {
-        this.selectedBlock = block;
-        this.selection = block?.selection || undefined;
+        this.selection = new Selection(block?.selection || undefined, block);
+        // this.selectedBlock = block;
+        // this.selectionArea = block?.selection || undefined;
+    }
+
+    resetSelections() {
+        this.selection = new Selection();
+    }
+}
+
+class Selection {
+
+    public selectedCell?: Cell;
+    public selectedBlock?: AnnotationBlock;
+    public selectionArea?: CellSelection;
+
+    constructor(selection?: CellSelection, selectedBlock?: AnnotationBlock, selectedCell?: Cell){
+        this.selectionArea = selection;
+        this.selectedBlock = selectedBlock;
+        this.selectedCell = selectedCell;
     }
 }
 

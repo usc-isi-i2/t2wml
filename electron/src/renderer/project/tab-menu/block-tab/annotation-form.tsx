@@ -69,8 +69,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   componentDidMount() {
     this.disposers.push(reaction(() => currentFilesService.currentState.mappingType, (mappingType) => { this.setState({ mappingType }) }));
-    this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (selectedBlock) => this.updateSelectedBlock(selectedBlock)));
-    this.disposers.push(reaction(() => wikiStore.table.selection, (selection) => this.updateSelection(selection)));
+    this.disposers.push(reaction(() => wikiStore.table.selection.selectedBlock, (selectedBlock) => this.updateSelectedBlock(selectedBlock)));
+    this.disposers.push(reaction(() => wikiStore.table.selection.selectionArea, (selection) => this.updateSelection(selection)));
   }
 
   componentWillUnmount() {
@@ -139,10 +139,10 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
 
   updateSelection(selection?: CellSelection) {
-    if ((!wikiStore.table.selectedBlock) || ! this.compareSelections(wikiStore.table.selectedBlock?.selection, selection)) {
+    if ((!wikiStore.table.selection.selectedBlock) || ! this.compareSelections(wikiStore.table.selection.selectedBlock?.selection, selection)) {
       const selectedArea = selection ? utils.humanReadableSelection(selection) : undefined;
       const fields = { ...this.state.fields }
-      if ((!wikiStore.table.selectedBlock)) {
+      if ((!wikiStore.table.selection.selectedBlock)) {
         /* eslint-disable */
         for (const [key, val] of Object.entries(fields)) {
           fields[key as keyof AnnotationFields] = undefined;
@@ -193,7 +193,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
   async updateSuggestion(suggestion: ResponseWithSuggestion) {
-    if (suggestion && !wikiStore.table.selectedBlock) {
+    if (suggestion && !wikiStore.table.selection.selectedBlock) {
       this.setState({
         fields: {
           ...this.state.fields,
@@ -207,7 +207,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   async getAnnotationSuggestionsForSelection(selection?: { 'x1': number, 'x2': number, 'y1': number, 'y2': number }) {
     if (!selection) { return; }
-    if (wikiStore.table.selectedBlock) { console.log("returned because state had a block"); return; }
+    if (wikiStore.table.selection.selectedBlock) { console.log("returned because state had a block"); return; }
     // data should be a json dictionary, with fields:
     // {
     //   "selection": The block,
@@ -276,7 +276,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       }
       this.timeoutChangeAreaId = window.setTimeout(() => {
         if (this.state.validArea) {
-          wikiStore.table.selection = selection;
+          wikiStore.table.selection.selectionArea = selection;
         }
       }, 500);
     } else {

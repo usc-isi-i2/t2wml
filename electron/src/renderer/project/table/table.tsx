@@ -157,7 +157,7 @@ class Table extends React.Component<TableProperties, { rowHeight: number, column
                 <VirtualizedTable id="virtualized-table"
                   height={Size.height}
                   width={tableData[0].length * columnWidth}
-                  className={wikiStore.table.selection && ableActivated ? 'active' : ''}
+                  className={wikiStore.table.selection.selectionArea && ableActivated ? 'active' : ''}
                   headerHeight={rowHeight}
                   rowHeight={rowHeight}
 

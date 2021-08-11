@@ -32,11 +32,11 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
 
     this.state = {
       errorMessage: {} as ErrorMessage,
-      selectedCell: wikiStore.table.selectedCell
+      selectedCell: wikiStore.table.selection.selectedCell
     };
   }
   componentDidMount() {
-    this.disposers.push(reaction(() => wikiStore.table.selectedCell, (selectedCell) => this.setState({ selectedCell })));
+    this.disposers.push(reaction(() => wikiStore.table.selection.selectedCell, (selectedCell) => this.setState({ selectedCell })));
   }
 
   componentWillUnmount() {
@@ -58,10 +58,10 @@ class WikifyMenu extends React.Component<{}, WikifyMenuState> {
       };
       const selectedBlock = utils.checkSelectedAnnotationBlocks(selection);
       if (selectedBlock) {
-        wikiStore.table.selectedBlock = selectedBlock;
+        wikiStore.table.selection.selectedBlock = selectedBlock;
       }
     } else {
-      wikiStore.table.selectedBlock = undefined;
+      wikiStore.table.selection.selectedBlock = undefined;
     }
   }
 
