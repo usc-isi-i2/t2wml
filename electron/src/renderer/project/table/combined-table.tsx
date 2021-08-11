@@ -121,7 +121,8 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     async createAnnotationIfDoesNotExist() {
-        if (!currentFilesService.currentState.dataFile) { return; }
+        console.log("start createAnnotationIfDoesNotExist")
+        if (!currentFilesService.currentState.dataFile) { console.log("end createAnnotationIfDoesNotExist"); return; }
         if (!currentFilesService.currentState.mappingFile) {
             //create a mapping file - needs to be forward slash so title matches whats returned from backend
             const title = "annotations" + "/" + path.parse(currentFilesService.currentState.dataFile).name + "-" + currentFilesService.currentState.sheetName + ".annotation";
@@ -134,6 +135,8 @@ class CombinedTable extends Component<{}, TableState> {
             await this.requestService.createAnnotation(data)
             currentFilesService.changeAnnotation(title, currentFilesService.currentState.sheetName, currentFilesService.currentState.dataFile);
         }
+        console.log("end createAnnotationIfDoesNotExist")
+
     }
 
     getQnodeCellContent(qnode: QNode, rawContent?: string) {
@@ -198,6 +201,7 @@ class CombinedTable extends Component<{}, TableState> {
 
 
     getClasslessTableData(table?: TableDTO): TableData {
+        console.log("start getClasslessTableData table.cells.length", table?.cells.length)
         if (!table) {
             const { table: wikiTable } = wikiStore.table;
             table = wikiTable;
@@ -218,24 +222,29 @@ class CombinedTable extends Component<{}, TableState> {
             loadedRows.add(i + table.firstRowIndex)
             tableData[i + table.firstRowIndex] = rowData;
         }
+        console.log("end for getClasslessTableData")
 
-        while (Object.keys(tableData).length < table.dims[0]) { // add rows to the display table
-            const rowData = [];
-            while (rowData.length < tableData[0].length) {
-                rowData.push({
-                    content: '',
-                    rawContent: '',
-                    classNames: [],
-                    ...DEFAULT_CELL_STATE
-                })
-            }
+        while (Object.keys(tableData).length < table.dims[0]) { // add rows to the display table- infinitive!!!
+            const rowData: TableCell[] = [];
+            // while (rowData.length < tableData[0].length) {
+            //     rowData.push({
+            //         content: '',
+            //         rawContent: '',
+            //         classNames: [],
+            //         ...DEFAULT_CELL_STATE
+            //     })
+            // }
+            console.log("while getClasslessTableData", Object.keys(tableData).length)
             tableData[Object.keys(tableData).length] = rowData;
         }
+        console.log("end while getClasslessTableData")
         this.setState({ loadedRows })
+        console.log("end getClasslessTableData")
         return tableData;
     }
 
     updateTableData(table?: TableDTO) {
+        console.log("start updateTableData")
         wikiStore.table.resetSelections();
         if (!table || !table.cells) {
             const loadedRows = new Set<number>();
@@ -244,7 +253,8 @@ class CombinedTable extends Component<{}, TableState> {
         }
         const tableData = this.getClasslessTableData(table);
         this.setState({ tableData, rowCount: table.dims[0] })
-        { this.createAnnotationIfDoesNotExist(); }
+        this.createAnnotationIfDoesNotExist();
+        console.log("end updateTableData")
     }
 
 
@@ -1191,6 +1201,14 @@ class CombinedTable extends Component<{}, TableState> {
         if (!loadedRows.has(index)) {
             this.fetchRows(index);
         }
+        while (tableData[index].length < tableData[0].length) {
+            tableData[index].push({
+                content: '',
+                rawContent: '',
+                classNames: [],
+                ...DEFAULT_CELL_STATE
+            })
+        }
         return tableData[index];
     }
 
@@ -1239,7 +1257,6 @@ class CombinedTable extends Component<{}, TableState> {
                             classNames: [],
                             ...DEFAULT_CELL_STATE
                         };
-
                         rowData.push(cell);
                     }
                     tableData[i + table.firstRowIndex] = rowData;
