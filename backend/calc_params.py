@@ -1,7 +1,7 @@
 from pathlib import Path
-from t2wml.api import Sheet, SpreadsheetFile, Wikifier
+from t2wml.api import SpreadsheetFile, Wikifier
 from caching import CacheHolder
-
+from web_sheet import Sheet
 
 class CalcParams:
     def __init__(self, project, data_path, sheet_name, yaml_path=None, annotation_path=None):
