@@ -200,15 +200,11 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
 
-    getClasslessTableData(table?: TableDTO): TableData {
-        console.log("start getClasslessTableData table.cells.length", table?.cells.length)
-        if (!table) {
-            const { table: wikiTable } = wikiStore.table;
-            table = wikiTable;
-        }
+    getClasslessTableData(table: TableDTO): TableData {
         const { loadedRows } = this.state;
+        const [numRows, numCols] = table.dims;
         const tableData: TableData = {};
-        for (let i = 0; i < table.cells.length; i++) {
+        for (let i = 0; i < Math.min(table.cells.length-table.firstRowIndex, 50); i++) {
             const rowData = [];
             for (let j = 0; j < table.cells[i].length; j++) {
                 const cell: TableCell = {
@@ -222,20 +218,21 @@ class CombinedTable extends Component<{}, TableState> {
             loadedRows.add(i + table.firstRowIndex)
             tableData[i + table.firstRowIndex] = rowData;
         }
-        console.log("end for getClasslessTableData")
+        console.log("end for first 49 rows");
 
-        while (Object.keys(tableData).length < table.dims[0]) { // add rows to the display table- infinitive!!!
+        for (let i = Math.min(table.cells.length, 50); i<numRows; i++){ // add rows to the display table- infinitive!!!
             const rowData: TableCell[] = [];
-            // while (rowData.length < tableData[0].length) {
-            //     rowData.push({
-            //         content: '',
-            //         rawContent: '',
-            //         classNames: [],
-            //         ...DEFAULT_CELL_STATE
-            //     })
-            // }
-            console.log("while getClasslessTableData", Object.keys(tableData).length)
-            tableData[Object.keys(tableData).length] = rowData;
+            while (rowData.length < tableData[0].length) {
+                rowData.push({
+                    content: '',
+                    rawContent: '',
+                    classNames: [],
+                    ...DEFAULT_CELL_STATE
+                })
+            }
+            if(i%1000==0){
+            console.log("while getClasslessTableData", i)}
+            tableData[i + table.firstRowIndex] = rowData;
         }
         console.log("end while getClasslessTableData")
         this.setState({ loadedRows })
