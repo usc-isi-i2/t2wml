@@ -28,7 +28,6 @@ debug_mode = False
 
 set_web_settings()
 
-
 def get_project_folder():
     try:
         project_folder = request.args['project_folder']
@@ -115,12 +114,7 @@ def get_calc_params(project, data_required=True, mapping_type=None, mapping_file
     return calc_params
 
 
-@app.route('/api/project', methods=['GET'])
-@json_response
-def get_project_files():
-    project = get_project()
-    response = dict(project=get_project_dict(project))
-    return response, 200
+############# heavy getters: ###############
 
 
 @app.route('/api/mapping', methods=['GET'])
@@ -148,7 +142,6 @@ def get_mapping(mapping_file=None, mapping_type=None):
     get_layers(response, calc_params, start, end)
     return response, 200
 
-
 @app.route('/api/table', methods=['GET'])
 @json_response
 def get_data():
@@ -169,6 +162,13 @@ def get_data():
     response.update(calc_response)
     return response, code
 
+@app.route('/api/annotation/guess-blocks', methods=['GET'])
+@json_response
+def guess_all_annotation_blocks():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    suggest_annotations(calc_params)
+    return get_mapping()
 
 @app.route('/api/partialcsv', methods=['GET'])
 @json_response
@@ -190,231 +190,6 @@ def partial_csv():
     return response, 200
 
 
-@app.route('/api/project', methods=['POST'])
-@json_response
-def create_project():
-    """
-    This route creates a project
-    :return:
-    """
-    project_folder = get_project_folder()
-    # check we're not overwriting existing project
-    project_file = Path(project_folder) / "project.t2wml"
-    if project_file.is_file():
-        raise web_exceptions.ProjectAlreadyExistsException(project_folder)
-    title = request.get_json()["title"]
-    if not title:
-        raise web_exceptions.InvalidRequestException(
-            "title required to create project")
-    description = request.get_json().get("description", "")
-    url = request.get_json().get("url", "")
-    # create project
-    project = create_api_project(project_folder, title, description, url)
-    response = dict(project=get_project_dict(project))
-    return response, 201
-
-
-@app.route('/api/data', methods=['POST'])
-@json_response
-def upload_data_file():
-    """
-    This function uploads the data file.
-    :return:
-    """
-    project = get_project()
-
-    file_path = file_upload_validator({'.xlsx', '.xls', '.csv', '.tsv'})
-    data_file = project.add_data_file(
-        file_path, copy_from_elsewhere=True, overwrite=True)
-    project.save()
-    response = dict(project=get_project_dict(project))
-    sheet_name = project.data_files[data_file]["val_arr"][0]
-
-    annotations_dir = os.path.join(project.directory, "annotations")
-    if not os.path.isdir(annotations_dir):
-        os.mkdir(annotations_dir)
-    annotations_path = os.path.join(annotations_dir, Path(
-        data_file).stem+"_"+sheet_name+".annotation")
-
-    save_annotations(project, [], os.path.join(
-        annotations_path), data_file, sheet_name)
-
-    calc_params = CalcParams(project, data_file, sheet_name, None)
-
-    start = int(request.args.get("data_start", 0))
-    end = int(request.args.get("data_end", 0))
-    if end == 0:
-        end = None
-
-    response["table"] = get_table(calc_params, start, end)
-    get_layers(response, calc_params) #this will just return empty layers and any wikification if it exists
-
-    return response, 200
-
-
-@app.route('/api/project/entities', methods=['POST'])
-@json_response
-def upload_entities():
-    project = get_project()
-
-    file_path = file_upload_validator({".tsv"})
-    project.add_entity_file(
-        file_path, copy_from_elsewhere=True, overwrite=True)
-    project.save()
-
-    entities_stats = add_entities_from_file(file_path)
-    response = dict(entitiesStats=entities_stats,
-                    project=get_project_dict(project))
-    calc_params = get_calc_params(project, data_required=False)
-    if calc_params:
-        response["layers"] = get_qnodes_layer(calc_params)
-    return response, 200
-
-
-@app.route('/api/project/entities', methods=['GET'])
-@json_response
-def get_project_entities():
-    project = get_project()
-    response = get_entities(project)
-    return response, 200
-
-
-@app.route('/api/project/entities', methods=['PUT'])
-@json_response
-def edit_entities():
-    project = get_project()
-    entity_file = request.get_json()["entity_file"]
-    updated_entries = request.get_json()["updated_entries"]
-    response = update_entities(project, entity_file, updated_entries)
-    return response, 200
-
-
-
-@app.route('/api/web/wikify_region', methods=['POST']) #V
-@json_response
-def causx_wikify():
-    project = get_project()
-    region = request.get_json()["selection"]
-    overwrite_existing = request.get_json().get("overwrite", False)
-    #context = request.get_json()["context"]
-    calc_params = get_calc_params(project)
-
-    cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
-    project.add_df_to_wikifier_file(calc_params.data_path, cell_qnode_map, overwrite_existing)
-
-    calc_params = get_calc_params(project)
-    response = dict(project=get_project_dict(project))
-    response["layers"] = get_qnodes_layer(calc_params)
-
-    if problem_cells:
-        response['wikifierError'] = "Failed to wikify: " + \
-            ",".join(problem_cells)
-
-    return response, 200
-
-    
-@app.route('/api/wikifier', methods=['POST'])
-@json_response
-def upload_wikifier_output():
-    """
-    This function uploads the wikifier output
-    :return:
-    """
-    project = get_project()
-
-    file_path = file_upload_validator({".csv"})
-    project.add_old_style_wikifier_to_project(file_path)
-    project.save()
-
-    response = dict(project=get_project_dict(project))
-    calc_params = get_calc_params(project, data_required=False)
-    if calc_params:
-        response["layers"] = get_qnodes_layer(calc_params)
-    return response, 200
-
-
-@app.route('/api/wikifier_service', methods=['POST'])
-@json_response
-def call_wikifier_service():
-    """
-    This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
-    :return:
-    """
-    project = get_project()
-    calc_params = get_calc_params(project)
-    overwrite_existing = request.get_json().get("overwrite", False)
-    selection = request.get_json()['selection']
-    selection = (selection["x1"]-1, selection["y1"] -
-                 1), (selection["x2"]-1, selection["y2"]-1)
-
-    df, entities_dict, problem_cells = wikify_selection(calc_params, selection)
-    t2wml_settings.wikidata_provider.cache.update(entities_dict)
-    project.add_df_to_wikifier_file(
-        calc_params.data_path, df, overwrite_existing)
-
-    calc_params = get_calc_params(project)
-    response = dict(project=get_project_dict(project))
-    response["layers"] = get_qnodes_layer(calc_params)
-
-    if problem_cells:
-        response['wikifierError'] = "Failed to wikify: " + \
-            ",".join(problem_cells)
-
-    return response, 200
-
-
-@app.route('/api/auto_wikinodes', methods=['POST'])
-@json_response
-def create_auto_nodes():
-    """
-    This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
-    :return:
-    """
-    project = get_project()
-    calc_params = get_calc_params(project)
-    selection = request.get_json()['selection']
-    selection = (selection["x1"]-1, selection["y1"] -
-                 1), (selection["x2"]-1, selection["y2"]-1)
-    is_property = request.get_json()['is_property']
-    data_type = request.get_json().get("data_type", None)
-    autocreate_items(calc_params, selection, is_property, data_type)
-    response = dict(project=get_project_dict(project))
-    response["layers"] = get_qnodes_layer(calc_params)
-    return response, 200
-
-
-@app.route('/api/yaml/save', methods=['POST'])
-@json_response
-def upload_yaml():
-    project = get_project()
-    dataFile = request.get_json()["dataFile"]
-    sheet_name = request.get_json()["sheetName"]
-    yaml_data = request.get_json()["yaml"]
-    title = request.get_json()["title"]
-    filename = save_yaml(project, yaml_data, dataFile, sheet_name, title)
-    response = dict(project=get_project_dict(project), filename=filename)
-    return response, 200
-
-
-@app.route('/api/yaml/apply', methods=['POST'])
-@json_response
-def apply_yaml():
-    """
-    This function uploads and processes the yaml file
-    :return:
-    """
-    project = get_project()
-    calc_params = get_calc_params(project)
-    yaml_data = request.get_json()["yaml"]
-    title = request.get_json()["title"]
-    save_yaml(project, yaml_data, calc_params.data_path,
-              calc_params.sheet_name, title)
-    yaml_title = request.get_json()["title"]
-    yaml_path = Path(project.directory) / yaml_title
-    response = dict(project=get_project_dict(project))
-    calc_response, code = get_mapping(yaml_path, "Yaml")
-    response.update(calc_response)
-    return response, code
 
 
 @app.route('/api/project/download/<filetype>/<filename>/all', methods=['GET'])
@@ -509,6 +284,196 @@ def load_to_datamart():
     return data, 201
 
 
+
+
+#POSTS/PUTS:
+
+
+@app.route('/api/data', methods=['POST'])
+@json_response
+def upload_data_file():
+    """
+    This function uploads the data file.
+    :return:
+    """
+    project = get_project()
+
+    file_path = file_upload_validator({'.xlsx', '.xls', '.csv', '.tsv'})
+    data_file = project.add_data_file(
+        file_path, copy_from_elsewhere=True, overwrite=True)
+    project.save()
+    response = dict(project=get_project_dict(project))
+    sheet_name = project.data_files[data_file]["val_arr"][0]
+
+    annotations_dir = os.path.join(project.directory, "annotations")
+    if not os.path.isdir(annotations_dir):
+        os.mkdir(annotations_dir)
+    annotations_path = os.path.join(annotations_dir, Path(
+        data_file).stem+"_"+sheet_name+".annotation")
+
+    save_annotations(project, [], os.path.join(
+        annotations_path), data_file, sheet_name)
+
+    calc_params = CalcParams(project, data_file, sheet_name, None)
+
+    start = int(request.args.get("data_start", 0))
+    end = int(request.args.get("data_end", 0))
+    if end == 0:
+        end = None
+
+    response["table"] = get_table(calc_params, start, end)
+    get_layers(response, calc_params) #this will just return empty layers and any wikification if it exists
+
+    return response, 200
+
+
+
+@app.route('/api/project/entities', methods=['POST'])
+@json_response
+def upload_entities():
+    project = get_project()
+
+    file_path = file_upload_validator({".tsv"})
+    project.add_entity_file(
+        file_path, copy_from_elsewhere=True, overwrite=True)
+    project.save()
+
+    entities_stats = add_entities_from_file(file_path)
+    response = dict(entitiesStats=entities_stats,
+                    project=get_project_dict(project))
+    calc_params = get_calc_params(project, data_required=False)
+    if calc_params:
+        response["layers"] = get_qnodes_layer(calc_params)
+    return response, 200
+
+
+
+@app.route('/api/web/wikify_region', methods=['POST']) #V
+@json_response
+def causx_wikify():
+    project = get_project()
+    region = request.get_json()["selection"]
+    overwrite_existing = request.get_json().get("overwrite", False)
+    #context = request.get_json()["context"]
+    calc_params = get_calc_params(project)
+
+    cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
+    project.add_df_to_wikifier_file(calc_params.data_path, cell_qnode_map, overwrite_existing)
+
+    calc_params = get_calc_params(project)
+    response = dict(project=get_project_dict(project))
+    response["layers"] = get_qnodes_layer(calc_params)
+
+    if problem_cells:
+        response['wikifierError'] = "Failed to wikify: " + \
+            ",".join(problem_cells)
+
+    return response, 200
+
+
+@app.route('/api/wikifier', methods=['POST'])
+@json_response
+def upload_wikifier_output():
+    """
+    This function uploads the wikifier output
+    :return:
+    """
+    project = get_project()
+
+    file_path = file_upload_validator({".csv"})
+    project.add_old_style_wikifier_to_project(file_path)
+    project.save()
+
+    response = dict(project=get_project_dict(project))
+    calc_params = get_calc_params(project, data_required=False)
+    if calc_params:
+        response["layers"] = get_qnodes_layer(calc_params)
+    return response, 200
+
+
+@app.route('/api/wikifier_service', methods=['POST'])
+@json_response
+def call_wikifier_service():
+    """
+    This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
+    :return:
+    """
+    project = get_project()
+    calc_params = get_calc_params(project)
+    overwrite_existing = request.get_json().get("overwrite", False)
+    selection = request.get_json()['selection']
+    selection = (selection["x1"]-1, selection["y1"] -
+                 1), (selection["x2"]-1, selection["y2"]-1)
+
+    df, entities_dict, problem_cells = wikify_selection(calc_params, selection)
+    t2wml_settings.wikidata_provider.cache.update(entities_dict)
+    project.add_df_to_wikifier_file(
+        calc_params.data_path, df, overwrite_existing)
+
+    calc_params = get_calc_params(project)
+    response = dict(project=get_project_dict(project))
+    response["layers"] = get_qnodes_layer(calc_params)
+
+    if problem_cells:
+        response['wikifierError'] = "Failed to wikify: " + \
+            ",".join(problem_cells)
+
+    return response, 200
+
+
+@app.route('/api/auto_wikinodes', methods=['POST'])
+@json_response
+def create_auto_nodes():
+    """
+    This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
+    :return:
+    """
+    project = get_project()
+    calc_params = get_calc_params(project)
+    selection = request.get_json()['selection']
+    selection = (selection["x1"]-1, selection["y1"] -
+                 1), (selection["x2"]-1, selection["y2"]-1)
+    is_property = request.get_json()['is_property']
+    data_type = request.get_json().get("data_type", None)
+    autocreate_items(calc_params, selection, is_property, data_type)
+    response = dict(project=get_project_dict(project))
+    response["layers"] = get_qnodes_layer(calc_params)
+    return response, 200
+
+
+
+@app.route('/api/yaml/save', methods=['POST'])
+@json_response
+def upload_yaml():
+    project = get_project()
+    dataFile = request.get_json()["dataFile"]
+    sheet_name = request.get_json()["sheetName"]
+    yaml_data = request.get_json()["yaml"]
+    title = request.get_json()["title"]
+    filename = save_yaml(project, yaml_data, dataFile, sheet_name, title)
+    response = dict(project=get_project_dict(project), filename=filename)
+    return response, 200
+
+
+@app.route('/api/yaml/apply', methods=['POST'])
+@json_response
+def apply_yaml():
+    """
+    This function uploads and processes the yaml file
+    :return:
+    """
+    project = get_project()
+    calc_params = get_calc_params(project)
+    yaml_data = request.get_json()["yaml"]
+    title = request.get_json()["title"]
+    save_yaml(project, yaml_data, calc_params.data_path,
+              calc_params.sheet_name, title)
+    yaml_title = request.get_json()["title"]
+    yaml_path = Path(project.directory) / yaml_title
+    response = dict(project=get_project_dict(project))
+    calc_response, code = get_mapping(yaml_path, "Yaml")
+    response.update(calc_response)
+    return response, code
 @app.route('/api/annotation/create', methods=['POST'])
 @json_response
 def save_annotation():
@@ -539,148 +504,6 @@ def upload_annotation():
     response.update(calc_response)
     return response, code
 
-
-@app.route('/api/annotation/suggest', methods=['PUT'])
-@json_response
-def suggest_annotation_block():
-    project = get_project()
-    calc_params = get_calc_params(project)
-    block = request.get_json()["selection"]
-    annotation = request.get_json()["annotations"]
-
-    response = {  # fallback response
-        # drop metadata
-        "roles": ["dependentVar", "mainSubject", "property", "qualifier", "unit"],
-        # drop monolingual string
-        "types": ["string", "quantity", "time", "wikibaseitem"],
-        "children": {}
-    }
-
-    try:
-        response = annotation_suggester(calc_params.sheet, block, annotation)
-    except Exception as e:
-        pass  # print(e)
-    return response, 200
-
-
-@app.route('/api/annotation/guess-blocks', methods=['GET'])
-@json_response
-def guess_annotation_blocks():
-    project = get_project()
-    calc_params = get_calc_params(project)
-    suggest_annotations(calc_params)
-    return get_mapping()
-
-
-@app.route('/api/project/globalsettings', methods=['PUT', 'GET'])
-@json_response
-def update_global_settings():
-    if request.method == 'PUT':
-        new_global_settings = dict()
-        datamart_api = request.get_json().get("datamartApi", None)
-        if datamart_api is not None:
-            new_global_settings["datamart_api"] = datamart_api
-        global_settings.update(**new_global_settings)
-
-    response = global_settings.__dict__
-    return response, 200
-
-
-@app.route('/api/project/settings', methods=['PUT', 'GET'])
-@json_response
-def update_settings():
-    """
-    This function updates the settings from GUI
-    :return:
-    """
-    project = get_project()
-    if request.method == 'PUT':
-        request_json = request.get_json()
-        title = request_json.get("title", None)
-        if title:
-            project.title = title
-        description = request_json.get("description", None)
-        if description is not None:
-            project.description = description
-        url = request_json.get("url", None)
-        if url is not None:
-            project.url = url
-        endpoint = request_json.get("endpoint", None)
-        if endpoint:
-            project.sparql_endpoint = endpoint
-        warn = request_json.get("warnEmpty", None)
-        if warn is not None:
-            project.warn_for_empty_cells = warn
-        calendar = request_json.get("handleCalendar", None)
-        if calendar:
-            calendar_dict = {
-                "Replace with Gregorian": "replace",
-                "Leave Untouched": "leave",
-                "Add Gregorian": "add",
-                "replace": "replace",
-                "add": "add",
-                "leave": "leave"
-            }
-            try:
-                project.handle_calendar = calendar_dict[calendar]
-            except KeyError:
-                raise web_exceptions.InvalidRequestException(
-                    "No such calendar option")
-        project.save()
-        update_t2wml_settings(project)
-
-    response = dict(project=get_project_dict(project))
-    return response, 200
-
-
-@app.route('/api/properties', methods=['GET'])
-@app.route('/api/qnodes', methods=['GET'])
-@json_response
-def get_qnodes():
-    q = request.args.get('q')
-    if not q:
-        raise web_exceptions.InvalidRequestException("No search parameter set")
-
-    # construct the url with correct parameters for kgtk search
-    url = 'https://kgtk.isi.edu/api?q={}'.format(q)
-
-    if "properties" in request.url:
-        url += '&type=ngram&extra_info=true&language=en&item=property'
-        data_type = request.args.get('data_type')
-        if data_type:
-            if data_type == "wikibaseitem":
-                data_type = "wikibase-item"
-            url += '&data_type={}'.format(data_type)
-
-    else:  # qnodes
-        # get the optional parameters for the url
-        is_class = request.args.get('is_class')
-        url += '&extra_info=true&language=en'
-        if is_class:
-            url += '&is_class=true&type=exact&size=5'
-        else:
-            url += '&is_class=false&type=ngram&size=10'
-            instance_of = request.args.get('instance_of')
-            if instance_of:
-                url += '&instance_of={}'.format(instance_of)
-
-    try:
-        response = requests.get(url, verify=False)
-    except requests.exceptions.RequestException as error:
-        raise web_exceptions.InvalidRequestException(error)
-    else:
-        items = response.json()
-        if type(items) != list:
-            raise web_exceptions.InvalidRequestException(
-                "KGTK did not return a valid list of nodes"
-            )
-        qnodes = [{
-            'id': item['qnode'],
-            'label': item['label'][0] if item['label'] else '',
-            'description': item['description'][0] if item['description'] else '',
-        } for item in items]
-
-    return {'qnodes': qnodes}, 200
 
 
 @app.route('/api/set_qnode', methods=['POST'])
@@ -818,6 +641,219 @@ def create_qnode():
     return response, 200
 
 
+
+
+##### Small getters that return small things and *should* be cheap operations
+
+@app.route('/api/project', methods=['GET'])
+@json_response
+def get_project_files():
+    project = get_project()
+    response = dict(project=get_project_dict(project))
+    return response, 200
+
+
+#sure, it's technically a post, but functionally it's "getting" a working project dir
+@app.route('/api/project', methods=['POST'])
+@json_response
+def create_project():
+    """
+    This route creates a project
+    :return:
+    """
+    project_folder = get_project_folder()
+    # check we're not overwriting existing project
+    project_file = Path(project_folder) / "project.t2wml"
+    if project_file.is_file():
+        raise web_exceptions.ProjectAlreadyExistsException(project_folder)
+    title = request.get_json()["title"]
+    if not title:
+        raise web_exceptions.InvalidRequestException(
+            "title required to create project")
+    description = request.get_json().get("description", "")
+    url = request.get_json().get("url", "")
+    # create project
+    project = create_api_project(project_folder, title, description, url)
+    response = dict(project=get_project_dict(project))
+    return response, 201
+
+#all it returns is a project
+@app.route('/api/files/add_mapping', methods=['POST'])
+@json_response
+def add_existing_mapping_file_to_project():
+    project = get_project()
+    dataFile = request.get_json()["dataFile"]
+    sheet_name = request.get_json()["sheetName"]
+    title = request.get_json()["title"]
+    type = request.get_json()["type"]
+
+    if type == "yaml":
+        filename = project.add_yaml_file(title, dataFile, sheet_name, True)
+
+    if type == "annotation":
+        filename = project.add_annotation_file(
+            title, dataFile, sheet_name, True)
+
+    project.save()
+    response = dict(project=get_project_dict(project), filename=filename)
+    return response, 200
+
+#returns entity dict
+@app.route('/api/project/entities', methods=['GET'])
+@json_response
+def get_project_entities():
+    project = get_project()
+    response = get_entities(project)
+    return response, 200
+
+#returns the same as get entities
+@app.route('/api/project/entities', methods=['PUT'])
+@json_response
+def edit_entities():
+    project = get_project()
+    entity_file = request.get_json()["entity_file"]
+    updated_entries = request.get_json()["updated_entries"]
+    response = update_entities(project, entity_file, updated_entries)
+    return response, 200
+
+
+
+@app.route('/api/annotation/suggest', methods=['PUT'])
+@json_response
+def guess_block_type_role():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    block = request.get_json()["selection"]
+    annotation = request.get_json()["annotations"]
+
+    response = {  # fallback response
+        # drop metadata
+        "roles": ["dependentVar", "mainSubject", "property", "qualifier", "unit"],
+        # drop monolingual string
+        "types": ["string", "quantity", "time", "wikibaseitem"],
+        "children": {}
+    }
+
+    try:
+        response = annotation_suggester(calc_params.sheet, block, annotation)
+    except Exception as e:
+        pass  # print(e)
+    return response, 200
+
+
+
+@app.route('/api/project/globalsettings', methods=['PUT', 'GET'])
+@json_response
+def update_global_settings():
+    if request.method == 'PUT':
+        new_global_settings = dict()
+        datamart_api = request.get_json().get("datamartApi", None)
+        if datamart_api is not None:
+            new_global_settings["datamart_api"] = datamart_api
+        global_settings.update(**new_global_settings)
+
+    response = global_settings.__dict__
+    return response, 200
+
+
+@app.route('/api/project/settings', methods=['PUT', 'GET'])
+@json_response
+def update_settings():
+    """
+    This function updates the settings from GUI
+    :return:
+    """
+    project = get_project()
+    if request.method == 'PUT':
+        request_json = request.get_json()
+        title = request_json.get("title", None)
+        if title:
+            project.title = title
+        description = request_json.get("description", None)
+        if description is not None:
+            project.description = description
+        url = request_json.get("url", None)
+        if url is not None:
+            project.url = url
+        endpoint = request_json.get("endpoint", None)
+        if endpoint:
+            project.sparql_endpoint = endpoint
+        warn = request_json.get("warnEmpty", None)
+        if warn is not None:
+            project.warn_for_empty_cells = warn
+        calendar = request_json.get("handleCalendar", None)
+        if calendar:
+            calendar_dict = {
+                "Replace with Gregorian": "replace",
+                "Leave Untouched": "leave",
+                "Add Gregorian": "add",
+                "replace": "replace",
+                "add": "add",
+                "leave": "leave"
+            }
+            try:
+                project.handle_calendar = calendar_dict[calendar]
+            except KeyError:
+                raise web_exceptions.InvalidRequestException(
+                    "No such calendar option")
+        project.save()
+        update_t2wml_settings(project)
+
+    response = dict(project=get_project_dict(project))
+    return response, 200
+
+@app.route('/api/properties', methods=['GET'])
+@app.route('/api/qnodes', methods=['GET'])
+@json_response
+def get_qnodes():
+    q = request.args.get('q')
+    if not q:
+        raise web_exceptions.InvalidRequestException("No search parameter set")
+
+    # construct the url with correct parameters for kgtk search
+    url = 'https://kgtk.isi.edu/api?q={}'.format(q)
+
+    if "properties" in request.url:
+        url += '&type=ngram&extra_info=true&language=en&item=property'
+        data_type = request.args.get('data_type')
+        if data_type:
+            if data_type == "wikibaseitem":
+                data_type = "wikibase-item"
+            url += '&data_type={}'.format(data_type)
+
+    else:  # qnodes
+        # get the optional parameters for the url
+        is_class = request.args.get('is_class')
+        url += '&extra_info=true&language=en'
+        if is_class:
+            url += '&is_class=true&type=exact&size=5'
+        else:
+            url += '&is_class=false&type=ngram&size=10'
+            instance_of = request.args.get('instance_of')
+            if instance_of:
+                url += '&instance_of={}'.format(instance_of)
+
+    try:
+        response = requests.get(url, verify=False)
+    except requests.exceptions.RequestException as error:
+        raise web_exceptions.InvalidRequestException(error)
+    else:
+        items = response.json()
+        if type(items) != list:
+            raise web_exceptions.InvalidRequestException(
+                "KGTK did not return a valid list of nodes"
+            )
+        qnodes = [{
+            'id': item['qnode'],
+            'label': item['label'][0] if item['label'] else '',
+            'description': item['description'][0] if item['description'] else '',
+        } for item in items]
+
+    return {'qnodes': qnodes}, 200
+
+
+
+
 @app.route('/api/query_node/<id>', methods=['GET'])
 @json_response
 def query_qnode(id):
@@ -862,26 +898,6 @@ def delete_file():
     response = dict(project=get_project_dict(project))
     return response, 200
 
-
-@app.route('/api/files/add_mapping', methods=['POST'])
-@json_response
-def add_mapping_file():
-    project = get_project()
-    dataFile = request.get_json()["dataFile"]
-    sheet_name = request.get_json()["sheetName"]
-    title = request.get_json()["title"]
-    type = request.get_json()["type"]
-
-    if type == "yaml":
-        filename = project.add_yaml_file(title, dataFile, sheet_name, True)
-
-    if type == "annotation":
-        filename = project.add_annotation_file(
-            title, dataFile, sheet_name, True)
-
-    project.save()
-    response = dict(project=get_project_dict(project), filename=filename)
-    return response, 200
 
 
 
