@@ -57,12 +57,13 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
       classNames: [],
       ...DEFAULT_CELL_STATE
     };
-    for (let i = 0; i < Math.min(table.cells.length, 150); i++) {
+    const tableLength = table.cells.length
+    for (let i = 0; i < Math.min(tableLength, 150); i++) {
       const rowData = [];
       let j = 0;
-      for (; j < table.cells[i].length + 1; j++) {
+      for (; j < table.cells[0].length + 1; j++) {
         const cell: TableCell = {
-          content: table.cells[i][j],
+          content: i > tableLength ? '' : table.cells[i][j],
           classNames: [],
           ...DEFAULT_CELL_STATE
         };

@@ -252,7 +252,7 @@ class CombinedTable extends Component<{}, TableState> {
             return;
         }
         const tableData = this.getClasslessTableData(table);
-        this.setState({ tableData, rowCount: Math.min(table.dims[0] + 1, 50) })
+        this.setState({ tableData, rowCount: Math.max(table.dims[0] + 1, 50) })
         this.createAnnotationIfDoesNotExist();
     }
 
@@ -1208,7 +1208,7 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     rowGetter(index: number): TableCell[] {
-        const { tableData, rowCount } = this.state;
+        const { tableData } = this.state;
         if (!tableData) { return [] as TableCell[]; }
         if (!wikiStore.table.loadedRows.has(index) && index < wikiStore.table.table.dims[0]) {
             this.fetchRows(index);
