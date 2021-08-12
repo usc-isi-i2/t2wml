@@ -38,14 +38,14 @@ class TableState {
         this.resetSelections();
     }
 
-    updateSelectionAll(selection?: CellSelection, selectedBlock?: AnnotationBlock, selectedCell?: Cell){
+    updateSelectionAll(selection?: CellSelection, selectedBlock?: AnnotationBlock, selectedCell?: Cell) {
         // this.selectionArea = selection;
         // this.selectedCell = selectedCell;
         // this.selectedBlock = selectedBlock;
         this.selection = new Selection(selection, selectedBlock, selectedCell);
     }
 
-    updateSelection(selection?: CellSelection,selectedCell?: Cell){
+    updateSelection(selection?: CellSelection, selectedCell?: Cell) {
         this.selection = new Selection(selection, this.selection.selectedBlock, selectedCell);
     }
 
@@ -66,7 +66,7 @@ class Selection {
     public selectedBlock?: AnnotationBlock;
     public selectionArea?: CellSelection;
 
-    constructor(selection?: CellSelection, selectedBlock?: AnnotationBlock, selectedCell?: Cell){
+    constructor(selection?: CellSelection, selectedBlock?: AnnotationBlock, selectedCell?: Cell) {
         this.selectionArea = selection;
         this.selectedBlock = selectedBlock;
         this.selectedCell = selectedCell;
@@ -169,7 +169,7 @@ export class Layer<T extends Entry> {
         return undefined;
     }
 
-    public append(responseLayer?: LayerDTO<T>) {
+    public update(responseLayer?: LayerDTO<T>) {
         if (!responseLayer) {
             return;
         }
@@ -183,12 +183,11 @@ export class Layer<T extends Entry> {
                 this.entries.push(entry)
             });
         }
-        console.log("append", this.entries)
     }
 }
 
 class StatementLayer extends Layer<StatementEntry>{
-    qnodes: Map<string, QNode>
+    qnodes: Map<string, QNode>;
 
     constructor(responseLayer?: StatementLayerDTO) {
         super(responseLayer);
@@ -206,6 +205,15 @@ class StatementLayer extends Layer<StatementEntry>{
             return return_val;
         }
         return { "label": id, "url": "", description: "", "id": id };
+    }
+
+    updateStatment(responseLayer?: StatementLayerDTO) {
+        this.update(responseLayer);
+        if (responseLayer && responseLayer.qnodes) {
+            const newMap = new Map<string, QNode>(Object.entries(responseLayer.qnodes));
+            const merged = new Map([...Array.from(this.qnodes.entries()), ...Array.from(newMap.entries())]);
+            this.qnodes = merged;
+        }
     }
 }
 
@@ -250,20 +258,21 @@ export class LayerState {
     }
 
     @action
-    public updateFromDTOWithoutStatement(dto: LayersDTO) {
-        console.debug('updateFromDTOWithoutStatement: ', dto);
+    public updateFromDTOupdate(dto: LayersDTO) {
+        console.debug('updateFromDTOupdate: ', dto);
         if (!dto) { return; }
 
         if (dto.qnode) {
             // this.qnode = new Layer(dto.qnode);
-            this.qnode.append(dto.qnode);
+            this.qnode.update(dto.qnode);
         }
         if (dto.type) {
             this.type = new Layer(dto.type);
         }
-        // if (dto.statement) {
-        //     this.statement = new StatementLayer(dto.statement);
-        // }
+        if (dto.statement) {
+            this.statement.updateStatment(dto.statement)
+            // this.statement = new StatementLayer(dto.statement);
+        }
         if (dto.error) {
             this.error = new Layer(dto.error);
         }

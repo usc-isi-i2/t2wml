@@ -258,7 +258,7 @@ class RequestService {
     // const updater = currentFilesService.createUpdater();
     const response = await backendGet(`/table?${this.getMappingParams()}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`) as ResponseWithTableDTO;
     // updater.update(() => this.fillMapping(response), "getTableByRows");
-    wikiStore.layers.updateFromDTOWithoutStatement(response.layers);
+    wikiStore.layers.updateFromDTOupdate(response.layers);
     // wikiStore.yaml.yamlContent = response.yamlContent;
     // wikiStore.yaml.yamlError = response.yamlError;
     return response.table
