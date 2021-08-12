@@ -106,14 +106,16 @@ def get_calc_params(project, data_required=True, mapping_type=None, mapping_file
             return None
 
     start_end_kwargs = {}
-    for key in ["data_start", "map_start", "part_start"]:
+    for key in ["data_start", "map_start"]:#, "part_start"]:
         start_end_kwargs[key] = int(request.args.get(key, 0))
     for key in ["data_end", "map_end"]:
         end = int(request.args.get(key, 0))
         if end == 0:
             end = None
         start_end_kwargs[key] = end
-    start_end_kwargs["part_end"] = int(request.args.get("part_end", 30))
+
+    #start_end_kwargs["part_end"] = int(request.args.get("part_end", 30))
+    start_end_kwargs["part_count"] = int(request.args.get("part_count", 100))
 
     calc_params = CalcParams(
         project, data_file, sheet_name, **start_end_kwargs)
