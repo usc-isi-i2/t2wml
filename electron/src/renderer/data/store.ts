@@ -17,6 +17,10 @@ class TableState {
 
     @observable public mode: TableMode;
     @observable public table: TableDTO;
+
+    @observable public loadedRows: Set<number>;
+    @observable public currentRowIndex?: number;
+
     @observable public showSpinner: boolean;
 
     @observable public showCleanedData: boolean;
@@ -30,6 +34,7 @@ class TableState {
         this.showSpinner = false;
         this.showCleanedData = false;
         this.showQnodes = false;
+        this.loadedRows = new Set<number>();
     }
 
     updateTable(table: TableDTO) {
@@ -236,8 +241,8 @@ export class LayerState {
     }
 
     @action
-    public updateFromDTO(dto: LayersDTO) {
-        console.debug('Updating layers: ', dto);
+    public resetFromDTO(dto: LayersDTO) {
+        console.debug('Reset layers: ', dto);
         if (!dto) { return; }
 
         if (dto.qnode) {
@@ -258,26 +263,24 @@ export class LayerState {
     }
 
     @action
-    public updateFromDTOupdate(dto: LayersDTO) {
-        console.debug('updateFromDTOupdate: ', dto);
+    public updateFromDTO(dto: LayersDTO) {
+        console.debug('updateFromDTO: ', dto);
         if (!dto) { return; }
 
         if (dto.qnode) {
-            // this.qnode = new Layer(dto.qnode);
             this.qnode.update(dto.qnode);
         }
         if (dto.type) {
-            this.type = new Layer(dto.type);
+            this.type.update(dto.type);
         }
         if (dto.statement) {
             this.statement.updateStatment(dto.statement)
-            // this.statement = new StatementLayer(dto.statement);
         }
         if (dto.error) {
-            this.error = new Layer(dto.error);
+            this.error.update(dto.error);
         }
         if (dto.cleaned) {
-            this.cleaned = new Layer(dto.cleaned);
+            this.cleaned.update(dto.cleaned);
         }
     }
 
