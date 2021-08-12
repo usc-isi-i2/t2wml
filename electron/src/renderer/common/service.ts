@@ -40,6 +40,14 @@ class RequestService {
     return `project_folder=${folder}`;
   }
 
+  private getIndex(startIndex=0, endIndex=50){
+    if(wikiStore.table.currentRowIndex){
+      startIndex = wikiStore.table.currentRowIndex - 50;
+      endIndex = wikiStore.table.currentRowIndex + 50;
+    }
+    return [startIndex, endIndex]
+  }
+
   public getDataFileParams(required = true) {
     if (!currentFilesService.currentState.dataFile) {
       if (required) {
@@ -85,10 +93,17 @@ class RequestService {
     console.log("mapping", response)
     wikiStore.layers.partialCsv = {} as TableDTO;
     wikiStore.project.projectDTO = response.project;
-    wikiStore.layers.updateFromDTO(response.layers);
+    wikiStore.layers.resetFromDTO(response.layers);
     wikiStore.yaml.yamlContent = response.yamlContent;
     wikiStore.yaml.yamlError = response.yamlError;
     wikiStore.annotations.blocks = response.annotations || [];
+    wikiStore.table.loadedRows = new Set<number>();
+  }
+
+  @action
+  public updateMapping(response: ResponseWithMappingDTO) {
+    console.log("updateMapping", response)
+    wikiStore.layers.updateFromDTO(response.layers);
   }
 
   @action
@@ -100,7 +115,7 @@ class RequestService {
   @action
   public updateProjectandQnode(response: ResponseWithQNodeLayerDTO) {
     console.log("qnode", response)
-    wikiStore.layers.updateFromDTO(response.layers);
+    wikiStore.layers.resetFromDTO(response.layers);
     wikiStore.project.projectDTO = response.project;
   }
 
@@ -149,12 +164,14 @@ class RequestService {
     }
   }
 
-  public async postQNodes(values: any, startIndex=0, endIndex=50) {
+  public async postQNodes(values: any) {
+    const [startIndex, endIndex] = this.getIndex()
     const response = await backendPost(`/set_qnode?${this.getDataFileParams(false)}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, values) as ResponseWithQNodeLayerDTO;
     this.updateProjectandQnode(response);
   }
 
-  public async removeQNodes(values: any, startIndex=0, endIndex=50) {
+  public async removeQNodes(values: any) {
+    const [startIndex, endIndex] = this.getIndex()
     const response = await backendPost(`/delete_wikification?${this.getDataFileParams()}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, values) as ResponseWithQNodeLayerDTO;
     this.updateProjectandQnode(response);
   }
@@ -171,7 +188,8 @@ class RequestService {
     return response.filename;
   }
 
-  public async uploadYaml(data: any, startIndex=0, endIndex=50) {
+  public async uploadYaml(data: any) {
+    const [startIndex, endIndex] = this.getIndex()
     const response = await backendPost(`/yaml/apply?${this.getMappingParams()}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, data) as ResponseWithProjectAndMappingDTO;
     this.fillMapping(response)
     wikiStore.project.projectDTO = response.project;
@@ -183,7 +201,8 @@ class RequestService {
     return response.filename;
   }
 
-  public async postAnnotationBlocks(data: any, startIndex=0, endIndex=50) {
+  public async postAnnotationBlocks(data: any) {
+    const [startIndex, endIndex] = this.getIndex()
     const updater = currentFilesService.createUpdater();
     const response = await backendPost(`/annotation?${this.getDataFileParams()}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, data) as ResponseWithProjectAndMappingDTO;
     updater.update(() => {
@@ -197,7 +216,8 @@ class RequestService {
     return response
   }
 
-  public async getSuggestedAnnotationBlocks(startIndex=0, endIndex=50) {
+  public async getSuggestedAnnotationBlocks() {
+    const [startIndex, endIndex] = this.getIndex()
     const updater = currentFilesService.createUpdater();
     const response = await backendGet(`/annotation/guess-blocks?${this.getMappingParams()}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`) as ResponseWithMappingDTO;
     updater.update(() => {
@@ -211,35 +231,41 @@ class RequestService {
     wikiStore.changeWindowDisplayMode(folder);
   }
 
-  public async getProject(folder: string, startIndex=0, endIndex=50) {
+  public async getProject(folder: string) {
+    const [startIndex, endIndex] = this.getIndex()
     console.debug('getProject called for ', folder);
     const response = await backendGet(`/project?project_folder=${folder}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`) as ResponseWithProjectDTO;
     console.debug('Response returned ', response);
     this.switchProjectState(response);
   }
 
-  public async uploadDataFile(folder: string, data: any, startIndex=0, endIndex=50) {
+  public async uploadDataFile(folder: string, data: any) {
+    const [startIndex, endIndex] = this.getIndex()
     const updater = currentFilesService.createUpdater();
     const response = await backendPost(`/data?project_folder=${folder}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, data) as ResponseWithEverythingDTO;
     updater.update(() => this.fillTable(response), "uploadDataFile");
   }
 
-  public async uploadWikifierOutput(data: any, startIndex=0, endIndex=50) {
+  public async uploadWikifierOutput(data: any) {
+    const [startIndex, endIndex] = this.getIndex()
     const response = await backendPost(`/wikifier?${this.getDataFileParams(false)}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, data) as ResponseWithQNodeLayerDTO;
     this.updateProjectandQnode(response);
   }
 
-  public async callWikifierService(data: any, startIndex=0, endIndex=50) {
+  public async callWikifierService(data: any) {
+    const [startIndex, endIndex] = this.getIndex()
     const response = await backendPost(`/wikifier_service?${this.getDataFileParams(false)}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, data) as ResponseCallWikifierServiceDTO;
     this.updateProjectandQnode(response);
   }
 
-  public async callAutoCreateWikinodes(data: any, startIndex=0, endIndex=50) {
+  public async callAutoCreateWikinodes(data: any) {
+    const [startIndex, endIndex] = this.getIndex()
     const response = await backendPost(`/auto_wikinodes?${this.getDataFileParams()}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, data) as ResponseWithQNodeLayerDTO;
     this.updateProjectandQnode(response);
   }
 
-  public async callCountryWikifier(data: any, startIndex=0, endIndex=50) {
+  public async callCountryWikifier(data: any) {
+    const [startIndex, endIndex] = this.getIndex()
     const updater = currentFilesService.createUpdater();
     const response = await backendPost(`/web/wikify_region?${this.getDataFileParams(false)}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, data) as ResponseCallWikifierServiceDTO;
     updater.update(() => {
@@ -257,14 +283,12 @@ class RequestService {
   public async getTableByRows(startIndex=0, endIndex=0): Promise<TableDTO> {
     // const updater = currentFilesService.createUpdater();
     const response = await backendGet(`/table?${this.getMappingParams()}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`) as ResponseWithTableDTO;
-    // updater.update(() => this.fillMapping(response), "getTableByRows");
-    wikiStore.layers.updateFromDTOupdate(response.layers);
-    // wikiStore.yaml.yamlContent = response.yamlContent;
-    // wikiStore.yaml.yamlError = response.yamlError;
+    this.updateMapping(response)
     return response.table
   }
 
-  public async getMappingCalculation(startIndex=0, endIndex=50) {
+  public async getMappingCalculation() {
+    const [startIndex, endIndex] = this.getIndex()
     const updater = currentFilesService.createUpdater();
     const response = await backendGet(`/mapping?${this.getMappingParams()}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`) as ResponseWithMappingDTO;
     updater.update(() => this.fillMapping(response), "getMappingCalculation");
@@ -335,7 +359,8 @@ class RequestService {
     wikiStore.project.projectDTO = response.project;
   }
 
-  public async createQnode(entityFields: EntityFields, startIndex=0, endIndex=50) {
+  public async createQnode(entityFields: EntityFields) {
+    const [startIndex, endIndex] = this.getIndex()
     const response = await backendPost(`/create_node?${this.getDataFileParams(false)}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, { ...entityFields}) as ResponseWithQNodeLayerAndQnode;
     if (response.layers.qnode) {
       this.updateProjectandQnode(response);
@@ -344,7 +369,8 @@ class RequestService {
   }
 
 
-  public async createQnodes(entityFields: EntityFields, selection?: number[][], value?:string, startIndex=0, endIndex=50) {
+  public async createQnodes(entityFields: EntityFields, selection?: number[][], value?:string) {
+    const [startIndex, endIndex] = this.getIndex()
     const response = await backendPost(`/create_node?${this.getDataFileParams(false)}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, { ...entityFields, selection: selection, value: value}) as ResponseWithQNodeLayerAndQnode;
     if (response.layers.qnode) {
       this.updateProjectandQnode(response);

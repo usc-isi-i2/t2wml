@@ -36,7 +36,6 @@ interface TableState {
     errorMessage: ErrorMessage;
 
     rowCount: number;
-    loadedRows: Set<number>
 }
 
 
@@ -48,13 +47,11 @@ class CombinedTable extends Component<{}, TableState> {
     private prevElement?: any; // We use any here, since the HTML element type hierarchy is too messy
     private prevDirection?: Direction;
     private pendingRowTimeout?: number;
-    private pendingRowIndex?: number;
 
     constructor(props: {}) {
         super(props);
 
         this.requestService = new RequestService();
-        const loadedRows = new Set<number>();
 
         // init state
         this.state = {
@@ -66,7 +63,6 @@ class CombinedTable extends Component<{}, TableState> {
             multipleSheets: false,
             errorMessage: {} as ErrorMessage,
             rowCount: 0,
-            loadedRows: loadedRows
         };
 
         this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
@@ -162,7 +158,7 @@ class CombinedTable extends Component<{}, TableState> {
             tableData = tableDataState;
         }
 
-        const { loadedRows } = this.state;
+        const { loadedRows } = wikiStore.table;
         const { qnode: qnodes } = wikiStore.layers;
 
         // clear any existing qnode coloration
@@ -244,15 +240,15 @@ class CombinedTable extends Component<{}, TableState> {
         //     i++;
         // }
         tableData[i + table.firstRowIndex] = emptyRow; // add one empty row
-        this.setState({ loadedRows })
+        wikiStore.table.loadedRows = loadedRows;
         return tableData;
     }
 
     updateTableData(table?: TableDTO) {
         wikiStore.table.resetSelections();
         if (!table || !table.cells) {
-            const loadedRows = new Set<number>();
-            this.setState({ tableData: undefined, rowCount: 0, loadedRows });
+            wikiStore.table.loadedRows = new Set<number>();
+            this.setState({ tableData: undefined, rowCount: 0 });
             return;
         }
         const tableData = this.getClasslessTableData(table);
@@ -262,7 +258,7 @@ class CombinedTable extends Component<{}, TableState> {
 
 
     updateStatement(tableData?: TableData, returnTableData = false) {
-        const { loadedRows } = this.state;
+        const { loadedRows } = wikiStore.table;
         if (!tableData) {
             if (!this.state.tableData) {
                 return;
@@ -295,14 +291,16 @@ class CombinedTable extends Component<{}, TableState> {
         const { error: errors } = wikiStore.layers;
         for (const entry of errors.entries) {
             for (const indexPair of entry.indices) {
-                tableData[indexPair[0]][indexPair[1]].classNames.push('error');
+                if(loadedRows.has(indexPair[0])){
+                    tableData[indexPair[0]][indexPair[1]].classNames.push('error');
                 let errMsg = ""
                 for (const err of entry.error) {
                     errMsg += err.message
                     errMsg += ","
                 }
-                errMsg = errMsg.slice(0, -1) //get rid of last comma
+                errMsg = errMsg.slice(0, -1) // get rid of last comma
                 tableData[indexPair[0]][indexPair[1]].overlay = errMsg;
+                }
             }
         }
 
@@ -312,7 +310,7 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     updateQnode(tableData?: TableData, returnTableData = false) {
-        const { loadedRows } = this.state;
+        const { loadedRows } = wikiStore.table;
         if (!tableData) {
             if (!this.state.tableData) {
                 return;
@@ -352,7 +350,7 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     setAnnotationColors(tableData?: TableData, returnTableData = false) {
-        const { loadedRows } = this.state;
+        const { loadedRows } = wikiStore.table;
         if (!tableData) {
             if (!this.state.tableData) {
                 return;
@@ -467,7 +465,7 @@ class CombinedTable extends Component<{}, TableState> {
 
     applyCsstoBlock(tableData: TableData, selection: CellSelection, classNames: string[]) {
         const { x1, x2, y1, y2 } = selection;
-        const { loadedRows } = this.state;
+        const { loadedRows } = wikiStore.table;
 
         const leftCol = Math.min(x1, x2) - 1;
         const rightCol = Math.max(x1, x2) - 1;
@@ -511,11 +509,10 @@ class CombinedTable extends Component<{}, TableState> {
 
     updateActiveCellStyle(selectedCell?: Cell) {
         // Get a reference to the table elements
-        const { loadedRows } = this.state;
         let { tableData } = this.state;
         if (!tableData) { return; }
 
-        for (const indexRow of loadedRows) {
+        for (const indexRow of wikiStore.table.loadedRows) {
             for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
                 tableData[indexRow][indexCol].highlight = false;
             }
@@ -761,9 +758,8 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     removeClassNameFromTableData(tableData: TableData, classNameToDelete?: string): TableData {
-        const { loadedRows } = this.state;
         if (classNameToDelete) {
-            for (const indexRow of loadedRows) {
+            for (const indexRow of wikiStore.table.loadedRows) {
                 for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
                     const cell = tableData[indexRow][indexCol]
                     tableData[indexRow][indexCol] = {
@@ -778,9 +774,8 @@ class CombinedTable extends Component<{}, TableState> {
 
 
     resetActiveBlockCss(tableData: TableData) {
-        const { loadedRows } = this.state;
         tableData = this.removeClassNameFromTableData(tableData, 'linked-block');
-        for (const indexRow of loadedRows) {
+        for (const indexRow of wikiStore.table.loadedRows) {
             for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
                 tableData[indexRow][indexCol] = {
                     ...tableData[indexRow][indexCol],
@@ -790,7 +785,6 @@ class CombinedTable extends Component<{}, TableState> {
         }
         return tableData;
     }
-
 
     checkOverlaps(selection?: CellSelection) {
         if (!selection) { return; }
@@ -1100,7 +1094,8 @@ class CombinedTable extends Component<{}, TableState> {
     handleOnClickHeader(event: React.MouseEvent) {
         const element = event.target as any;
         const colIndex = parseInt(element.dataset.colIndex)
-        const { tableData, loadedRows } = this.state;
+        const { tableData } = this.state;
+        const { loadedRows } = wikiStore.table;
         if (!tableData) { return; }
 
         for (const indexRow of loadedRows) {
@@ -1210,25 +1205,27 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     rowGetter(index: number): TableCell[] {
-        const { tableData, loadedRows, rowCount } = this.state;
+        const { tableData, rowCount } = this.state;
+        const { loadedRows } = wikiStore.table;
         if (!tableData) { return [] as TableCell[]; }
         if (!loadedRows.has(index) && index < rowCount - 1) {
             this.fetchRows(index);
+            // return [] as TableCell[];
         }
         return tableData[index];
     }
 
     async fetchRows(index: number) {
-        if (index === this.pendingRowIndex) { return; }
+        if (index === wikiStore.table.currentRowIndex) { return; }
         if (this.pendingRowTimeout) {
             window.clearTimeout(this.pendingRowTimeout);
         }
         this.pendingRowTimeout = window.setTimeout(async () => {
-            if (index === this.pendingRowIndex) { return; }
+            if (index === wikiStore.table.currentRowIndex) { return; }
             if (this.requestService) {
-                this.pendingRowIndex = index;
+                wikiStore.table.currentRowIndex = index;
                 let { tableData } = this.state;
-                const { loadedRows } = this.state;
+                const { loadedRows } = wikiStore.table;
 
                 if (!tableData) { return; }
 
@@ -1239,7 +1236,7 @@ class CombinedTable extends Component<{}, TableState> {
                 let addStart = 0; // add extra rows on the start, if the endIndex is early loaded.
 
                 for (let i = startIndex; i < endIndex; i++) {// add +1 to the startIndex if it's loaded before, to start from the first index that not loaded.
-                    if (loadedRows.has(i)) {
+                    if (loadedRows.has(i) || i < 0) {
                         startIndex += 1;
                         addEnd += 1;
                     } else {
@@ -1282,13 +1279,12 @@ class CombinedTable extends Component<{}, TableState> {
                     tableData[i + table.firstRowIndex] = rowData;
                     loadedRows.add(i + table.firstRowIndex);
                 }
-                this.setState({ loadedRows }, () => {
-                    tableData = this.updateStatement(tableData, true);
-                    // tableData = this.updateQnode(tableData, true);
-                    // tableData = this.setAnnotationColors(tableData, true);
-                    this.updateSelection(wikiStore.table.selection);
-                    this.setState({ tableData })
-                })
+                wikiStore.table.loadedRows = loadedRows;
+                tableData = this.updateStatement(tableData, true);
+                // tableData = this.updateQnode(tableData, true);
+                // tableData = this.setAnnotationColors(tableData, true);
+                this.updateSelection(wikiStore.table.selection);
+                this.setState({ tableData })
             }
         }, 250);
 

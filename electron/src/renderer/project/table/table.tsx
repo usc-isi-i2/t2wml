@@ -66,6 +66,7 @@ class Table extends React.Component<TableProperties, { rowHeight: number, column
 
   scrolToTop(){
     this.tableRef.scrollToPosition(0);
+    wikiStore.table.currentRowIndex = 0;
   }
 
   updateShowQNodes() {
@@ -106,47 +107,7 @@ class Table extends React.Component<TableProperties, { rowHeight: number, column
       rowCount
     } = this.props;
 
-    const { rowHeight, columnWidth } = this.state
-
-    console.log("render tableData")
-    // // add one column and one row to the table:
-    // for (let index = 0; index < Object.keys(tableData).length; index++) {
-    //   const rowData = tableData[index]
-    //   while (rowData.length < MIN_COLUMNS + 1) { // add columns to the display table
-    //     rowData.push({
-    //       content: '',
-    //       rawContent: '',
-    //       classNames: [],
-    //       ...DEFAULT_CELL_STATE
-    //     })
-    //   }
-    // }
-
-    // while (Object.keys(tableData).length < MIN_ROWS + 1) { // add rows to the display table
-    //   const rowData = [];
-    //   while (rowData.length < MIN_COLUMNS + 1) {
-    //     rowData.push({
-    //       content: '',
-    //       rawContent: '',
-    //       classNames: [],
-    //       ...DEFAULT_CELL_STATE
-    //     })
-    //   }
-    //   tableData[Object.keys(tableData).length] = rowData;
-    // }
-
-    // while (Object.keys(tableData).length < rowCount) { // add rows to the display table
-    //   const rowData = [];
-    //   while (rowData.length < MIN_COLUMNS + 1) {
-    //     rowData.push({
-    //       content: '',
-    //       rawContent: '',
-    //       classNames: [],
-    //       ...DEFAULT_CELL_STATE
-    //     })
-    //   }
-    //   tableData[Object.keys(tableData).length] = rowData;
-    // }
+    const { rowHeight, columnWidth } = this.state;
 
     return (
       <div
