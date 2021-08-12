@@ -1029,7 +1029,7 @@ class CombinedTable extends Component<{}, TableState> {
                             this.prevElement = nextElement;
                         }
 
-                        if (event.code === 'ArrowDown' && y1 < Object.keys(tableData).length - 1 && y1 < wikiStore.table.table.dims[0] -1) {
+                        if (event.code === 'ArrowDown' && y1 < Object.keys(tableData).length - 1 && y1 < wikiStore.table.table.dims[0] - 1) {
                             const nextElement = tableData[y1 + 1][x1];
                             if (y1 === y2) {
                                 selection = { 'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2 + 1 };
@@ -1060,7 +1060,7 @@ class CombinedTable extends Component<{}, TableState> {
                             }
                             this.prevElement = nextElement;
                         }
-                        if (event.code === 'ArrowRight' && x1 < tableData[y1].length - 1 && x1 < wikiStore.table.table.dims[1] -1) {
+                        if (event.code === 'ArrowRight' && x1 < tableData[y1].length - 1 && x1 < wikiStore.table.table.dims[1] - 1) {
                             const nextElement = tableData[y1][x1 + 1];
                             if (x1 === x2) {
                                 selection = { 'x1': x1, 'x2': x2 + 1, 'y1': y1, 'y2': y2 };
@@ -1224,6 +1224,7 @@ class CombinedTable extends Component<{}, TableState> {
             window.clearTimeout(this.pendingRowTimeout);
         }
         this.pendingRowTimeout = window.setTimeout(async () => {
+            if (index === this.pendingRowIndex) { return; }
             if (this.requestService) {
                 this.pendingRowIndex = index;
                 let { tableData } = this.state;
@@ -1234,23 +1235,29 @@ class CombinedTable extends Component<{}, TableState> {
                 // calculate the indexes to send to the backend - find the maximum range between [startIndex, endIndex]
                 let startIndex = index - 50;
                 let endIndex = index + 50;
+                let addEnd = 0; // add extra rows to the end, if the startIndex is early loaded.
+                let addStart = 0; // add extra rows on the start, if the endIndex is early loaded.
 
-                for (let i = startIndex; i < endIndex; i++) {
+                for (let i = startIndex; i < endIndex; i++) {// add +1 to the startIndex if it's loaded before, to start from the first index that not loaded.
                     if (loadedRows.has(i)) {
                         startIndex += 1;
-                    } else { // add +1 to the startIndex if it's loaded before, to start from the first index that not loaded.
+                        addEnd += 1;
+                    } else {
                         break
                     }
                 }
 
-                for (let i = endIndex; i > startIndex; i--) {
+                for (let i = endIndex; i > startIndex; i--) { // subtract 1 from the endIndex if it's loaded before, to end on the last index that not loaded.
                     if (loadedRows.has(i)) {
                         endIndex -= 1;
-                    } else { // subtract 1 from the endIndex if it's loaded before, to end on the last index that not loaded.
+                        if (!addEnd) { addStart += 1 }
+                    } else {
                         break;
                     }
                 }
                 if (startIndex == endIndex) { return; }
+                startIndex -= addStart;
+                endIndex += addEnd;
 
                 const table = await this.requestService.getTableByRows(startIndex, endIndex) as TableDTO;
                 const emptyCell = {
