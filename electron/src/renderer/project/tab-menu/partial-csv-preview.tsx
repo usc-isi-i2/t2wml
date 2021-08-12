@@ -52,18 +52,33 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
       return;
     }
     const tableData = [];
+    const emptyCell: TableCell = {
+      content: '',
+      classNames: [],
+      ...DEFAULT_CELL_STATE
+    };
     for (let i = 0; i < Math.min(table.cells.length, 150); i++) {
       const rowData = [];
-      for (let j = 0; j < Math.max(table.cells[i].length + 1, 10); j++) {
+      let j = 0;
+      for (; j < table.cells[i].length + 1; j++) {
         const cell: TableCell = {
-          content: table.cells[i][j] ? table.cells[i][j] : '',
+          content: table.cells[i][j],
           classNames: [],
           ...DEFAULT_CELL_STATE
         };
         rowData.push(cell);
       }
+      for (; j < 10; j++) {
+        rowData.push(emptyCell);
+      }
+      rowData.push(emptyCell);
       tableData.push(rowData);
     }
+    const rowData = [];
+    for (let k = 0; k < Math.max(table.cells[0].length, 10) + 1; k++) { // add one extra row
+      rowData.push(emptyCell);
+    }
+    tableData.push(rowData);
     this.setState({ partialCsv: tableData });
   }
 

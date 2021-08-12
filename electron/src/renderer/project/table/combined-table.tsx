@@ -235,10 +235,10 @@ class CombinedTable extends Component<{}, TableState> {
         for (; i < numRows; i++) { // add rows to the display table
             tableData[i + table.firstRowIndex] = loadingRow;
         }
-        // for (; i < 50;) { // add rows to the display table
-        //     tableData[i + table.firstRowIndex] = emptyRow;
-        //     i++;
-        // }
+        for (; i < 50;) { // add rows to the display table
+            tableData[i + table.firstRowIndex] = emptyRow;
+            i++;
+        }
         tableData[i + table.firstRowIndex] = emptyRow; // add one empty row
         wikiStore.table.loadedRows = loadedRows;
         return tableData;
@@ -252,7 +252,7 @@ class CombinedTable extends Component<{}, TableState> {
             return;
         }
         const tableData = this.getClasslessTableData(table);
-        this.setState({ tableData, rowCount: table.dims[0] + 1 })
+        this.setState({ tableData, rowCount: Math.min(table.dims[0] + 1, 50) })
         this.createAnnotationIfDoesNotExist();
     }
 
@@ -291,15 +291,15 @@ class CombinedTable extends Component<{}, TableState> {
         const { error: errors } = wikiStore.layers;
         for (const entry of errors.entries) {
             for (const indexPair of entry.indices) {
-                if(loadedRows.has(indexPair[0])){
+                if (loadedRows.has(indexPair[0])) {
                     tableData[indexPair[0]][indexPair[1]].classNames.push('error');
-                let errMsg = ""
-                for (const err of entry.error) {
-                    errMsg += err.message
-                    errMsg += ","
-                }
-                errMsg = errMsg.slice(0, -1) // get rid of last comma
-                tableData[indexPair[0]][indexPair[1]].overlay = errMsg;
+                    let errMsg = ""
+                    for (const err of entry.error) {
+                        errMsg += err.message
+                        errMsg += ","
+                    }
+                    errMsg = errMsg.slice(0, -1) // get rid of last comma
+                    tableData[indexPair[0]][indexPair[1]].overlay = errMsg;
                 }
             }
         }
@@ -512,7 +512,8 @@ class CombinedTable extends Component<{}, TableState> {
         let { tableData } = this.state;
         if (!tableData) { return; }
 
-        for (const indexRow of wikiStore.table.loadedRows) {
+        const { loadedRows } = wikiStore.table;
+        for (const indexRow of loadedRows) {
             for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
                 tableData[indexRow][indexCol].highlight = false;
             }
@@ -759,7 +760,8 @@ class CombinedTable extends Component<{}, TableState> {
 
     removeClassNameFromTableData(tableData: TableData, classNameToDelete?: string): TableData {
         if (classNameToDelete) {
-            for (const indexRow of wikiStore.table.loadedRows) {
+            const { loadedRows } = wikiStore.table;
+            for (const indexRow of loadedRows) {
                 for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
                     const cell = tableData[indexRow][indexCol]
                     tableData[indexRow][indexCol] = {
@@ -775,7 +777,8 @@ class CombinedTable extends Component<{}, TableState> {
 
     resetActiveBlockCss(tableData: TableData) {
         tableData = this.removeClassNameFromTableData(tableData, 'linked-block');
-        for (const indexRow of wikiStore.table.loadedRows) {
+        const { loadedRows } = wikiStore.table;
+        for (const indexRow of loadedRows) {
             for (let indexCol = 0; indexCol < tableData[indexRow].length; indexCol++) {
                 tableData[indexRow][indexCol] = {
                     ...tableData[indexRow][indexCol],
@@ -1206,9 +1209,8 @@ class CombinedTable extends Component<{}, TableState> {
 
     rowGetter(index: number): TableCell[] {
         const { tableData, rowCount } = this.state;
-        const { loadedRows } = wikiStore.table;
         if (!tableData) { return [] as TableCell[]; }
-        if (!loadedRows.has(index) && index < rowCount - 1) {
+        if (!wikiStore.table.loadedRows.has(index) && index < wikiStore.table.table.dims[0]) {
             this.fetchRows(index);
             // return [] as TableCell[];
         }
@@ -1267,7 +1269,8 @@ class CombinedTable extends Component<{}, TableState> {
 
                 for (let i = 0; i < table.cells.length; i++) {
                     const rowData = [];
-                    for (let j = 0; j < table.cells[i].length; j++) {
+                    let j = 0;
+                    for (; j < table.cells[i].length; j++) {
                         const cell: TableCell = {
                             content: table.cells[i][j],
                             rawContent: table.cells[i][j],
@@ -1275,6 +1278,9 @@ class CombinedTable extends Component<{}, TableState> {
                             ...DEFAULT_CELL_STATE
                         };
                         rowData.push(cell);
+                    }
+                    for (; j < 25; j++) {
+                        rowData.push(emptyCell);
                     }
                     rowData.push(emptyCell) // add one empty column
                     tableData[i + table.firstRowIndex] = rowData;
