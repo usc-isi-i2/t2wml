@@ -239,10 +239,10 @@ class CombinedTable extends Component<{}, TableState> {
         for (; i < numRows; i++) { // add rows to the display table
             tableData[i + table.firstRowIndex] = loadingRow;
         }
-        for (; i < 50;) { // add rows to the display table
-            tableData[i + table.firstRowIndex] = emptyRow;
-            i++;
-        }
+        // for (; i < 50;) { // add rows to the display table
+        //     tableData[i + table.firstRowIndex] = emptyRow;
+        //     i++;
+        // }
         tableData[i + table.firstRowIndex] = emptyRow; // add one empty row
         this.setState({ loadedRows })
         return tableData;
