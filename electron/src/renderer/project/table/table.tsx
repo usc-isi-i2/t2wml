@@ -55,12 +55,17 @@ class Table extends React.Component<TableProperties, { rowHeight: number, column
 
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.table.showQnodes, () => this.updateShowQNodes()));
+    this.disposers.push(reaction(() => wikiStore.table.table, () => this.scrolToTop()));
   }
 
   componentWillUnmount() {
     for (const disposer of this.disposers) {
       disposer();
     }
+  }
+
+  scrolToTop(){
+    this.tableRef.scrollToPosition(0);
   }
 
   updateShowQNodes() {
@@ -160,7 +165,7 @@ class Table extends React.Component<TableProperties, { rowHeight: number, column
                   className={wikiStore.table.selection.selectionArea && ableActivated ? 'active' : ''}
                   headerHeight={rowHeight}
                   rowHeight={rowHeight}
-
+                  // scrollTop
                   ref={(ref: VirtualizedTable | null) => this.setTableReference(ref)}
                   rowCount={rowCount}
                   rowGetter={({ index }) => this.rowGetter(index)}

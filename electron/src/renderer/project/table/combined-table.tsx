@@ -86,11 +86,7 @@ class CombinedTable extends Component<{}, TableState> {
         this.disposers.push(reaction(() => wikiStore.layers.statement, () => this.updateStatement())); // 1
         this.disposers.push(reaction(() => wikiStore.annotations.blocks, () => this.setAnnotationColors())); // 4
 
-        // this.disposers.push(reaction(() => wikiStore.table.selection.selectionArea, (selection) => this.updateSelectionStyle(selection))); // 6
-        // this.disposers.push(reaction(() => wikiStore.table.selection.selectedCell, (cell) => this.updateActiveCellStyle(cell))); // 5
-        // this.disposers.push(reaction(() => wikiStore.table.selection.selectedBlock, (block) => { wikiStore.table.selection.selectionArea = block?.selection }));
         this.disposers.push(reaction(() => wikiStore.table.selection, (selection) => this.updateSelection(selection))); // 5+6
-
 
         this.disposers.push(reaction(() => wikiStore.table.showQnodes, (showQnode) => this.updateQnodeCells(showQnode, undefined, true))); // 1
     }
@@ -121,7 +117,6 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     async createAnnotationIfDoesNotExist() {
-        console.log("start createAnnotationIfDoesNotExist")
         if (!currentFilesService.currentState.dataFile) { console.log("end createAnnotationIfDoesNotExist"); return; }
         if (!currentFilesService.currentState.mappingFile) {
             //create a mapping file - needs to be forward slash so title matches whats returned from backend
@@ -135,8 +130,6 @@ class CombinedTable extends Component<{}, TableState> {
             await this.requestService.createAnnotation(data)
             currentFilesService.changeAnnotation(title, currentFilesService.currentState.sheetName, currentFilesService.currentState.dataFile);
         }
-        console.log("end createAnnotationIfDoesNotExist")
-
     }
 
     getQnodeCellContent(qnode: QNode, rawContent?: string) {
@@ -201,10 +194,16 @@ class CombinedTable extends Component<{}, TableState> {
 
 
     getClasslessTableData(table: TableDTO): TableData {
-        const { loadedRows } = this.state;
+        const loadedRows = new Set<number>();
         const numRows = table.dims[0];
         const tableData: TableData = {};
-        const iMin = Math.min(numRows-table.firstRowIndex, 50);
+        const iMin = Math.min(numRows - table.firstRowIndex, 50);
+        const emptyCell = {
+            content: '',
+            rawContent: '',
+            classNames: [],
+            ...DEFAULT_CELL_STATE
+        }
         for (let i = 0; i < iMin; i++) {
             const rowData = [];
             for (let j = 0; j < table.cells[i].length; j++) {
@@ -216,34 +215,40 @@ class CombinedTable extends Component<{}, TableState> {
                 };
                 rowData.push(cell);
             }
+            for (let i = rowData.length; i < 25; i++) {
+                rowData.push(emptyCell)
+            }
+            rowData.push(emptyCell) // add one empty column
             loadedRows.add(i + table.firstRowIndex)
             tableData[i + table.firstRowIndex] = rowData;
         }
-        console.log("end for first 49 rows");
 
         const emptyRow: TableCell[] = [];
-        while (emptyRow.length < tableData[0].length) {
-           emptyRow.push({
+        const loadingRow: TableCell[] = [];
+        while (loadingRow.length < tableData[0].length) {
+            loadingRow.push({
                 content: 'loading...',
                 rawContent: '',
                 classNames: [],
                 ...DEFAULT_CELL_STATE
-            })
+            });
+            emptyRow.push(emptyCell);
         }
 
-        for (let i = iMin; i<numRows; i++){ // add rows to the display table- infinitive!!!
-            if(i%1000==0){
-            console.log("while getClasslessTableData", i)}
-            tableData[i + table.firstRowIndex] = emptyRow;
+        let i = iMin
+        for (; i < numRows; i++) { // add rows to the display table
+            tableData[i + table.firstRowIndex] = loadingRow;
         }
-        console.log("end while getClasslessTableData")
+        // for (; i < 50;) { // add rows to the display table
+        //     tableData[i + table.firstRowIndex] = emptyRow;
+        //     i++;
+        // }
+        tableData[i + table.firstRowIndex] = emptyRow; // add one empty row
         this.setState({ loadedRows })
-        console.log("end getClasslessTableData")
         return tableData;
     }
 
     updateTableData(table?: TableDTO) {
-        console.log("start updateTableData")
         wikiStore.table.resetSelections();
         if (!table || !table.cells) {
             const loadedRows = new Set<number>();
@@ -251,9 +256,8 @@ class CombinedTable extends Component<{}, TableState> {
             return;
         }
         const tableData = this.getClasslessTableData(table);
-        this.setState({ tableData, rowCount: table.dims[0] })
+        this.setState({ tableData, rowCount: table.dims[0] + 1 })
         this.createAnnotationIfDoesNotExist();
-        console.log("end updateTableData")
     }
 
 
@@ -525,7 +529,6 @@ class CombinedTable extends Component<{}, TableState> {
         const activeCell = tableData[selectedCell.row][selectedCell.col]
         activeCell.highlight = true;
         activeCell.active = true;
-        console.log("updateActiveCellStyle", tableData[selectedCell.row][selectedCell.col])
 
         //select related cells
         // if (statement && statement.cells) {
@@ -861,9 +864,15 @@ class CombinedTable extends Component<{}, TableState> {
 
 
         // get coordinates
-        const x: number = parseInt(element.dataset.colIndex);
-        const y: number = parseInt(element.dataset.rowIndex);
+        let x: number = parseInt(element.dataset.colIndex);
+        let y: number = parseInt(element.dataset.rowIndex);
         if (!x || !y) { return; }
+        if (y > wikiStore.table.table.dims[0]) {
+            y = wikiStore.table.table.dims[0];
+        }
+        if (x > wikiStore.table.table.dims[1]) {
+            x = wikiStore.table.table.dims[1];
+        }
 
         const selectedCell = { ...new Cell(x - 1, y - 1), value: element.textContent };
 
@@ -917,11 +926,17 @@ class CombinedTable extends Component<{}, TableState> {
             if (!wikiStore.table.selection.selectionArea) {
                 return;
             }
-            const newColIndex = parseInt(element.dataset.colIndex)
-            const newRowIndex = parseInt(element.dataset.rowIndex)
+            let newColIndex = parseInt(element.dataset.colIndex)
+            let newRowIndex = parseInt(element.dataset.rowIndex)
             // Don't allow out-of-bounds selecting / resizing
             if (!newColIndex || newColIndex === 0) { return }
             if (!newRowIndex || newRowIndex === 0) { return }
+            if (newRowIndex > wikiStore.table.table.dims[0]) {
+                newRowIndex = wikiStore.table.table.dims[0];
+            }
+            if (newColIndex > wikiStore.table.table.dims[1]) {
+                newColIndex = wikiStore.table.table.dims[1];
+            }
 
             const selection = { ...wikiStore.table.selection.selectionArea };
 
@@ -970,7 +985,7 @@ class CombinedTable extends Component<{}, TableState> {
 
                 // arrow down
                 if (event.code === 'ArrowDown') {
-                    if (row < Object.keys(tableData).length) {
+                    if (row < Object.keys(tableData).length && row < wikiStore.table.table.dims[0]) {
                         row = row + 1;
                     }
                 }
@@ -984,12 +999,12 @@ class CombinedTable extends Component<{}, TableState> {
 
                 // arrow right
                 if (event.code === 'ArrowRight') {
-                    if (col < tableData[row].length) {
+                    if (col < tableData[row].length && col < wikiStore.table.table.dims[1]) {
                         col = col + 1;
                     }
                 }
-                const irow = row < Object.keys(tableData).length ? row + 1 : row;
-                const icol = col < tableData[row].length ? col + 1 : col;
+                const irow = row < Object.keys(tableData).length && row < wikiStore.table.table.dims[0] ? row + 1 : row;
+                const icol = col < tableData[row].length && col < wikiStore.table.table.dims[1] ? col + 1 : col;
                 const textContent = tableData[irow][icol].rawContent
 
                 const selectedCell = { ...new Cell(col, row), value: textContent };
@@ -1014,7 +1029,7 @@ class CombinedTable extends Component<{}, TableState> {
                             this.prevElement = nextElement;
                         }
 
-                        if (event.code === 'ArrowDown' && y1 < Object.keys(tableData).length - 1) {
+                        if (event.code === 'ArrowDown' && y1 < Object.keys(tableData).length - 1 && y1 < wikiStore.table.table.dims[0] - 1) {
                             const nextElement = tableData[y1 + 1][x1];
                             if (y1 === y2) {
                                 selection = { 'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2 + 1 };
@@ -1045,7 +1060,7 @@ class CombinedTable extends Component<{}, TableState> {
                             }
                             this.prevElement = nextElement;
                         }
-                        if (event.code === 'ArrowRight' && x1 < tableData[y1].length - 1) {
+                        if (event.code === 'ArrowRight' && x1 < tableData[y1].length - 1 && x1 < wikiStore.table.table.dims[1] - 1) {
                             const nextElement = tableData[y1][x1 + 1];
                             if (x1 === x2) {
                                 selection = { 'x1': x1, 'x2': x2 + 1, 'y1': y1, 'y2': y2 };
@@ -1195,18 +1210,10 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     rowGetter(index: number): TableCell[] {
-        const { tableData, loadedRows } = this.state;
+        const { tableData, loadedRows, rowCount } = this.state;
         if (!tableData) { return [] as TableCell[]; }
-        if (!loadedRows.has(index)) {
+        if (!loadedRows.has(index) && index < rowCount - 1) {
             this.fetchRows(index);
-        }
-        while (tableData[index].length < tableData[0].length) {
-            tableData[index].push({
-                content: '',
-                rawContent: '',
-                classNames: [],
-                ...DEFAULT_CELL_STATE
-            })
         }
         return tableData[index];
     }
@@ -1217,6 +1224,7 @@ class CombinedTable extends Component<{}, TableState> {
             window.clearTimeout(this.pendingRowTimeout);
         }
         this.pendingRowTimeout = window.setTimeout(async () => {
+            if (index === this.pendingRowIndex) { return; }
             if (this.requestService) {
                 this.pendingRowIndex = index;
                 let { tableData } = this.state;
@@ -1227,25 +1235,37 @@ class CombinedTable extends Component<{}, TableState> {
                 // calculate the indexes to send to the backend - find the maximum range between [startIndex, endIndex]
                 let startIndex = index - 50;
                 let endIndex = index + 50;
+                let addEnd = 0; // add extra rows to the end, if the startIndex is early loaded.
+                let addStart = 0; // add extra rows on the start, if the endIndex is early loaded.
 
-                for (let i = startIndex; i < endIndex; i++) {
+                for (let i = startIndex; i < endIndex; i++) {// add +1 to the startIndex if it's loaded before, to start from the first index that not loaded.
                     if (loadedRows.has(i)) {
                         startIndex += 1;
-                    } else { // add +1 to the startIndex if it's loaded before, to start from the first index that not loaded.
+                        addEnd += 1;
+                    } else {
                         break
                     }
                 }
 
-                for (let i = endIndex; i > startIndex; i--) {
+                for (let i = endIndex; i > startIndex; i--) { // subtract 1 from the endIndex if it's loaded before, to end on the last index that not loaded.
                     if (loadedRows.has(i)) {
                         endIndex -= 1;
-                    } else { // subtract 1 from the endIndex if it's loaded before, to end on the last index that not loaded.
+                        if (!addEnd) { addStart += 1 }
+                    } else {
                         break;
                     }
                 }
                 if (startIndex == endIndex) { return; }
+                startIndex -= addStart;
+                endIndex += addEnd;
 
                 const table = await this.requestService.getTableByRows(startIndex, endIndex) as TableDTO;
+                const emptyCell = {
+                    content: '',
+                    rawContent: '',
+                    classNames: [],
+                    ...DEFAULT_CELL_STATE
+                }
 
                 for (let i = 0; i < table.cells.length; i++) {
                     const rowData = [];
@@ -1258,6 +1278,7 @@ class CombinedTable extends Component<{}, TableState> {
                         };
                         rowData.push(cell);
                     }
+                    rowData.push(emptyCell) // add one empty column
                     tableData[i + table.firstRowIndex] = rowData;
                     loadedRows.add(i + table.firstRowIndex);
                 }

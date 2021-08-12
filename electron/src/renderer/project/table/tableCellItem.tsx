@@ -22,7 +22,7 @@ class TableCellItem extends Component<{ rowIndex: number, columnIndex: number, c
 
   render() {
     const { cellData, rowIndex, columnIndex } = this.props;
-    if (!cellData) { return }
+    if (!cellData) { return (<div className="cell-div" data-row-index={rowIndex + 1} data-col-index={columnIndex}></div>);}
     
     const data = cellData;
 
