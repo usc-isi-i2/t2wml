@@ -250,7 +250,7 @@ def get_yaml_layers(calc_params):
                   statement=statementLayer,
                   cleaned=cleanedLayer,
                   type=typeLayer)
-                  
+
     return layers
 
 
@@ -362,30 +362,25 @@ def update_entities(project, entity_file, updated_entries):
 
 
 def get_partial_csv(calc_params):
-    start = calc_params.part_start
-    end = calc_params.part_end
     wikifier = calc_params.wikifier
-    annotation = calc_params.annotation_path
     cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
-    kg = KnowledgeGraph.generate(
-        cell_mapper, calc_params.sheet, wikifier, start, end)
+    kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier, count=calc_params.part_count)
     if not kg.statements:
-        if cell_mapper.annotation.subject_annotations:
-            df = pd.DataFrame([], columns=["subject", "property", "value"])
-            subject_cells = []
-            (x1, y1), (x2,
-                       y2) = subject_block_cells = cell_mapper.annotation.subject_annotations[0].cell_args
-            for row in range(y1, y2+1):
-                for col in range(x1, x2+1):
-                    subject_cells.append(calc_params.sheet[row, col])
-            df.subject = subject_cells
+        raise ValueError("No statements")
+        # if cell_mapper.annotation.subject_annotations:
+        #     df = pd.DataFrame([], columns=["subject", "property", "value"])
+        #     subject_cells = []
+        #     (x1, y1), (x2, y2) = cell_mapper.annotation.subject_annotations.cell_args
+        #     for row in range(y1, y2+1):
+        #         for col in range(x1, x2+1):
+        #             subject_cells.append(calc_params.sheet[row, col])
+        #     df.subject = subject_cells
 
-    else:
-        columns, dict_values = get_cells_and_columns(
-            kg.statements, calc_params.project)
-        df = pd.DataFrame.from_dict(dict_values)
-        df.replace(to_replace=[None], value="", inplace=True)
-        df = df[columns]  # sort the columns
+    columns, dict_values = get_cells_and_columns(
+        kg.statements, calc_params.project)
+    df = pd.DataFrame.from_dict(dict_values)
+    df.replace(to_replace=[None], value="", inplace=True)
+    df = df[columns]  # sort the columns
     dims = list(df.shape)
     cells = json.loads(df.to_json(orient="values"))
     cells.insert(0, list(df.columns))

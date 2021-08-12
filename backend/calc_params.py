@@ -5,7 +5,8 @@ from web_sheet import Sheet
 
 class CalcParams:
     def __init__(self, project, data_path, sheet_name, yaml_path=None, annotation_path=None,
-                data_start=0, data_end=None, map_start=0, map_end=None, part_start=0, part_end=None):
+                data_start=0, data_end=None, map_start=0, map_end=None,
+                part_start=0, part_end=None, part_count=100):
         self.project = project
         self.project_path = project.directory
         self._data_path = data_path
@@ -21,6 +22,7 @@ class CalcParams:
         self.map_end=map_end
         self.part_start=part_start
         self.part_end=part_end
+        self.part_count=part_count
 
 
     @property

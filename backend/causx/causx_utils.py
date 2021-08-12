@@ -297,9 +297,8 @@ def df_to_table(df, columns):
 
 
 @error_with_func
-def get_causx_partial_csv(calc_params, start=0, end=150):
-    start = calc_params.part_start
-    end = calc_params.part_end
+def get_causx_partial_csv(calc_params):
+    count = calc_params.part_count
 
     columns = ["dataset_id", "variable", "main_subject", "value",
                     "time","time_precision",
@@ -314,7 +313,7 @@ def get_causx_partial_csv(calc_params, start=0, end=150):
 
 
     try:
-        kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, calc_params.wikifier, start, end)
+        kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, calc_params.wikifier, count)
     except Exception as e:
         raise ValueError(str(e)+"300")
 
