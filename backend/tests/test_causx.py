@@ -270,6 +270,6 @@ class TestCausxWorkflow:
         assert self.expected_results["upload_saved_annotation"]["layers"] == data["layers"]
 
 
-    def test_99_save_results(self):
+    def xtest_99_save_results(self):
         with open(os.path.join(self.files_dir, "expected_results.json"), 'w') as f:
             f.write(json.dumps(stored_results, sort_keys=True, indent=4))

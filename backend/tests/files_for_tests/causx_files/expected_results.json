@@ -8126,7 +8126,7 @@
     },
     "suggest_annotation": [
         {
-            "id": "e3aa4131-fca6-4300-9484-157ddeafa017",
+            "id": "1b78e037-6489-4326-980c-8421053d73ca",
             "link": "",
             "links": {},
             "property": {
@@ -8145,8 +8145,8 @@
             "type": "time"
         },
         {
-            "id": "d8138a6f-fa24-4b3f-b896-04cdf82a83ec",
-            "link": "68847921-2bd1-420b-8bf0-ac9d48268c7d",
+            "id": "7f9881d8-8922-4aad-be98-207792dc430c",
+            "link": "a8fe94f6-7e7b-47b6-aec7-39962b432d1a",
             "links": {},
             "role": "mainSubject",
             "selection": {
@@ -8158,10 +8158,10 @@
             "type": "wikibaseitem"
         },
         {
-            "id": "68847921-2bd1-420b-8bf0-ac9d48268c7d",
+            "id": "a8fe94f6-7e7b-47b6-aec7-39962b432d1a",
             "link": "",
             "links": {
-                "mainSubject": "d8138a6f-fa24-4b3f-b896-04cdf82a83ec"
+                "mainSubject": "7f9881d8-8922-4aad-be98-207792dc430c"
             },
             "role": "dependentVar",
             "selection": {
@@ -8227,7 +8227,7 @@
     "upload_project": {
         "annotations": [
             {
-                "id": "e3aa4131-fca6-4300-9484-157ddeafa017",
+                "id": "1b78e037-6489-4326-980c-8421053d73ca",
                 "link": "",
                 "links": {},
                 "property": {
@@ -8246,8 +8246,8 @@
                 "type": "time"
             },
             {
-                "id": "d8138a6f-fa24-4b3f-b896-04cdf82a83ec",
-                "link": "68847921-2bd1-420b-8bf0-ac9d48268c7d",
+                "id": "7f9881d8-8922-4aad-be98-207792dc430c",
+                "link": "a8fe94f6-7e7b-47b6-aec7-39962b432d1a",
                 "links": {},
                 "role": "mainSubject",
                 "selection": {
@@ -8259,11 +8259,11 @@
                 "type": "wikibaseitem"
             },
             {
-                "id": "68847921-2bd1-420b-8bf0-ac9d48268c7d",
+                "id": "a8fe94f6-7e7b-47b6-aec7-39962b432d1a",
                 "link": "",
                 "links": {
-                    "mainSubject": "d8138a6f-fa24-4b3f-b896-04cdf82a83ec",
-                    "property": "a42e8055-8245-4695-a0fe-df2f54c65883"
+                    "mainSubject": "7f9881d8-8922-4aad-be98-207792dc430c",
+                    "property": "4c85721b-2101-440c-9c80-1bc78ab9eb43"
                 },
                 "role": "dependentVar",
                 "selection": {
@@ -8276,8 +8276,8 @@
             },
             {
                 "children": {},
-                "id": "a42e8055-8245-4695-a0fe-df2f54c65883",
-                "link": "68847921-2bd1-420b-8bf0-ac9d48268c7d",
+                "id": "4c85721b-2101-440c-9c80-1bc78ab9eb43",
+                "link": "a8fe94f6-7e7b-47b6-aec7-39962b432d1a",
                 "links": {},
                 "role": "property",
                 "selection": {
@@ -11248,7 +11248,7 @@
             },
             "datamart_api": null,
             "description": "a test description",
-            "directory": "C:\\Users\\devora\\C_sources\\pedro\\t2wml\\backend\\media\\eb23d643-fd1c-474e-a033-cee463d2fb26",
+            "directory": "C:\\Users\\devora\\C_sources\\pedro\\t2wml\\backend\\media\\da12eedf-3dcf-49ee-968b-242ab2815b7b",
             "entity_files": [
                 "annotations/autogen-files-worldeducation/autogen_entities_world_education.xlsx.tsv",
                 "user_input_properties.tsv"
