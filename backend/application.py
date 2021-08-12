@@ -113,7 +113,7 @@ def get_calc_params(project, data_required=True, mapping_type=None, mapping_file
         if end == 0:
             end = None
         start_end_kwargs[key] = end
-    start_end_kwargs["part_end"] = request.args.get("part_end", 30)
+    start_end_kwargs["part_end"] = int(request.args.get("part_end", 30))
 
     calc_params = CalcParams(
         project, data_file, sheet_name, **start_end_kwargs)
