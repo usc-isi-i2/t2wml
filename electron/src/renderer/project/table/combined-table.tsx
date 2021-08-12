@@ -1255,6 +1255,7 @@ class CombinedTable extends Component<{}, TableState> {
                 if (startIndex == endIndex) { return; }
                 startIndex -= addStart;
                 endIndex += addEnd;
+                if (startIndex < 0) { startIndex = 0; }
 
                 const table = await this.requestService.getTableByRows(startIndex, endIndex) as TableDTO;
                 const emptyCell = {
