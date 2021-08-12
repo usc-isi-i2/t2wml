@@ -128,10 +128,10 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     this.setState({ showWikifyBlockMenu: false });
   }
 
-  compareSelections(s1?: CellSelection, s2?:CellSelection):boolean {
-    if(!s1 && s2 ) {return false;}
-    if(s1 && !s2) {return false;}
-    if(s1?.x1 !== s2?.x1 || s1?.x2 !== s2?.x2 || s1?.y1 !== s2?.y1 || s1?.y2 !== s2?.y2){
+  compareSelections(s1?: CellSelection, s2?: CellSelection): boolean {
+    if (!s1 && s2) { return false; }
+    if (s1 && !s2) { return false; }
+    if (s1?.x1 !== s2?.x1 || s1?.x2 !== s2?.x2 || s1?.y1 !== s2?.y1 || s1?.y2 !== s2?.y2) {
       return false;
     }
     return true;
@@ -139,7 +139,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
 
   updateSelection(selection?: CellSelection) {
-    if ((!wikiStore.table.selection.selectedBlock) || ! this.compareSelections(wikiStore.table.selection.selectedBlock?.selection, selection)) {
+    this.setState({ validArea: true });
+    if ((!wikiStore.table.selection.selectedBlock) || !this.compareSelections(wikiStore.table.selection.selectedBlock?.selection, selection)) {
       const selectedArea = selection ? utils.humanReadableSelection(selection) : undefined;
       const fields = { ...this.state.fields }
       if ((!wikiStore.table.selection.selectedBlock)) {
@@ -248,7 +249,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
   validationSelectionArea(selection: CellSelection) {
-    if (selection.x1 <= selection.x2 && selection.y1 <= selection.y2) {
+    if (selection.x1 <= selection.x2 && selection.y1 <= selection.y2 &&
+      selection.x2 <= wikiStore.table.table.dims[1] && selection.y2 <= wikiStore.table.table.dims[0]) {
       this.setState({ validArea: true });
     } else {
       this.setState({ validArea: false });
