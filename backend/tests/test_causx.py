@@ -18,7 +18,7 @@ annotations = []
 
 
 def get_data_url():
-    return f"?data_file={data_file}&sheet_name={sheet_name}&map_start=15&map_end=30&data_start=15&data_end=30&part_start=15&part_end=30"
+    return f"?data_file={data_file}&sheet_name={sheet_name}&map_start=0&map_end=15&data_start=0&data_end=15&part_start=0&part_end=10"
 
 
 stored_results = dict()
@@ -270,6 +270,6 @@ class TestCausxWorkflow:
         assert self.expected_results["upload_saved_annotation"]["layers"] == data["layers"]
 
 
-    def xtest_99_save_results(self):
+    def test_99_save_results(self):
         with open(os.path.join(self.files_dir, "expected_results.json"), 'w') as f:
             f.write(json.dumps(stored_results, sort_keys=True, indent=4))
