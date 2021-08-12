@@ -7,7 +7,7 @@ from io import BytesIO
 from pathlib import Path
 from flask import request
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
-from causx.wikification import wikify_countries #temporary?
+from causx.wikification import wikify_countries  # temporary?
 import web_exceptions
 from app_config import app
 from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
@@ -27,6 +27,7 @@ from wikification import wikify_selection
 debug_mode = False
 
 set_web_settings()
+
 
 def get_project_folder():
     try:
@@ -104,7 +105,18 @@ def get_calc_params(project, data_required=True, mapping_type=None, mapping_file
         else:
             return None
 
-    calc_params = CalcParams(project, data_file, sheet_name)
+    start_end_kwargs = {}
+    for key in ["data_start", "map_start", "part_start"]:
+        start_end_kwargs[key] = int(request.args.get(key, 0))
+    for key in ["data_end", "map_end"]:
+        end = int(request.args.get(key, 0))
+        if end == 0:
+            end = None
+        start_end_kwargs[key] = end
+    start_end_kwargs["part_end"] = request.args.get("part_end", 30)
+
+    calc_params = CalcParams(
+        project, data_file, sheet_name, **start_end_kwargs)
 
     mapping_type = mapping_type or request.args.get("mapping_type")
     mapping_file = mapping_file or request.args.get("mapping_file")
@@ -128,19 +140,15 @@ def get_mapping(mapping_file=None, mapping_type=None):
 
     response = dict(project=get_project_dict(project))
 
-    start = int(request.args.get("map_start", 0))
-    end = int(request.args.get("map_end", 0))
-    if end == 0:
-        end = None
-
     if calc_params.yaml_path:
         response["yamlContent"] = get_yaml_content(calc_params)
         response["annotations"] = []
     else:
         response["annotations"], response["yamlContent"] = get_annotations(
             calc_params)
-    get_layers(response, calc_params, start, end)
+    get_layers(response, calc_params)
     return response, 200
+
 
 @app.route('/api/table', methods=['GET'])
 @json_response
@@ -152,15 +160,12 @@ def get_data():
         return response, 200
     calc_params = get_calc_params(project)
     response = dict()
-    start = int(request.args.get("data_start", 0))
-    end = int(request.args.get("data_end", 0))
-    if end == 0:
-        end = None
 
-    response["table"] = get_table(calc_params, start, end)
+    response["table"] = get_table(calc_params)
     calc_response, code = get_mapping()
     response.update(calc_response)
     return response, code
+
 
 @app.route('/api/annotation/guess-blocks', methods=['GET'])
 @json_response
@@ -170,6 +175,7 @@ def guess_all_annotation_blocks():
     suggest_annotations(calc_params)
     return get_mapping()
 
+
 @app.route('/api/partialcsv', methods=['GET'])
 @json_response
 def partial_csv():
@@ -177,19 +183,14 @@ def partial_csv():
     calc_params = get_calc_params(project)
     response = dict()
 
-    start = int(request.args.get("part_start", 0))
-    end = int(request.args.get("part_end", 150))
-
     try:
-        response["partialCsv"] = get_partial_csv(calc_params, start, end)
+        response["partialCsv"] = get_partial_csv(calc_params)
     except Exception as e:
         # print(e)
         response["partialCsv"] = dict(dims=[1, 3],
                                       firstRowIndex=0,
                                       cells=[["subject", "property", "value"]])
     return response, 200
-
-
 
 
 @app.route('/api/project/download/<filetype>/<filename>/all', methods=['GET'])
@@ -284,9 +285,7 @@ def load_to_datamart():
     return data, 201
 
 
-
-
-#POSTS/PUTS:
+# POSTS/PUTS:
 
 
 @app.route('/api/data', methods=['POST'])
@@ -316,16 +315,11 @@ def upload_data_file():
 
     calc_params = CalcParams(project, data_file, sheet_name, None)
 
-    start = int(request.args.get("data_start", 0))
-    end = int(request.args.get("data_end", 0))
-    if end == 0:
-        end = None
-
-    response["table"] = get_table(calc_params, start, end)
-    get_layers(response, calc_params) #this will just return empty layers and any wikification if it exists
+    response["table"] = get_table(calc_params)
+    # this will just return empty layers and any wikification if it exists
+    get_layers(response, calc_params)
 
     return response, 200
-
 
 
 @app.route('/api/project/entities', methods=['POST'])
@@ -347,8 +341,7 @@ def upload_entities():
     return response, 200
 
 
-
-@app.route('/api/web/wikify_region', methods=['POST']) #V
+@app.route('/api/web/wikify_region', methods=['POST'])  # V
 @json_response
 def causx_wikify():
     project = get_project()
@@ -358,7 +351,8 @@ def causx_wikify():
     calc_params = get_calc_params(project)
 
     cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
-    project.add_df_to_wikifier_file(calc_params.data_path, cell_qnode_map, overwrite_existing)
+    project.add_df_to_wikifier_file(
+        calc_params.data_path, cell_qnode_map, overwrite_existing)
 
     calc_params = get_calc_params(project)
     response = dict(project=get_project_dict(project))
@@ -441,7 +435,6 @@ def create_auto_nodes():
     return response, 200
 
 
-
 @app.route('/api/yaml/save', methods=['POST'])
 @json_response
 def upload_yaml():
@@ -474,6 +467,8 @@ def apply_yaml():
     calc_response, code = get_mapping(yaml_path, "Yaml")
     response.update(calc_response)
     return response, code
+
+
 @app.route('/api/annotation/create', methods=['POST'])
 @json_response
 def save_annotation():
@@ -503,7 +498,6 @@ def upload_annotation():
     calc_response, code = get_mapping(annotations_path, "Annotation")
     response.update(calc_response)
     return response, code
-
 
 
 @app.route('/api/set_qnode', methods=['POST'])
@@ -632,7 +626,7 @@ def create_qnode():
     if selection:
         calc_params = get_calc_params(project)
         context = request.get_json().get("context", "")
-        value=request_json.pop("value")
+        value = request_json.pop("value")
         create_user_wikification(calc_params, project, selection, value,
                                  context, node_id)
         response["layers"] = get_qnodes_layer(calc_params)
@@ -641,9 +635,7 @@ def create_qnode():
     return response, 200
 
 
-
-
-##### Small getters that return small things and *should* be cheap operations
+# Small getters that return small things and *should* be cheap operations
 
 @app.route('/api/project', methods=['GET'])
 @json_response
@@ -653,7 +645,7 @@ def get_project_files():
     return response, 200
 
 
-#sure, it's technically a post, but functionally it's "getting" a working project dir
+# sure, it's technically a post, but functionally it's "getting" a working project dir
 @app.route('/api/project', methods=['POST'])
 @json_response
 def create_project():
@@ -677,7 +669,9 @@ def create_project():
     response = dict(project=get_project_dict(project))
     return response, 201
 
-#all it returns is a project
+# all it returns is a project
+
+
 @app.route('/api/files/add_mapping', methods=['POST'])
 @json_response
 def add_existing_mapping_file_to_project():
@@ -698,7 +692,9 @@ def add_existing_mapping_file_to_project():
     response = dict(project=get_project_dict(project), filename=filename)
     return response, 200
 
-#returns entity dict
+# returns entity dict
+
+
 @app.route('/api/project/entities', methods=['GET'])
 @json_response
 def get_project_entities():
@@ -706,7 +702,9 @@ def get_project_entities():
     response = get_entities(project)
     return response, 200
 
-#returns the same as get entities
+# returns the same as get entities
+
+
 @app.route('/api/project/entities', methods=['PUT'])
 @json_response
 def edit_entities():
@@ -715,7 +713,6 @@ def edit_entities():
     updated_entries = request.get_json()["updated_entries"]
     response = update_entities(project, entity_file, updated_entries)
     return response, 200
-
 
 
 @app.route('/api/annotation/suggest', methods=['PUT'])
@@ -739,7 +736,6 @@ def guess_block_type_role():
     except Exception as e:
         pass  # print(e)
     return response, 200
-
 
 
 @app.route('/api/project/globalsettings', methods=['PUT', 'GET'])
@@ -802,6 +798,7 @@ def update_settings():
     response = dict(project=get_project_dict(project))
     return response, 200
 
+
 @app.route('/api/properties', methods=['GET'])
 @app.route('/api/qnodes', methods=['GET'])
 @json_response
@@ -852,8 +849,6 @@ def get_qnodes():
     return {'qnodes': qnodes}, 200
 
 
-
-
 @app.route('/api/query_node/<id>', methods=['GET'])
 @json_response
 def query_qnode(id):
@@ -897,8 +892,6 @@ def delete_file():
 
     response = dict(project=get_project_dict(project))
     return response, 200
-
-
 
 
 # app utils
