@@ -155,7 +155,17 @@ def get_calc_params(project, data_required=True):
         else:
             return None
 
-    calc_params = CalcParams(project, data_file, sheet_name)
+    start_end_kwargs = {}
+    for key in ["data_start", "map_start", "part_start"]:
+        start_end_kwargs[key] = int(request.args.get(key, 0))
+    for key in ["data_end", "map_end"]:
+        end = int(request.args.get(key, 0))
+        if end == 0:
+            end = None
+        start_end_kwargs[key] = end
+    start_end_kwargs["part_end"] = request.args.get("part_end", 30)
+
+    calc_params = CalcParams(project, data_file, sheet_name, **start_end_kwargs)
 
     calc_params._annotation_path = get_annotation_name(calc_params)
 
@@ -165,10 +175,6 @@ def get_calc_params(project, data_required=True):
 def get_mapping(preload=False):
     project = get_project()
     calc_params = get_calc_params(project)
-    start = int(request.args.get("map_start", 0))
-    end = int(request.args.get("map_end", 0))
-    if end == 0:
-        end = None
     response = dict(project=get_project_dict(project))
     response["annotations"], response["yamlContent"] = get_annotations(
             calc_params)
@@ -178,7 +184,7 @@ def get_mapping(preload=False):
             preload(calc_params)
         except Exception as e:
             pass
-    get_layers(response, calc_params, start, end)
+    get_layers(response, calc_params)
     return response, 200
 
 @app.route('/api/causx/token', methods=['GET'])
@@ -485,12 +491,7 @@ def causx_upload_data():
     project.save()
     response["sheetName"] = sheet_name
     calc_params = CalcParams(project, file_path, sheet_name)
-    start = int(request.args.get("data_start", 0))
-    end = int(request.args.get("data_end", 0))
-    if end == 0:
-        end = None
-
-    response["table"] = get_table(calc_params, start, end)
+    response["table"] = get_table(calc_params)
     project.title=Path(file_path).stem
     project.save()
     response.update(dict(project=get_project_dict(project), filepath=file_path))
@@ -516,12 +517,8 @@ def causx_upload_project():
     sheet_name=filemap["sheet"]
     calc_params=CalcParams(project, filemap["data"], sheet_name, annotation_path=filemap["annotation"])
     response=dict()
-    start = int(request.args.get("data_start", 0))
-    end = int(request.args.get("data_end", 0))
-    if end == 0:
-        end = None
 
-    response["table"] = get_table(calc_params, start, end)
+    response["table"] = get_table(calc_params)
     response["annotations"], response["yamlContent"] = get_annotations(calc_params)
     response["layers"] = get_qnodes_layer(calc_params)
     response["project"]=get_project_dict(project)
@@ -599,10 +596,8 @@ def causx_download_project():
 def causx_partial_csv():
     project = get_project()
     calc_params = get_calc_params(project)
-    start = int(request.args.get("part_start", 0))
-    end = int(request.args.get("part_end", 150))
     response = dict()
-    response["partialCsv"] = get_causx_partial_csv(calc_params, start, end)
+    response["partialCsv"] = get_causx_partial_csv(calc_params)
     return response, 200
 
 @app.route('/api/causx/download_zip_results', methods=['GET'])

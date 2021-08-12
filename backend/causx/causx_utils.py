@@ -298,6 +298,9 @@ def df_to_table(df, columns):
 
 @error_with_func
 def get_causx_partial_csv(calc_params, start=0, end=150):
+    start = calc_params.part_start
+    end = calc_params.part_end
+
     columns = ["dataset_id", "variable", "main_subject", "value",
                     "time","time_precision",
                     "country","country_id","country_cameo","region_coordinate",
