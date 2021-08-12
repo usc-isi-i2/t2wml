@@ -159,11 +159,9 @@ def get_cell_qnodes(statement, qnodes):
                 qnodes[str(outer_value)] = None
 
 
-def get_yaml_layers(calc_params, start=0, end=None):
-    if calc_params.cache:
-        layers = calc_params.cache.get_layers()
-        if layers:
-            return layers
+def get_yaml_layers(calc_params):
+    start = calc_params.map_start
+    end = calc_params.map_end
 
     cell_type_indices = {
         "qualifier": {},
@@ -252,9 +250,7 @@ def get_yaml_layers(calc_params, start=0, end=None):
                   statement=statementLayer,
                   cleaned=cleanedLayer,
                   type=typeLayer)
-    # no caching until we've figured out how to make it work
-    # if calc_params.yaml_path:
-    #    calc_params.cache.save(kg, layers)
+                  
     return layers
 
 
@@ -289,11 +285,9 @@ def get_table(calc_params):
 def get_layers(response, calc_params):
     # convenience function for code that repeats three times
     response["layers"] = get_empty_layers()
-    start = calc_params.map_start
-    end = calc_params.map_end
 
     try:
-        response["layers"].update(get_yaml_layers(calc_params, start, end))
+        response["layers"].update(get_yaml_layers(calc_params))
     except Exception as e:
         response["yamlError"] = str(e)
 
