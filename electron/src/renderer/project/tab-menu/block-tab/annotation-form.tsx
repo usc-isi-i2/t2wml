@@ -318,14 +318,24 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     const annotations = wikiStore.annotations.blocks.filter(block => {
       return block.id !== selectedBlock?.id;
     });
-    const annotation: any = {
-      selection: selection
-    };
+
+    let annotation: any = {}
+    if (selectedBlock){
+    const currentAnnotation = wikiStore.annotations.blocks.filter(block => {
+      return block.id == selectedBlock?.id;
+    });
+    if (currentAnnotation){
+      annotation = currentAnnotation[0]
+    }
+  }
+    annotation["selection"]=selection
 
     // Add all updated values from the annotation form
     for (const [key, value] of Object.entries(fields)) {
       annotation[key] = value;
     }
+
+
 
     // if (!fields.property && searchFields.property && searchFields.property.startsWith("P")) {
     //   try {
