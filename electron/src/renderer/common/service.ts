@@ -40,11 +40,12 @@ class RequestService {
     return `project_folder=${folder}`;
   }
 
-  private getIndex(startIndex=0, endIndex=50){
-    if(wikiStore.table.currentRowIndex){
+  private getIndex(startIndex = 0, endIndex = 50) {
+    if (wikiStore.table.currentRowIndex) {
       startIndex = wikiStore.table.currentRowIndex - 50;
       endIndex = wikiStore.table.currentRowIndex + 50;
     }
+    if (startIndex < 0) { startIndex = 0; }
     return [startIndex, endIndex]
   }
 
@@ -274,13 +275,13 @@ class RequestService {
     })
   }
 
-  public async getTable(startIndex=0, endIndex=50) {
+  public async getTable(startIndex = 0, endIndex = 50) {
     const updater = currentFilesService.createUpdater();
     const response = await backendGet(`/table?${this.getMappingParams()}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`) as ResponseWithTableDTO;
     updater.update(() => this.fillTable(response), "getTable");
   }
 
-  public async getTableByRows(startIndex=0, endIndex=0): Promise<TableDTO> {
+  public async getTableByRows(startIndex = 0, endIndex = 0): Promise<TableDTO> {
     // const updater = currentFilesService.createUpdater();
     const response = await backendGet(`/table?${this.getMappingParams()}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`) as ResponseWithTableDTO;
     this.updateMapping(response)
@@ -361,7 +362,7 @@ class RequestService {
 
   public async createQnode(entityFields: EntityFields) {
     const [startIndex, endIndex] = this.getIndex()
-    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, { ...entityFields}) as ResponseWithQNodeLayerAndQnode;
+    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, { ...entityFields }) as ResponseWithQNodeLayerAndQnode;
     if (response.layers.qnode) {
       this.updateProjectandQnode(response);
     }
@@ -369,9 +370,9 @@ class RequestService {
   }
 
 
-  public async createQnodes(entityFields: EntityFields, selection?: number[][], value?:string) {
+  public async createQnodes(entityFields: EntityFields, selection?: number[][], value?: string) {
     const [startIndex, endIndex] = this.getIndex()
-    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, { ...entityFields, selection: selection, value: value}) as ResponseWithQNodeLayerAndQnode;
+    const response = await backendPost(`/create_node?${this.getDataFileParams(false)}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, { ...entityFields, selection: selection, value: value }) as ResponseWithQNodeLayerAndQnode;
     if (response.layers.qnode) {
       this.updateProjectandQnode(response);
     }
@@ -381,7 +382,7 @@ class RequestService {
   public async getQnodeById(id?: string) {
     if (!id || id.length < 2) { return; }
     try {
-      const response = await backendGet(`/query_node/${id[0].toLocaleUpperCase()+id.slice(1)}?${this.getDataFileParams()}`) as QNode;
+      const response = await backendGet(`/query_node/${id[0].toLocaleUpperCase() + id.slice(1)}?${this.getDataFileParams()}`) as QNode;
       return response;
     } catch (error) {
       if (error.errorCode === 404) {
