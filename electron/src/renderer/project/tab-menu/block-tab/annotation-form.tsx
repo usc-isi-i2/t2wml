@@ -286,7 +286,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
   }
 
-  async postAnnotations(annotations: AnnotationBlock[], annotation?: AnnotationBlock) {
+  async postAnnotations(annotations: AnnotationBlock[]) {
     wikiStore.table.showSpinner = true;
     try {
       await this.requestService.call(this, () => (
@@ -358,7 +358,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     // }
 
     annotations.push(annotation);
-    this.postAnnotations(annotations, annotation);
+    this.postAnnotations(annotations);
 
   }
 
