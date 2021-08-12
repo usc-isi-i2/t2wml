@@ -299,22 +299,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       this.setState({ errorMessage: error });
     }
 
-    if (annotation) {
-      if (annotation.role && annotation.selection && annotation.role == "mainSubject") {
-        try {
-          await this.requestService.call(this, () => (
-            this.requestService.callCountryWikifier({ "selection": annotation.selection })
-          ))
-        }
-        catch (error) {
-          //do nothing...
-        }
-      }
-      wikiStore.table.selectBlock(utils.checkSelectedAnnotationBlocks(annotation.selection))
-    } else {
-      wikiStore.table.resetSelections();
-    }
-
     wikiStore.table.showSpinner = false;
 
     wikiStore.partialCsv.showSpinner = true;
