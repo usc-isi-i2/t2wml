@@ -36,30 +36,35 @@ def wikify_selection(calc_params, selection, url="https://dsbox02.isi.edu:8888/w
     }
 
     resp = requests.post(url, files=files)
-    if resp.status_code==500:
-        raise ValueError("Failed to get response from wikifier service")
+    if resp.status_code >299 :
+        raise ValueError("Failed to get response from wikifier service or service errored out")
 
 
     s = str(resp.content, 'utf-8')
     data = StringIO(s)
 
-    df = pd.read_csv(data)
-    check_na = df['value_kg_id'].notna()
-    missing_values = df[np.invert(check_na)]
-    df = df[check_na] #trim anything that didn't wikify successfully
-    df = df[df["value_score"] > 0.9] #trim anything whose score is too low
-    ids=df.pop("value_kg_id")
-    df["item"]=ids
-    labels= df.pop("value_kg_label")
-    scores= df.pop("value_score")
-    aliases=df.pop("value_kg_aliases")
-    descriptions= df.pop("value_kg_descriptions")
-    entities_dict={}
-    for index, id in enumerate(ids):
-        entities_dict[id]={"label": labels.iloc[index], "description": descriptions.iloc[index]}
-    problem_cells=[]
-    for index, line in missing_values.iterrows():
-        problem_cells.append(to_excel(line.column, line.row))
-    return df, entities_dict, problem_cells
+    try:
+        df = pd.read_csv(data)
+        df = df.replace(r'^\s*$', np.nan, regex=True)
+        check_na = df['value_kg_id'].notna()
+        missing_values = df[np.invert(check_na)]
+        df = df[check_na] #trim anything that didn't wikify successfully
+        df = df[df["value_score"] > 0.9] #trim anything whose score is too low
+        ids=df.pop("value_kg_id")
+        df["item"]=ids
+        labels= df.pop("value_kg_label")
+        scores= df.pop("value_score")
+        aliases=df.pop("value_kg_aliases")
+        descriptions= df.pop("value_kg_descriptions")
+        entities_dict={}
+        for index, id in enumerate(ids):
+            entities_dict[id]={"label": labels.iloc[index], "description": descriptions.iloc[index]}
+        problem_cells=[]
+        for index, line in missing_values.iterrows():
+            problem_cells.append(to_excel(line.column, line.row))
+        return df, entities_dict, problem_cells
+    except Exception as e:
+        print(e)
+        raise e
 
 
