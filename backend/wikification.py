@@ -19,14 +19,10 @@ def wikify_selection(calc_params, selection, url="https://dsbox02.isi.edu:8888/w
     data_file_name = calc_params.sheet.data_file_name
     sheet=calc_params.sheet
 
-    df_rows = []
-    for col in range(col1, col2+1):
-        for row in range(row1, row2+1):
-            value=sheet[row, col]
-            if (value):
-                df_rows.append([col, row, value, data_file_name, sheet_name, ""])
-    df = pd.DataFrame(df_rows, columns=[
-                      "column", "row", "value", "file", "sheet", "context"])
+    values = list(set(sheet[row1:row2+1, col1:col2+1].to_numpy().flatten().tolist()))
+    df = pd.DataFrame([])
+    df['value'] = values
+    
     csv_str = df.to_csv(index=None)
     binary = csv_str.encode()
     url += f'?k=1&columns={"value"}'
@@ -51,17 +47,29 @@ def wikify_selection(calc_params, selection, url="https://dsbox02.isi.edu:8888/w
         df = df[check_na] #trim anything that didn't wikify successfully
         df = df[df["value_score"] > 0.9] #trim anything whose score is too low
         ids=df.pop("value_kg_id")
-        df["item"]=ids
+        values=df["value"]
         labels= df.pop("value_kg_label")
         scores= df.pop("value_score")
         aliases=df.pop("value_kg_aliases")
         descriptions= df.pop("value_kg_descriptions")
         entities_dict={}
+        lookup_dict={}
         for index, id in enumerate(ids):
             entities_dict[id]={"label": labels.iloc[index], "description": descriptions.iloc[index]}
+            lookup_dict[values.iloc[index]]=id
         problem_cells=[]
         for index, line in missing_values.iterrows():
             problem_cells.append(to_excel(line.column, line.row))
+
+        df_rows = []
+        for col in range(col1, col2+1):
+            for row in range(row1, row2+1):
+                value=sheet[row, col]
+                if value in lookup_dict:
+                    df_rows.append([col, row, value, data_file_name, sheet_name, "", lookup_dict[value]])
+        df = pd.DataFrame(df_rows, columns=[
+                        "column", "row", "value", "file", "sheet", "context", "item"])
+
         return df, entities_dict, problem_cells
     except Exception as e:
         print(e)
