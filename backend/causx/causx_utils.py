@@ -120,7 +120,7 @@ class AnnotationNodeGenerator:
             create_nodes_from_selection(tuple_selection, self.project, sheet, wikifier)
 
         if not df.empty:
-                self.project.add_df_to_wikifier_file(sheet.data_file_path, df, True)
+                self.project.add_df_to_wikifier_file(sheet, df, True)
                 wikifier.add_dataframe(df)
 
     @error_with_func

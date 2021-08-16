@@ -100,7 +100,7 @@ def get_qnodes_layer(calc_params):
         ids_to_get = set()
         for col in range(sheet.col_len):
             for row in range(start, end):
-                id, context, value = item_table.get_cell_info(col, row, sheet)
+                id, context, value = item_table.get_cell_info(col, row, sheet=sheet)
                 if id:
                     ids_to_get.add(id)
                     if id in qnode_entries:

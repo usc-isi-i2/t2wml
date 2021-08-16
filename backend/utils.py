@@ -93,5 +93,5 @@ def create_user_wikification(calc_params, project, selection, value, context, it
                             data_file_name, sheet_name])
     df = pd.DataFrame(df_rows, columns=[
                       "column", "row", "value", "context", "item", "file", "sheet"])
-    project.add_df_to_wikifier_file(calc_params.data_path, df, overwrite_existing=True)
+    project.add_df_to_wikifier_file(calc_params.sheet, df, overwrite_existing=True)
     return df

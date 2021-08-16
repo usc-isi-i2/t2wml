@@ -10,7 +10,7 @@ from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
 from causx.wikification import wikify_countries  # temporary?
 import web_exceptions
 from app_config import app
-from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
+from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode, t2wml_settings, Wikifier
 from t2wml_web import (create_zip, get_kg, autocreate_items, get_kgtk_download_and_variables,
                        set_web_settings, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, get_partial_csv, get_qnodes_layer,
@@ -354,7 +354,7 @@ def causx_wikify():
 
     cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
     project.add_df_to_wikifier_file(
-        calc_params.data_path, cell_qnode_map, overwrite_existing)
+        calc_params.sheet, cell_qnode_map, overwrite_existing)
 
     calc_params = get_calc_params(project)
     response = dict(project=get_project_dict(project))
@@ -401,10 +401,10 @@ def call_wikifier_service():
     selection = (selection["x1"]-1, selection["y1"] -
                  1), (selection["x2"]-1, selection["y2"]-1)
 
-    df, entities_dict, problem_cells = wikify_selection(calc_params, selection)
+    wiki_dict, entities_dict, problem_cells = wikify_selection(calc_params, selection)
     t2wml_settings.wikidata_provider.cache.update(entities_dict)
-    project.add_df_to_wikifier_file(
-        calc_params.data_path, df, overwrite_existing)
+    project.add_dict_to_wikifier_file(
+        calc_params.sheet, wiki_dict, overwrite_existing)
 
     calc_params = get_calc_params(project)
     response = dict(project=get_project_dict(project))
@@ -545,27 +545,11 @@ def delete_wikification():
     value = request.get_json().get('value', None)
     #context = request.get_json().get("context", "")
 
-    top_left, bottom_right = selection
-    col1, row1 = top_left
-    col2, row2 = bottom_right
-
-    filepath, exists = project.get_wikifier_file(calc_params.data_path)
+    filepath, exists=project.get_wikifier_file(calc_params.sheet)
     if exists:
-        df = pd.read_csv(filepath)
-        for col in range(col1, col2+1):
-            for row in range(row1, row2+1):
-                if value:
-                    df = df.drop(df[(df['column'] == col)
-                                    & (df['row'] == row)
-                                    & (df['value'] == value)
-                                    & (df['file'] == data_file_name)
-                                    & (df['sheet'] == sheet_name)].index)
-                else:
-                    df = df.drop(df[(df['column'] == col)
-                                    & (df['row'] == row)
-                                    & (df['file'] == data_file_name)
-                                    & (df['sheet'] == sheet_name)].index)
-        df.to_csv(filepath, index=False, header=True)
+        wikifier = Wikifier.load_from_file(filepath)
+        wikifier.delete_wikification(selection, value, context="")
+        wikifier.save_to_file(filepath)
 
     response = dict(project=get_project_dict(project))
     response["layers"] = get_qnodes_layer(calc_params)

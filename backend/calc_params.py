@@ -52,11 +52,11 @@ class CalcParams:
 
     @property
     def wikifier(self):
-        wikifier = Wikifier()
-        wikifier_file, exists = self.project.get_wikifier_file(self.data_path)
+        wikifier_file, exists = self.project.get_wikifier_file(self.sheet)
         if exists:
-            wikifier.add_file(wikifier_file)
-        return wikifier
+            return Wikifier.load_from_file(filepath=wikifier_file)
+        else:
+            return Wikifier()
 
     @property
     def sheet_names(self):
