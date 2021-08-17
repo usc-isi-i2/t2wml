@@ -116,8 +116,16 @@ class RequestService {
   @action
   public updateProjectandQnode(response: ResponseWithQNodeLayerDTO) {
     console.log("qnode", response)
+    wikiStore.layers.updateFromDTO(response.layers);
+    wikiStore.project.projectDTO = response.project;
+  }
+
+  @action
+  public setProjectandQnode(response: ResponseWithQNodeLayerDTO) {
+    console.log("qnode", response)
     wikiStore.layers.resetFromDTO(response.layers);
     wikiStore.project.projectDTO = response.project;
+    wikiStore.table.loadedRows = new Set<number>();
   }
 
   public async getPartialCsv() {
@@ -168,13 +176,13 @@ class RequestService {
   public async postQNodes(values: any) {
     const [startIndex, endIndex] = this.getIndex()
     const response = await backendPost(`/set_qnode?${this.getDataFileParams(false)}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, values) as ResponseWithQNodeLayerDTO;
-    this.updateProjectandQnode(response);
+    this.setProjectandQnode(response);
   }
 
   public async removeQNodes(values: any) {
     const [startIndex, endIndex] = this.getIndex()
     const response = await backendPost(`/delete_wikification?${this.getDataFileParams()}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, values) as ResponseWithQNodeLayerDTO;
-    this.updateProjectandQnode(response);
+    this.setProjectandQnode(response);
   }
 
   public async addExistingMapping(data: any) {
@@ -250,19 +258,19 @@ class RequestService {
   public async uploadWikifierOutput(data: any) {
     const [startIndex, endIndex] = this.getIndex()
     const response = await backendPost(`/wikifier?${this.getDataFileParams(false)}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, data) as ResponseWithQNodeLayerDTO;
-    this.updateProjectandQnode(response);
+    this.setProjectandQnode(response);
   }
 
   public async callWikifierService(data: any) {
     const [startIndex, endIndex] = this.getIndex()
     const response = await backendPost(`/wikifier_service?${this.getDataFileParams(false)}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, data) as ResponseCallWikifierServiceDTO;
-    this.updateProjectandQnode(response);
+    this.setProjectandQnode(response);
   }
 
   public async callAutoCreateWikinodes(data: any) {
     const [startIndex, endIndex] = this.getIndex()
     const response = await backendPost(`/auto_wikinodes?${this.getDataFileParams()}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, data) as ResponseWithQNodeLayerDTO;
-    this.updateProjectandQnode(response);
+    this.setProjectandQnode(response);
   }
 
   public async callCountryWikifier(data: any) {
@@ -270,7 +278,7 @@ class RequestService {
     const updater = currentFilesService.createUpdater();
     const response = await backendPost(`/web/wikify_region?${this.getDataFileParams(false)}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`, data) as ResponseCallWikifierServiceDTO;
     updater.update(() => {
-      this.updateProjectandQnode(response);
+      this.setProjectandQnode(response);
       wikiStore.partialCsv.wikifierError = response.wikifierError;
     })
   }
@@ -317,7 +325,7 @@ class RequestService {
 
   public async uploadEntities(data: any) {
     const response = await backendPost(`/project/entities?${this.getDataFileParams(false)}`, data) as ResponseUploadEntitiesDTO;
-    this.updateProjectandQnode(response);
+    this.setProjectandQnode(response);
     wikiStore.partialCsv.entitiesStats = response.entitiesStats;
   }
 

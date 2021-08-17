@@ -189,10 +189,6 @@
   background: #a0cbdf;
 }
 
-.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-mainSubject.wikified {
-  color: #006699;
-}
-
 .ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-mainSubject-no-link {
   background: repeating-linear-gradient( 55deg, #D9EAF2, #D9EAF2 5px, #ffffff 5px, #ffffff 10px);
 }
@@ -210,10 +206,6 @@
   background: repeating-linear-gradient( 55deg, #D9F2E6, #D9F2E6 5px, #ffffff 5px, #ffffff 10px);
 }
 
-.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-dependentVar.wikified {
-  color: #006699;
-}
-
 .ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-qualifier {
   background: #DDD9F2;
   color: #111;
@@ -221,10 +213,6 @@
 
 .ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-qualifier.highlight {
   background: #aaa0df;
-}
-
-.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-qualifier.wikified {
-  color: #006699;
 }
 
 .ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-qualifier-no-property {
@@ -240,10 +228,6 @@
   background: #f5bf87;
 }
 
-.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-property.wikified {
-  color: #006699;
-}
-
 .ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-property-no-link {
   background: repeating-linear-gradient( 55deg, #fbe5ce, #fbe5ce 5px, #ffffff 5px, #ffffff 10px);
 }
@@ -257,10 +241,6 @@
   background: #a9b8ca;
 }
 
-.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-metadata.wikified {
-  color: #006699;
-}
-
 .ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-unit {
   background: #fff2ce;
   color: #111;
@@ -268,10 +248,6 @@
 
 .ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-unit.highlight {
   background: #ffde82;
-}
-
-.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-unit.wikified {
-  color: #006699;
 }
 
 .ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-unit-no-link {
@@ -477,6 +453,30 @@
 
 .ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .expects-wiki {
   color: #fd4800
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-dependentVar.wikified {
+  color: #006699 !important;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-property.wikified {
+  color: #006699 !important;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-unit.wikified {
+  color: #006699 !important;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-metadata.wikified {
+  color: #006699  !important;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-qualifier.wikified {
+  color: #006699  !important;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-mainSubject.wikified {
+  color: #006699  !important;
 }
 
 .ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .error::after {
