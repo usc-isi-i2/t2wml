@@ -1,3 +1,4 @@
+from collections import defaultdict
 import csv
 from pathlib import Path
 import numpy as np
@@ -84,9 +85,9 @@ def get_empty_layers():
 
 def create_user_wikification(calc_params, project, selection, value, context, item):
     (col1, row1), (col2, row2) = selection
-    wiki_dict = {}
+    wiki_dict = defaultdict(dict)
     for column in range(col1, col2+1):
         for row in range(row1, row2+1):
-            wiki_dict[str((column, row, value, context))] = item
+            wiki_dict[context][(column, row, value)] = item
     project.add_dict_to_wikifier_file(calc_params.sheet, wiki_dict, overwrite_existing=True)
     return wiki_dict
