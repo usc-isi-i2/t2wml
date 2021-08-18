@@ -640,7 +640,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
               selection={selection}
               onClose={(key: string, entityFields?: EntityFields) => this.handleOnCloseEditFieldMenu(key, entityFields)}
               title={typeEditFieldMenu}
-              data_type={data_type}
               // showResults={this.state.showResult1}
               onSelectNode={this.handleOnSelectNode.bind(this)}
             />

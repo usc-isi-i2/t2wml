@@ -33,6 +33,7 @@ interface WikifyFormState {
   entityFields: EntityFields;
   customQnode: boolean;
   disabledIsProperty: boolean;
+  disableDataType: boolean;
 }
 
 
@@ -57,6 +58,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
     }
 
     entityFields.is_property = field ? field === "property" : (wikiStore.table.selection.selectedBlock?.role === 'property' ? true : false);
+    entityFields.data_type = wikiStore.table.selection.selectedBlock?.type ? wikiStore.table.selection.selectedBlock?.type : "string";
 
     let customQnode = false;
     if (selected && isValidLabel(selected.label) && isValidLabel(selected.id.substring(1, selected.id.length))) {
@@ -78,7 +80,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       prevCell: undefined,
       entityFields: entityFields,
       customQnode: customQnode,
-      disabledIsProperty: wikiStore.table.selection.selectedBlock?.role ? true : false
+      disabledIsProperty: wikiStore.table.selection.selectedBlock?.role ? true : false,
+      disableDataType: wikiStore.table.selection.selectedBlock?.type ? true : false
     };
   }
 
@@ -108,14 +111,13 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       if (selected.data_type && entityFields.is_property) {
         entityFields.data_type = selected.data_type.toString();
       }
-
     }
     this.setState({ customQnode, entityFields, selected })
   }
 
   onChangeRole(selectedBlock?: AnnotationBlock) {
     if (selectedBlock) {
-      this.setState({ disabledIsProperty: selectedBlock?.role ? true : false })
+      this.setState({ disabledIsProperty: selectedBlock?.role ? true : false, disableDataType: selectedBlock?.type ? true : false })
     } else {
       const { selectedCell } = this.props;
       const { col, row } = selectedCell;
@@ -125,8 +127,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         y1: row + 1,
         y2: row + 1,
       };
-      const cellInBlock = checkSelectedAnnotationBlocks(selection);
-      this.setState({ disabledIsProperty: cellInBlock?.role ? true : false })
+      const blockOfCell = checkSelectedAnnotationBlocks(selection);
+      this.setState({ disabledIsProperty: blockOfCell?.role ? true : false, disableDataType: blockOfCell?.type ? true : false })
     }
   }
 
@@ -204,7 +206,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         is_property: field ? field === "property" : (wikiStore.table.selection.selectedBlock?.role === 'property' ? true : false),
         label: selectedCell.value || "",
         description: "",
-        data_type: "string",
+        data_type: wikiStore.table.selection.selectedBlock?.type ? wikiStore.table.selection.selectedBlock?.type : "string"
       },
       customQnode: false
     });
@@ -373,11 +375,12 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   renderCustomNodeForm() {
-    const { entityFields, customQnode } = this.state;
+    const { entityFields, customQnode, disableDataType } = this.state;
     if (customQnode) {
       return (
         <Col sm="12" md="12">
           <CustomNodeForm
+            disableDataType={disableDataType}
             entityFields={entityFields}
             handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") => this.handleOnChangeEntity(event, key)}
           />

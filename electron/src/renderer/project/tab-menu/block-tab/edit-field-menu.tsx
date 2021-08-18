@@ -19,7 +19,6 @@ interface EditFieldMenuProps {
     onClose: (key:string, entityFields?: EntityFields) => void,
     selection: CellSelection,
     title: string,
-    data_type?: string,
     // showResults: boolean,
     onSelectNode: (key: string, value?: QNode) => void,
 }
@@ -28,8 +27,6 @@ interface EditFieldMenuProps {
 class EditFieldMenu extends Component<EditFieldMenuProps, EditFieldMenuState> {
 
     private requestService: RequestService;
-    private timeoutSearch?: number;
-
 
     constructor(props: any) {
         super(props);
