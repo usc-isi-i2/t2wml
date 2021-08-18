@@ -1,3 +1,4 @@
+from collections import defaultdict
 import os
 import pandas as pd
 import numpy as np
@@ -62,13 +63,13 @@ def wikify_selection(calc_params, selection, url="https://dsbox02.isi.edu:8888/w
             problem_cells.append(to_excel(line.column, line.row))
 
         #df_rows = []
-        wiki_dict = {}
+        wiki_dict = {"":{}}
         for col in range(col1, col2+1):
             for row in range(row1, row2+1):
                 value=sheet[row, col]
                 if value in lookup_dict:
                     #df_rows.append([col, row, value, data_file_name, sheet_name, "", lookup_dict[value]])
-                    wiki_dict[str((col, row, value, ""))]=lookup_dict[value]
+                    wiki_dict[""][(col, row, value)]=lookup_dict[value]
         #df = pd.DataFrame(df_rows, columns=["column", "row", "value", "file", "sheet", "context", "item"])
 
         return wiki_dict, entities_dict, problem_cells
