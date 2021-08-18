@@ -91,6 +91,7 @@ class EditFieldMenu extends Component<EditFieldMenuProps, EditFieldMenuState> {
         const position = { x: 0, y: 0 }; //window.innerWidth * 0.05
 
         const selectedCell = wikiStore.table.selection.selectedCell;
+
         return (
             <Draggable handle=".handle"
                 defaultPosition={position}>

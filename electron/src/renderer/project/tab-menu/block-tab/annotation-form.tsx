@@ -224,7 +224,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
 
-  handleOnChange(event: KeyboardEvent, key: string) {
+  handleOnChange(event: KeyboardEvent, key: string) { 
     if (event.code === 'Enter') {
       event.preventDefault();
       this.handleOnSubmit(event);
@@ -242,11 +242,11 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       } else { //| "metadata" | "property" | "mainSubject" | "unit"
         updatedFields['type'] = undefined;
       }
-
     }
 
-    this.setState({ fields: updatedFields });
+    this.setState({ fields: updatedFields }, () => this.handleOnSubmit());
   }
+
 
   validationSelectionArea(selection: CellSelection) {
     if (selection.x1 <= selection.x2 && selection.y1 <= selection.y2 &&
@@ -279,6 +279,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       this.timeoutChangeAreaId = window.setTimeout(() => {
         if (this.state.validArea) {
           wikiStore.table.updateSelection(selection)
+          this.handleOnSubmit()
         }
       }, 500);
     } else {
@@ -447,7 +448,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           selectedBlock={selectedBlock}
           fields={fields}
           type={type}
-          onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields })}
+          onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields }, () => this.handleOnSubmit())}
           changeShowEditFieldMenu={(newTypeEditFieldMenu: string) => this.changeShowEditFieldMenu(newTypeEditFieldMenu)}
         />
 
@@ -556,7 +557,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     if (listQNodeFields.includes(key)) {
       const fields = { ...this.state.fields };
       fields[(key as keyof AnnotationFields) as nameQNodeFields] = value;
-      this.setState({ fields });
+      this.setState({ fields }, () => this.handleOnSubmit());
     }
   }
 
@@ -578,12 +579,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           : null
         }
         <Col sm="12" md="12" style={{ marginTop: "0.5rem" }}>
-          <Button
+          {/* <Button
             size="sm"
             type="submit"
             variant="outline-dark">
             Submit
-          </Button>
+          </Button> */}
           {this.renderDeleteButton()}
         </Col>
       </Form.Group>
@@ -608,7 +609,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   render() {
     const { selection, showEditFieldMenu, typeEditFieldMenu, errorMessage, fields, showWikifyBlockMenu, selectedBlock } = this.state;
-    const { type: data_type } = this.state.fields;
     if (this.state.mappingType == "Yaml") { return <div>Block mode not relevant when working with a yaml file</div> }
     if (!selection) { return <div>Please select a block</div>; }
     return (
@@ -627,7 +627,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
               selectedBlock={selectedBlock}
               fields={fields}
               type={{ label: "Subject", value: "subject" }}
-              onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields })}
+              onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields }, () => this.handleOnSubmit())}
               changeShowEditFieldMenu={(newTypeEditFieldMenu: string) => this.changeShowEditFieldMenu(newTypeEditFieldMenu)}
             />
             : null

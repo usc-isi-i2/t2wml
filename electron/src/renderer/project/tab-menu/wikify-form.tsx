@@ -267,7 +267,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
             <Form.Control
               type="text" size="sm"
               placeholder={entityFields.is_property ? 'property' : 'node'}
-              value={search}
+              defaultValue={search}
               // onFocus={this.handleOnFocusSearch.bind(this)}
               onChange={(event: any) => this.handleOnChangeSearch(event)}
               disabled={customQnode} />
@@ -285,7 +285,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
                 <Form.Control
                   type="text" size="sm"
                   placeholder="node"
-                  value={instanceOfSearch}
+                  defaultValue={instanceOfSearch}
                   onChange={(event: any) => { this.handleOnChangeInstanceOfSearch(event) }}
                   disabled={customQnode} />
                 {
