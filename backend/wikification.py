@@ -19,7 +19,7 @@ def wikify_selection(calc_params, selection, url="https://dsbox02.isi.edu:8888/w
     data_file_name = calc_params.sheet.data_file_name
     sheet=calc_params.sheet
 
-    values = list(set(sheet[row1:row2+1, col1:col2+1].to_numpy().flatten().tolist()))
+    values = list(set(sheet[row1:row2+1, col1:col2+1].flatten().tolist()))
     df = pd.DataFrame([])
     df['value'] = values
 
