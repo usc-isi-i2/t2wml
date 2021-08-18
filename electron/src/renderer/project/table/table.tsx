@@ -37,7 +37,7 @@ interface TableProperties {
 }
 
 
-class Table extends React.Component<TableProperties, { rowHeight: number, columnWidth: number }>{
+class Table extends React.Component<TableProperties, { rowHeight: number, columnWidth: number, activeTable: boolean}>{
 
   private tableRef: any;
   private disposers: IReactionDisposer[] = [];
@@ -47,7 +47,8 @@ class Table extends React.Component<TableProperties, { rowHeight: number, column
 
     this.state = {
       rowHeight: 25,
-      columnWidth: 75
+      columnWidth: 75,
+      activeTable: false
     }
 
     this.tableRef = null;
@@ -56,6 +57,7 @@ class Table extends React.Component<TableProperties, { rowHeight: number, column
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.table.showQnodes, () => this.updateShowQNodes()));
     this.disposers.push(reaction(() => wikiStore.table.table, () => this.scrolToTop()));
+    this.disposers.push(reaction(() => wikiStore.table.selection, (selection) => this.setState({activeTable: selection.selectionArea ? true: false})));
   }
 
   componentWillUnmount() {
@@ -123,7 +125,7 @@ class Table extends React.Component<TableProperties, { rowHeight: number, column
                 <VirtualizedTable id="virtualized-table"
                   height={Size.height}
                   width={tableData[0].length * columnWidth}
-                  className={wikiStore.table.selection.selectionArea && ableActivated ? 'active' : ''}
+                  className={this.state.activeTable && ableActivated ? 'active' : ''}
                   headerHeight={rowHeight}
                   rowHeight={rowHeight}
                   // scrollTop

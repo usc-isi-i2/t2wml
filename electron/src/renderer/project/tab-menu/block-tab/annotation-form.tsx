@@ -224,7 +224,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
 
-  handleOnChange(event: KeyboardEvent, key: string) { 
+  handleOnChange(event: KeyboardEvent, key: string) {
     if (event.code === 'Enter') {
       event.preventDefault();
       this.handleOnSubmit(event);
@@ -321,15 +321,15 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     });
 
     let annotation: any = {}
-    if (selectedBlock){
-    const currentAnnotation = wikiStore.annotations.blocks.filter(block => {
-      return block.id == selectedBlock?.id;
-    });
-    if (currentAnnotation){
-      annotation = currentAnnotation[0]
+    if (selectedBlock) {
+      const currentAnnotation = wikiStore.annotations.blocks.filter(block => {
+        return block.id == selectedBlock?.id;
+      });
+      if (currentAnnotation) {
+        annotation = currentAnnotation[0]
+      }
     }
-  }
-    annotation["selection"]=selection
+    annotation["selection"] = selection
 
     // Add all updated values from the annotation form
     for (const [key, value] of Object.entries(fields)) {
@@ -382,6 +382,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     const annotations = wikiStore.annotations.blocks.filter(block => {
       return block.id !== selectedBlock.id;
     });
+    wikiStore.table.resetSelections()
     this.postAnnotations(annotations);
 
   }
