@@ -23,7 +23,7 @@ jobs:
       - name: Run Tests
         run: |
           cd backend
-          pytest tests
+          pytest tests -v
       # - name: Coverage
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.github_token }}
