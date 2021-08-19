@@ -1,16 +1,4 @@
 .table-wrapper {
-  /* flex: 1;
-  width: 100vw;
-  height: 95vh;
-  overflow-x: scroll;
-  overflow-y: hidden;
-  position: relative; */
-
-  /* flex: 1;
-  position: relative;
-  display: block;
-  box-sizing: border-box;
-  overflow-x: scroll; */
   overflow-y: hidden;
   height: 100%;
 }
