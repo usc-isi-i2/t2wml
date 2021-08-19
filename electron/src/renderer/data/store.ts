@@ -26,7 +26,7 @@ class TableState {
     @observable public showCleanedData: boolean;
     @observable public showQnodes: boolean;
 
-    @observable public selection = new Selection();
+    @observable public selection = new CurrentSelection();
 
     constructor() {
         this.mode = 'annotation';
@@ -44,28 +44,23 @@ class TableState {
     }
 
     updateSelectionAll(selection?: CellSelection, selectedBlock?: AnnotationBlock, selectedCell?: Cell) {
-        // this.selectionArea = selection;
-        // this.selectedCell = selectedCell;
-        // this.selectedBlock = selectedBlock;
-        this.selection = new Selection(selection, selectedBlock, selectedCell);
+        this.selection = new CurrentSelection(selection, selectedBlock, selectedCell);
     }
 
     updateSelection(selection?: CellSelection, selectedCell?: Cell) {
-        this.selection = new Selection(selection, this.selection.selectedBlock, selectedCell);
+        this.selection = new CurrentSelection(selection, this.selection.selectedBlock, selectedCell);
     }
 
-    selectBlock(block?: AnnotationBlock) {
-        this.selection = new Selection(block?.selection || undefined, block);
-        // this.selectedBlock = block;
-        // this.selectionArea = block?.selection || undefined;
+    selectNewBlock(block?: AnnotationBlock) {
+        this.selection = new CurrentSelection(block?.selection || undefined, block, this.selection.selectedCell);
     }
 
     resetSelections() {
-        this.selection = new Selection();
+        this.selection = new CurrentSelection();
     }
 }
 
-class Selection {
+export class CurrentSelection {
 
     public selectedCell?: Cell;
     public selectedBlock?: AnnotationBlock;

@@ -78,13 +78,13 @@ class CombinedTable extends Component<{}, TableState> {
         this.disposers.push(reaction(() => currentFilesService.currentState.sheetName, () => this.updateProjectInfo()));
         this.disposers.push(reaction(() => wikiStore.table.showSpinner, (show) => this.setState({ showSpinner: show })));
         this.disposers.push(reaction(() => wikiStore.table.table, (table) => this.updateTableData(table)));
-        this.disposers.push(reaction(() => wikiStore.layers.qnode, () => this.updateQnode())); // 1
-        this.disposers.push(reaction(() => wikiStore.layers.statement, () => this.updateStatement())); // 1
-        this.disposers.push(reaction(() => wikiStore.annotations.blocks, () => this.setAnnotationColors())); // 4
+        this.disposers.push(reaction(() => wikiStore.layers.qnode, () => this.updateQnode()));
+        this.disposers.push(reaction(() => wikiStore.layers.statement, () => this.updateStatement()));
+        this.disposers.push(reaction(() => wikiStore.annotations.blocks, () => this.setAnnotationColors()));
 
-        this.disposers.push(reaction(() => wikiStore.table.selection, (selection) => this.updateSelection(selection))); // 5+6
+        this.disposers.push(reaction(() => wikiStore.table.selection, (selection) => this.updateSelection(selection)));
 
-        this.disposers.push(reaction(() => wikiStore.table.showQnodes, (showQnode) => this.updateQnodeCells(showQnode, undefined, true))); // 1
+        this.disposers.push(reaction(() => wikiStore.table.showQnodes, (showQnode) => this.updateQnodeCells(showQnode, undefined, true)))
     }
 
     componentWillUnmount() {
@@ -158,12 +158,12 @@ class CombinedTable extends Component<{}, TableState> {
             tableData = tableDataState;
         }
 
-        const { loadedRows } = wikiStore.table;
-        const { qnode: qnodes } = wikiStore.layers;
-
         // clear any existing qnode coloration
 
         if (upadateQnodeContent || showQnode) {
+            const { loadedRows } = wikiStore.table;
+            const { qnode: qnodes } = wikiStore.layers;
+
             if (showQnode) {
                 for (const entry of qnodes.entries) {
                     for (const indexPair of entry.indices) {
@@ -345,8 +345,15 @@ class CombinedTable extends Component<{}, TableState> {
                 }
             }
         }
-        if (returnTableData) { return this.updateQnodeCells(wikiStore.table.showQnodes, tableData, false, true); }
-        this.updateQnodeCells(wikiStore.table.showQnodes, tableData);
+        const { showQnodes } = wikiStore.table
+
+        if (returnTableData) { return this.updateQnodeCells(showQnodes, tableData, false, true); }
+        if (showQnodes) {
+            this.updateQnodeCells(showQnodes, tableData);
+        } else {
+            this.setState({ tableData: tableData })
+        }
+
     }
 
     setAnnotationColors(tableData?: TableData, returnTableData = false) {
@@ -436,9 +443,9 @@ class CombinedTable extends Component<{}, TableState> {
                                     wikified: tableData[rowIndex][colIndex].classNames.includes("wikified"),
                                     error: tableData[rowIndex][colIndex].classNames.includes("error")
                                 };
-                                let classNameAll = classNames.slice();
+                                const classNameAll = classNames.slice();
                                 if (toAdd.wikified) {
-                                    classNameAll = classNameAll.filter(cn => cn !== 'expects-wiki')
+                                    // classNameAll = classNameAll.filter(cn => cn !== 'expects-wiki')
                                     classNameAll.push('wikified')
                                 }
                                 if (toAdd.error) classNameAll.push('error')

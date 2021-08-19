@@ -1,3 +1,4 @@
+from collections import defaultdict
 import os
 import pandas as pd
 import numpy as np
@@ -19,10 +20,10 @@ def wikify_selection(calc_params, selection, url="https://dsbox02.isi.edu:8888/w
     data_file_name = calc_params.sheet.data_file_name
     sheet=calc_params.sheet
 
-    values = list(set(sheet[row1:row2+1, col1:col2+1].to_numpy().flatten().tolist()))
+    values = list(set(sheet[row1:row2+1, col1:col2+1].flatten().tolist()))
     df = pd.DataFrame([])
     df['value'] = values
-    
+
     csv_str = df.to_csv(index=None)
     binary = csv_str.encode()
     url += f'?k=1&columns={"value"}'
@@ -61,16 +62,17 @@ def wikify_selection(calc_params, selection, url="https://dsbox02.isi.edu:8888/w
         for index, line in missing_values.iterrows():
             problem_cells.append(to_excel(line.column, line.row))
 
-        df_rows = []
+        #df_rows = []
+        wiki_dict = {"":{}}
         for col in range(col1, col2+1):
             for row in range(row1, row2+1):
                 value=sheet[row, col]
                 if value in lookup_dict:
-                    df_rows.append([col, row, value, data_file_name, sheet_name, "", lookup_dict[value]])
-        df = pd.DataFrame(df_rows, columns=[
-                        "column", "row", "value", "file", "sheet", "context", "item"])
+                    #df_rows.append([col, row, value, data_file_name, sheet_name, "", lookup_dict[value]])
+                    wiki_dict[""][(col, row, value)]=lookup_dict[value]
+        #df = pd.DataFrame(df_rows, columns=["column", "row", "value", "file", "sheet", "context", "item"])
 
-        return df, entities_dict, problem_cells
+        return wiki_dict, entities_dict, problem_cells
     except Exception as e:
         print(e)
         raise e

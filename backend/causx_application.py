@@ -17,7 +17,7 @@ from app_config import app, BASEDIR, NumpyEncoder
 from t2wml.project import Project, FileNotPresentInProject, InvalidProjectDirectory
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
 from t2wml.spreadsheets.utilities import PandasLoader
-from t2wml.api import annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
+from t2wml.api import annotation_suggester, get_Pnode, get_Qnode, t2wml_settings, Wikifier
 from copy_annotations.copy_annotations import copy_annotation
 from t2wml_web import ( get_kg, autocreate_items, set_web_settings,
                         get_layers, get_annotations, get_table, save_annotations,
@@ -329,28 +329,11 @@ def delete_wikification_for_causx():
     value = request.get_json().get('value', None)
     #context = request.get_json().get("context", "")
 
-
-    top_left, bottom_right = selection
-    col1, row1 = top_left
-    col2, row2 = bottom_right
-
-    filepath, exists=project.get_wikifier_file(calc_params.data_path)
+    filepath, exists=project.get_wikifier_file(calc_params.sheet)
     if exists:
-        df=pd.read_csv(filepath)
-        for col in range(col1, col2+1):
-            for row in range(row1, row2+1):
-                if value:
-                    df = df.drop(df[(df['column'] == col)
-                                    & (df['row'] == row)
-                                    & (df['value'] == value)
-                                    & (df['file'] == data_file_name)
-                                    & (df['sheet'] == sheet_name)].index)
-                else:
-                    df = df.drop(df[(df['column'] == col)
-                                    & (df['row'] == row)
-                                    & (df['file'] == data_file_name)
-                                    & (df['sheet'] == sheet_name)].index)
-        df.to_csv(filepath, index=False, header=True)
+        wikifier = Wikifier.load_from_file(filepath)
+        wikifier.delete_wikification(selection, value, context="")
+        wikifier.save_to_file(filepath)
 
     response = dict(project=get_project_dict(project))
     response["layers"] = get_qnodes_layer(calc_params)
@@ -452,7 +435,7 @@ def causx_wikify_for_causx():
     calc_params = get_calc_params(project)
 
     cell_qnode_map, problem_cells = wikify_countries(calc_params, selection)
-    project.add_df_to_wikifier_file(calc_params.data_path, cell_qnode_map, overwrite_existing)
+    project.add_df_to_wikifier_file(calc_params.sheet, cell_qnode_map, overwrite_existing)
 
     #auto-create nodes for anything that failed to wikify
     tuple_selection = ((selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1))

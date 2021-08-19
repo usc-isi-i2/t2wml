@@ -120,7 +120,7 @@ class AnnotationNodeGenerator:
             create_nodes_from_selection(tuple_selection, self.project, sheet, wikifier)
 
         if not df.empty:
-                self.project.add_df_to_wikifier_file(sheet.data_file_path, df, True)
+                self.project.add_df_to_wikifier_file(sheet, df, True)
                 wikifier.add_dataframe(df)
 
     @error_with_func
@@ -313,7 +313,7 @@ def get_causx_partial_csv(calc_params):
 
 
     try:
-        kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, calc_params.wikifier, count)
+        kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, calc_params.wikifier, count=count)
     except Exception as e:
         raise ValueError(str(e)+"300")
 
