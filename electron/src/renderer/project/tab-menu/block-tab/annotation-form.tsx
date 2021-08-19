@@ -287,7 +287,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
   }
 
-  async postAnnotations(annotations: AnnotationBlock[]) {
+  async postAnnotations(annotations: AnnotationBlock[], newAnnotationSelection?: CellSelection) {
     wikiStore.table.showSpinner = true;
     try {
       await this.requestService.call(this, () => (
@@ -298,6 +298,13 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     } catch (error) {
       error.errorDescription += "\n\nCannot submit annotations!";
       this.setState({ errorMessage: error });
+    }
+    if (newAnnotationSelection) { // select the block that just created
+      const currentAnnotation = wikiStore.annotations.blocks.filter(block => {
+        return this.compareSelections(newAnnotationSelection, block.selection)
+      })
+      const newBlock = currentAnnotation ? currentAnnotation[0] : undefined;
+      wikiStore.table.selectNewBlock(newBlock)
     }
 
     wikiStore.table.showSpinner = false;
@@ -315,6 +322,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     if (event) event.preventDefault();
     const { fields, selectedBlock, selection } = this.state;
     if (!fields.selectedArea || !(selection && fields.role)) { return null; }
+    let newAnnotationSelection = undefined;
 
     const annotations = wikiStore.annotations.blocks.filter(block => {
       return block.id !== selectedBlock?.id;
@@ -329,15 +337,15 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         annotation = currentAnnotation[0]
       }
     }
+    else {
+      newAnnotationSelection = selection;
+    }
     annotation["selection"] = selection
 
     // Add all updated values from the annotation form
     for (const [key, value] of Object.entries(fields)) {
       annotation[key] = value;
     }
-
-
-
     // if (!fields.property && searchFields.property && searchFields.property.startsWith("P")) {
     //   try {
     //     const response = await this.requestService.call(this, () => (
@@ -369,7 +377,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     // }
 
     annotations.push(annotation);
-    this.postAnnotations(annotations);
+    this.postAnnotations(annotations, newAnnotationSelection);
 
   }
 
@@ -565,6 +573,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   renderSubmitButton() {
     const { role, type } = this.state.fields;
+    const { selectedBlock, selection } = this.state;
     return (
       <Form.Group as={Row}>
         {(role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem' || role === "property") ?
@@ -580,20 +589,24 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           : null
         }
         <Col sm="12" md="12" style={{ marginTop: "0.5rem" }}>
-          {/* <Button
-            size="sm"
-            type="submit"
-            variant="outline-dark">
-            Submit
-          </Button> */}
-          {this.renderDeleteButton()}
+          {
+            !selectedBlock && selection ?
+              <Button
+                size="sm"
+                type="submit"
+                variant="outline-dark">
+                Submit
+              </Button> :
+              selectedBlock ?
+                this.renderDeleteButton(selectedBlock)
+                : null
+          }
         </Col>
       </Form.Group>
     )
   }
 
-  renderDeleteButton() {
-    const { selectedBlock } = this.state;
+  renderDeleteButton(selectedBlock?: AnnotationBlock) {
     if (selectedBlock) {
       return (
         <Button
