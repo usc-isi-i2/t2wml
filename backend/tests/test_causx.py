@@ -4,7 +4,7 @@ import json
 from causx_application import app
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def client(request):
     with app.test_client() as client:
         yield client
