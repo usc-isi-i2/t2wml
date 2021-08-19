@@ -129,17 +129,17 @@ def indexer(cell):
     return [row, col]
 
 
-def get_cleaned(kg):
+def get_cleaned(calc_params):
+    sheet=calc_params.sheet
+    cleaned_data = sheet.cleaned_data
     cleanedLayer = dict(layerType="cleaned", entries=[])
-    if kg.sheet:
-        cleaned_data = kg.sheet.cleaned_data
-        if cleaned_data is not None:
-            comparison = cleaned_data.ne(kg.sheet.raw_data)
+    if cleaned_data is not None:
+            comparison = cleaned_data.ne(sheet.raw_data)
             comparison = comparison.to_numpy()
             changed_values = np.argwhere(comparison)
             for entry in changed_values:
                 new_value = cleaned_data.iloc[entry[0], entry[1]]
-                old_value = kg.sheet.raw_data.iloc[entry[0], entry[1]]
+                old_value = sheet.raw_data.iloc[entry[0], entry[1]]
                 entry = dict(indices=[[entry[0], entry[1]]],
                              cleaned=new_value, original=old_value)
                 cleanedLayer["entries"].append(entry)
@@ -228,7 +228,7 @@ def get_yaml_layers(calc_params):
             statementEntry.update(**statements[cell_name])
             statementLayer["entries"].append(statementEntry)
 
-        cleanedLayer = get_cleaned(kg)
+        cleanedLayer = get_cleaned(calc_params)
 
         labels = get_labels_and_descriptions(
             t2wml_settings.wikidata_provider, qnodes, calc_params.project.sparql_endpoint)

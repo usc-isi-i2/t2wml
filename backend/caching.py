@@ -41,14 +41,10 @@ class CacheHolder:
     def save(self, kg, layers):
         if use_cache():
             try:
-                sheet=None
-                if kg.sheet:
-                    sheet=kg.sheet.to_json()
                 d = {
                     "statements": kg.statements,
                     "errors": kg.errors,
                     "metadata": kg.metadata,
-                    "sheet": sheet,
                     "layers": layers
                 }
                 s = json.dumps(d, default=numpy_converter)

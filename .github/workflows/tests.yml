@@ -11,7 +11,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.7'
+          python-version: '3.8'
       - name: Checkout t2wml-api
         run: git clone -b development https://github.com/usc-isi-i2/t2wml-api
       - name: Setup env
@@ -23,7 +23,7 @@ jobs:
       - name: Run Tests
         run: |
           cd backend
-          pytest tests
+          pytest tests -v
       # - name: Coverage
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.github_token }}

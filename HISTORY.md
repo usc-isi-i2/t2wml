@@ -3,7 +3,9 @@ T2WML Standalone Server App History
 
 Changes in version 2.11.0:
 ------------------------
+* t2wml-api 0.6.1
 * a virtualized table capable of handling large files (tested on ~400,000 rows and ~60 columns)
+* performance improvements to support the virtualized table, particularly in wikifier
 * lots of backend changes included that are currently only relevant for causx but may get desktop implementation in the near future, like copying annotations
 
 
