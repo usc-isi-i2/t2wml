@@ -336,7 +336,7 @@ class CombinedTable extends Component<{}, TableState> {
         for (const entry of qnodes.entries) {
             for (const indexPair of entry.indices) {
                 try {
-                    if (loadedRows.has(indexPair[0])) {
+                    if (loadedRows.has(indexPair[0]) && !tableData[indexPair[0]][indexPair[1]].classNames.includes('wikified')) {
                         tableData[indexPair[0]][indexPair[1]].classNames.push(`wikified`);
                     }
                 }
@@ -454,7 +454,6 @@ class CombinedTable extends Component<{}, TableState> {
                                     ...DEFAULT_CELL_STATE,
                                     classNames: classNameAll
                                 }
-
                             }
                             catch {
                                 //TODO: handle annotating imaginary cells
