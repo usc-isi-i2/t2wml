@@ -15,6 +15,46 @@ from causx.cameos import cameos
 from causx.coords import coords
 from t2wml_web import get_kg
 
+factor_classes = set([
+    "AgriculturalIndustry",
+    "AirPollutionLevels",
+    "AirTransportation",
+    "AlternativeEnergyIndustry",
+    "Corruption",
+    "CriminalActivities",
+    "EconomicProduction-GDP",
+    "EducationAvailability",
+    "EmploymentLevel",
+    "FoodAndNutritionLevel",
+    "ForeignArmsTrade",
+    "ForeignInvestment",
+    "FreedomOfExpression",
+    "GovernmentAbilityToAddressBasicNeeds",
+    "GovernmentEffectiveness",
+    "GovernmentStability",
+    "GovernmentTransparency",
+    "GroundTransportation",
+    "HealthcareAvailability",
+    "InternationalTrade",
+    "JudicialActivity",
+    "ManufacturingIndustry",
+    "MilitarySpending",
+    "MiningIndustry",
+    "PetroleumIndustry",
+    "PopulaceEducationLevel",
+    "PovertyRate",
+    "PowerAvailability",
+    "ProvisionOfAidOrSupport",
+    "Refugees",
+    "SanitaryConditions",
+    "SecuritySafetyLevel",
+    "ServicesIndustry",
+    "TransportationInfrastructure",
+    "UtilitiesInfrastructure",
+    "WaterAvailability",
+    "WaterTransportation",
+    "WealthInequality",
+  ])
 
 def clean_id(input):
     if not input:
@@ -426,9 +466,10 @@ def create_fidil_json(calc_params):
                 variable_dict=causx_get_variable_dict(calc_params.project).get(variable_id, {})
                 tags_dict={"FactorClass":"","Relevance":"","Normalizer":"","DocID":""}
                 tags_dict.update(variable_dict.get("tags", {}))
-                if tags_dict["FactorClass"]:
-                    if "http://ontology.causeex.com/ontology/odps/ICM#" not in tags_dict["FactorClass"]:
-                        tags_dict["FactorClass"]="http://ontology.causeex.com/ontology/odps/ICM#"+tags_dict["FactorClass"]
+
+                factor_class = tags_dict["FactorClass"]
+                if factor_class in factor_classes:
+                    tags_dict["FactorClass"]="http://ontology.causeex.com/ontology/odps/ICM#"+factor_class
                 units = tags_dict.pop("Units", "")
                 main_subject_id = statement["subject"]
                 id = hashlib.md5(id_str.encode()).hexdigest()
