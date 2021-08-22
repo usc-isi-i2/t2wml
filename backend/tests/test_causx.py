@@ -86,7 +86,7 @@ class TestCausxWorkflow:
                                json=dict(selection=dict(x1=1, x2=1, y1=2, y2=2), is_property=True, data_type='quantity'))
 
         #check property was created
-        id = "Pworldeducation-education_index"
+        id = "PCustomNode-education_index"
         url = f"/api/causx/entity/{id}"
         url = url+get_data_url()
         response = client.get(url, headers=headers)
@@ -183,7 +183,7 @@ class TestCausxWorkflow:
 
 
     def test_15_put_entity(self, client):
-        id = "Pworldeducation-education_index"
+        id = "PCustomNode-education_index"
         url = f"/api/causx/entity/{id}"
         url = url+get_data_url()
         response = client.put(url, headers=headers,
@@ -255,6 +255,10 @@ class TestCausxWorkflow:
                                   data=dict(file=f))
         data = response.data.decode("utf-8")
         data = json.loads(data)
+        try:
+            data["project"].pop("directory")
+        except:
+            pass
         stored_results["upload_project"] = data
         assert self.expected_results["upload_project"]["layers"] == data["layers"]
 

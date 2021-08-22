@@ -3,7 +3,7 @@
         "entity": {
             "data_type": "quantity",
             "description": "",
-            "id": "Pworldeducation-education_index",
+            "id": "PCustomNode-education_index",
             "label": "Education index",
             "tags": {
                 "DocID": "",
@@ -35,10 +35,10 @@
                     "education_index",
                     "Education index",
                     "Custom afghanistan",
-                    "Qworldeducation-custom_afghanistan",
+                    "QCustomNode-custom_afghanistan",
                     "0.0761",
                     "1980-01-01T00:00:00",
-                    "Qworldeducation-custom_afghanistan",
+                    "QCustomNode-custom_afghanistan",
                     null,
                     null,
                     "my doc id"
@@ -48,10 +48,10 @@
                     "education_index",
                     "Education index",
                     "Custom afghanistan",
-                    "Qworldeducation-custom_afghanistan",
+                    "QCustomNode-custom_afghanistan",
                     "0.365333",
                     "2012-01-01T00:00:00",
-                    "Qworldeducation-custom_afghanistan",
+                    "QCustomNode-custom_afghanistan",
                     null,
                     null,
                     "my doc id"
@@ -61,10 +61,10 @@
                     "education_index",
                     "Education index",
                     "Custom afghanistan",
-                    "Qworldeducation-custom_afghanistan",
+                    "QCustomNode-custom_afghanistan",
                     "0.365333",
                     "2013-01-01T00:00:00",
-                    "Qworldeducation-custom_afghanistan",
+                    "QCustomNode-custom_afghanistan",
                     null,
                     null,
                     "my doc id"
@@ -74,10 +74,10 @@
                     "education_index",
                     "Education index",
                     "Custom afghanistan",
-                    "Qworldeducation-custom_afghanistan",
+                    "QCustomNode-custom_afghanistan",
                     "0.365",
                     "2014-01-01T00:00:00",
-                    "Qworldeducation-custom_afghanistan",
+                    "QCustomNode-custom_afghanistan",
                     null,
                     null,
                     "my doc id"
@@ -313,7 +313,7 @@
     },
     "suggest_annotation": [
         {
-            "id": "0dcf8712-06c7-413a-a233-b3252c4de169",
+            "id": "816da8c9-54b4-479a-a5ad-8e5870fe8b74",
             "link": "",
             "links": {},
             "property": {
@@ -332,8 +332,8 @@
             "type": "time"
         },
         {
-            "id": "5bf3ae42-d546-45b2-bf9f-0560423a9484",
-            "link": "8c46f702-2eb4-43ed-bfc2-7719548f1d4d",
+            "id": "a519b3b2-ba4c-4964-9619-8c4e53820f0d",
+            "link": "fa0fd5bf-0867-42f6-ad34-3aa5bc0a4d62",
             "links": {},
             "role": "mainSubject",
             "selection": {
@@ -345,10 +345,10 @@
             "type": "wikibaseitem"
         },
         {
-            "id": "8c46f702-2eb4-43ed-bfc2-7719548f1d4d",
+            "id": "fa0fd5bf-0867-42f6-ad34-3aa5bc0a4d62",
             "link": "",
             "links": {
-                "mainSubject": "5bf3ae42-d546-45b2-bf9f-0560423a9484"
+                "mainSubject": "a519b3b2-ba4c-4964-9619-8c4e53820f0d"
             },
             "role": "dependentVar",
             "selection": {
@@ -401,20 +401,20 @@
                 2
             ]
         ],
-        "property": "Pworldeducation-education_index",
+        "property": "PCustomNode-education_index",
         "qualifier": [
             {
                 "property": "P585",
                 "value": "1980-01-01T00:00:00"
             }
         ],
-        "subject": "Qworldeducation-custom_afghanistan",
+        "subject": "QCustomNode-custom_afghanistan",
         "value": "0.0761"
     },
     "upload_project": {
         "annotations": [
             {
-                "id": "0dcf8712-06c7-413a-a233-b3252c4de169",
+                "id": "816da8c9-54b4-479a-a5ad-8e5870fe8b74",
                 "link": "",
                 "links": {},
                 "property": {
@@ -433,8 +433,8 @@
                 "type": "time"
             },
             {
-                "id": "5bf3ae42-d546-45b2-bf9f-0560423a9484",
-                "link": "8c46f702-2eb4-43ed-bfc2-7719548f1d4d",
+                "id": "a519b3b2-ba4c-4964-9619-8c4e53820f0d",
+                "link": "fa0fd5bf-0867-42f6-ad34-3aa5bc0a4d62",
                 "links": {},
                 "role": "mainSubject",
                 "selection": {
@@ -446,11 +446,11 @@
                 "type": "wikibaseitem"
             },
             {
-                "id": "8c46f702-2eb4-43ed-bfc2-7719548f1d4d",
+                "id": "fa0fd5bf-0867-42f6-ad34-3aa5bc0a4d62",
                 "link": "",
                 "links": {
-                    "mainSubject": "5bf3ae42-d546-45b2-bf9f-0560423a9484",
-                    "property": "41c07f26-5644-4246-a6d5-4a838636e993"
+                    "mainSubject": "a519b3b2-ba4c-4964-9619-8c4e53820f0d",
+                    "property": "fb324f06-b528-4a47-b799-be2d8ad76f68"
                 },
                 "role": "dependentVar",
                 "selection": {
@@ -463,8 +463,8 @@
             },
             {
                 "children": {},
-                "id": "41c07f26-5644-4246-a6d5-4a838636e993",
-                "link": "8c46f702-2eb4-43ed-bfc2-7719548f1d4d",
+                "id": "fb324f06-b528-4a47-b799-be2d8ad76f68",
+                "link": "fa0fd5bf-0867-42f6-ad34-3aa5bc0a4d62",
                 "links": {},
                 "role": "property",
                 "selection": {
@@ -484,7 +484,7 @@
                         "context": "",
                         "data_type": "quantity",
                         "description": "",
-                        "id": "Pworldeducation-education_index",
+                        "id": "PCustomNode-education_index",
                         "indices": [
                             [
                                 1,
@@ -2468,7 +2468,7 @@
                         "context": "",
                         "data_type": null,
                         "description": "",
-                        "id": "Qworldeducation-palestine_state_of",
+                        "id": "QCustomNode-palestine_state_of",
                         "indices": [
                             [
                                 136,
@@ -3083,7 +3083,7 @@
                         "context": "",
                         "data_type": null,
                         "description": "",
-                        "id": "Qworldeducation-the_former_yugoslav_republic_of_macedonia",
+                        "id": "QCustomNode-the_former_yugoslav_republic_of_macedonia",
                         "indices": [
                             [
                                 177,
@@ -3435,9 +3435,8 @@
             },
             "datamart_api": null,
             "description": "a test description",
-            "directory": "C:\\Users\\devora\\C_sources\\pedro\\t2wml\\backend\\media\\ba14c938-0b95-483c-b827-7d0b01052ce1",
             "entity_files": [
-                "annotations/autogen-files-worldeducation/autogen_entities_world_education.xlsx.tsv",
+                "annotations/autogen-files/autogen_entities_world_education.xlsx.tsv",
                 "user_input_properties.tsv"
             ],
             "handle_calendar": "leave",
