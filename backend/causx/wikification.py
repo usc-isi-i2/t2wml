@@ -104,7 +104,7 @@ class DatamartCountryWikifier:
 
 
         flattened_sheet_data = set(sheet[start_row:end_row,
-                                     start_col:end_col].to_numpy().flatten())
+                                     start_col:end_col].flatten())
         for value in flattened_sheet_data:
             wikification=None
             if value in failed_to_wikify_cache:

@@ -31,6 +31,7 @@ class EntitiesList extends Component<EntitiesProperties, {}> {
         const properties = [];
         for (const f in wikiStore.entitiesData.entities) {
             for (const prop in wikiStore.entitiesData.entities[f]) {
+                if (prop === "filepath") { continue; }
                 properties.push(
                     <li key={prop} onClick={() => this.handleSelectEntity(f, prop)}>
                         <span style={prop === this.props.selectedProperty ? { fontWeight: 'bold' } : { fontWeight: 'normal' }}>

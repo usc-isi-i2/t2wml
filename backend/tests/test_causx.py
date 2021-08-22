@@ -18,7 +18,7 @@ annotations = []
 
 
 def get_data_url():
-    return f"?data_file={data_file}&sheet_name={sheet_name}&map_start=15&map_end=30&data_start=15&data_end=30&part_start=15&part_end=30"
+    return f"?data_file={data_file}&sheet_name={sheet_name}&map_start=0&map_end=15&data_start=0&data_end=15&part_count=23"
 
 
 stored_results = dict()

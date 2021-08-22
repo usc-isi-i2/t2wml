@@ -2,8 +2,10 @@ import { observable, action } from 'mobx';
 import { ipcRenderer } from 'electron';
 import { DisplayMode } from '@/shared/types';
 import { ProjectList } from '../project-list/project-entry';
-import { CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry,
-        StatementEntry, StatementLayerDTO, TableDTO, TypeEntry, AnnotationBlock, ProjectDTO, ResponseEntitiesPropertiesDTO} from '../common/dtos';
+import {
+    CleanEntry, EntitiesStatsDTO, Entry, ErrorEntry, LayerDTO, LayersDTO, QNode, QNodeEntry,
+    StatementEntry, StatementLayerDTO, TableDTO, TypeEntry, AnnotationBlock, ProjectDTO, ResponseEntitiesPropertiesDTO
+} from '../common/dtos';
 import { Cell, CellSelection } from '../common/general';
 import RequestService from '../common/service';
 import { defaultYamlContent } from '../project/default-values';
@@ -15,13 +17,16 @@ class TableState {
 
     @observable public mode: TableMode;
     @observable public table: TableDTO;
+
+    @observable public loadedRows: Set<number>;
+    @observable public currentRowIndex?: number;
+
     @observable public showSpinner: boolean;
-    @observable public selectedCell?: Cell;
-    @observable public selectedBlock?: AnnotationBlock;
-    @observable public selection?: CellSelection;
 
     @observable public showCleanedData: boolean;
     @observable public showQnodes: boolean;
+
+    @observable public selection = new CurrentSelection();
 
     constructor() {
         this.mode = 'annotation';
@@ -29,23 +34,42 @@ class TableState {
         this.showSpinner = false;
         this.showCleanedData = false;
         this.showQnodes = false;
+        this.loadedRows = new Set<number>();
     }
 
-    updateTable(table: TableDTO){
-        this.table=table;
+    updateTable(table: TableDTO) {
+        this.table = table;
         console.log("resetting wikistore selections from wikistore update table")
         this.resetSelections();
     }
 
-    resetSelections(){
-        this.selectedCell = undefined;
-        this.selectedBlock= undefined;
-        this.selection = undefined;
+    updateSelectionAll(selection?: CellSelection, selectedBlock?: AnnotationBlock, selectedCell?: Cell) {
+        this.selection = new CurrentSelection(selection, selectedBlock, selectedCell);
     }
 
-    selectBlock(block?: AnnotationBlock){
-        this.selectedBlock = block;
-        this.selection = block?.selection || undefined;
+    updateSelection(selection?: CellSelection, selectedCell?: Cell) {
+        this.selection = new CurrentSelection(selection, this.selection.selectedBlock, selectedCell);
+    }
+
+    selectNewBlock(block?: AnnotationBlock) {
+        this.selection = new CurrentSelection(block?.selection || undefined, block, this.selection.selectedCell);
+    }
+
+    resetSelections() {
+        this.selection = new CurrentSelection();
+    }
+}
+
+export class CurrentSelection {
+
+    public selectedCell?: Cell;
+    public selectedBlock?: AnnotationBlock;
+    public selectionArea?: CellSelection;
+
+    constructor(selection?: CellSelection, selectedBlock?: AnnotationBlock, selectedCell?: Cell) {
+        this.selectionArea = selection;
+        this.selectedBlock = selectedBlock;
+        this.selectedCell = selectedCell;
     }
 }
 
@@ -94,10 +118,12 @@ class YamlEditorState {
         wikiStore.yaml.showSpinner = true;
 
         // send request
-        const data = {"yaml": this.yamlContent!,
-                      "title": currentFilesService.currentState.mappingFile!,
-                      "dataFile": currentFilesService.currentState.dataFile,
-                      "sheetName": currentFilesService.currentState.sheetName};
+        const data = {
+            "yaml": this.yamlContent!,
+            "title": currentFilesService.currentState.mappingFile!,
+            "dataFile": currentFilesService.currentState.dataFile,
+            "sheetName": currentFilesService.currentState.sheetName
+        };
 
         try {
             await this.requestService.saveYaml(data);
@@ -142,10 +168,26 @@ export class Layer<T extends Entry> {
         }
         return undefined;
     }
+
+    public update(responseLayer?: LayerDTO<T>) {
+        if (!responseLayer) {
+            return;
+        }
+        else {
+            for (const entry of responseLayer.entries) {
+                for (const index_pair of entry.indices) {
+                    this.entryMap.set(`${index_pair[0]},${index_pair[1]}`, entry);
+                }
+            }
+            responseLayer.entries.forEach(entry => {
+                this.entries.push(entry)
+            });
+        }
+    }
 }
 
 class StatementLayer extends Layer<StatementEntry>{
-    qnodes: Map<string, QNode>
+    qnodes: Map<string, QNode>;
 
     constructor(responseLayer?: StatementLayerDTO) {
         super(responseLayer);
@@ -163,6 +205,15 @@ class StatementLayer extends Layer<StatementEntry>{
             return return_val;
         }
         return { "label": id, "url": "", description: "", "id": id };
+    }
+
+    updateStatment(responseLayer?: StatementLayerDTO) {
+        this.update(responseLayer);
+        if (responseLayer && responseLayer.qnodes) {
+            const newMap = new Map<string, QNode>(Object.entries(responseLayer.qnodes));
+            const merged = new Map([...Array.from(this.qnodes.entries()), ...Array.from(newMap.entries())]);
+            this.qnodes = merged;
+        }
     }
 }
 
@@ -185,9 +236,9 @@ export class LayerState {
     }
 
     @action
-    public updateFromDTO(dto: LayersDTO) {
-        console.debug('Updating layers: ', dto);
-        if ( !dto ) { return; }
+    public resetFromDTO(dto: LayersDTO) {
+        console.debug('Reset layers: ', dto);
+        if (!dto) { return; }
 
         if (dto.qnode) {
             this.qnode = new Layer(dto.qnode);
@@ -207,6 +258,28 @@ export class LayerState {
     }
 
     @action
+    public updateFromDTO(dto: LayersDTO) {
+        console.debug('updateFromDTO: ', dto);
+        if (!dto) { return; }
+
+        if (dto.qnode) {
+            this.qnode.update(dto.qnode);
+        }
+        if (dto.type) {
+            this.type.update(dto.type);
+        }
+        if (dto.statement) {
+            this.statement.updateStatment(dto.statement)
+        }
+        if (dto.error) {
+            this.error.update(dto.error);
+        }
+        if (dto.cleaned) {
+            this.cleaned.update(dto.cleaned);
+        }
+    }
+
+    @action
     resetLayers() {
         this.qnode = new Layer<QNodeEntry>();
         this.type = new Layer<TypeEntry>();
@@ -218,19 +291,19 @@ export class LayerState {
 
 
 export class AnnotationState {
-    @observable public blocks: AnnotationBlock[] =[];
+    @observable public blocks: AnnotationBlock[] = [];
 }
 
 
-export class ProjectState{
+export class ProjectState {
     @observable public projectDTO?: ProjectDTO;
 
-    constructor(projectdto?: ProjectDTO){
-        this.projectDTO=projectdto;
+    constructor(projectdto?: ProjectDTO) {
+        this.projectDTO = projectdto;
     }
 }
 
-export class GlobalSettings{
+export class GlobalSettings {
     @observable datamart_api = "";
 }
 

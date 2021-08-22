@@ -33,6 +33,7 @@ interface WikifyFormState {
   entityFields: EntityFields;
   customQnode: boolean;
   disabledIsProperty: boolean;
+  disableDataType: boolean;
 }
 
 
@@ -56,7 +57,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       data_type: "string",
     }
 
-    entityFields.is_property = field ? field === "property" : (wikiStore.table.selectedBlock?.role === 'property' ? true : false);
+    entityFields.is_property = field ? field === "property" : (wikiStore.table.selection.selectedBlock?.role === 'property' ? true : false);
+    entityFields.data_type = wikiStore.table.selection.selectedBlock?.type ? wikiStore.table.selection.selectedBlock?.type : "string";
 
     let customQnode = false;
     if (selected && isValidLabel(selected.label) && isValidLabel(selected.id.substring(1, selected.id.length))) {
@@ -78,14 +80,15 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       prevCell: undefined,
       entityFields: entityFields,
       customQnode: customQnode,
-      disabledIsProperty: wikiStore.table.selectedBlock?.role ? true : false
+      disabledIsProperty: wikiStore.table.selection.selectedBlock?.role ? true : false,
+      disableDataType: wikiStore.table.selection.selectedBlock?.type ? true : false
     };
   }
 
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.wikifyQnodes.qnodes, (qnodes) => this.updateQNodes(qnodes)));
     this.disposers.push(reaction(() => wikiStore.layers.qnode, (qnodes) => this.onChangeQnodes(qnodes)));
-    this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (selectedBlock) => this.onChangeRole(selectedBlock)));
+    this.disposers.push(reaction(() => wikiStore.table.selection.selectedBlock, (selectedBlock) => this.onChangeRole(selectedBlock)));
 
   }
 
@@ -108,14 +111,13 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       if (selected.data_type && entityFields.is_property) {
         entityFields.data_type = selected.data_type.toString();
       }
-
     }
     this.setState({ customQnode, entityFields, selected })
   }
 
   onChangeRole(selectedBlock?: AnnotationBlock) {
     if (selectedBlock) {
-      this.setState({ disabledIsProperty: selectedBlock?.role ? true : false })
+      this.setState({ disabledIsProperty: selectedBlock?.role ? true : false, disableDataType: selectedBlock?.type ? true : false })
     } else {
       const { selectedCell } = this.props;
       const { col, row } = selectedCell;
@@ -125,8 +127,8 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         y1: row + 1,
         y2: row + 1,
       };
-      const cellInBlock = checkSelectedAnnotationBlocks(selection);
-      this.setState({ disabledIsProperty: cellInBlock?.role ? true : false })
+      const blockOfCell = checkSelectedAnnotationBlocks(selection);
+      this.setState({ disabledIsProperty: blockOfCell?.role ? true : false, disableDataType: blockOfCell?.type ? true : false })
     }
   }
 
@@ -201,10 +203,10 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
       instanceOfSearch: '',
       qnodes: [],
       entityFields: {
-        is_property: field ? field === "property" : (wikiStore.table.selectedBlock?.role === 'property' ? true : false),
+        is_property: field ? field === "property" : (wikiStore.table.selection.selectedBlock?.role === 'property' ? true : false),
         label: selectedCell.value || "",
         description: "",
-        data_type: "string",
+        data_type: wikiStore.table.selection.selectedBlock?.type ? wikiStore.table.selection.selectedBlock?.type : "string"
       },
       customQnode: false
     });
@@ -265,7 +267,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
             <Form.Control
               type="text" size="sm"
               placeholder={entityFields.is_property ? 'property' : 'node'}
-              value={search}
+              defaultValue={search}
               // onFocus={this.handleOnFocusSearch.bind(this)}
               onChange={(event: any) => this.handleOnChangeSearch(event)}
               disabled={customQnode} />
@@ -283,7 +285,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
                 <Form.Control
                   type="text" size="sm"
                   placeholder="node"
-                  value={instanceOfSearch}
+                  defaultValue={instanceOfSearch}
                   onChange={(event: any) => { this.handleOnChangeInstanceOfSearch(event) }}
                   disabled={customQnode} />
                 {
@@ -373,11 +375,12 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
   }
 
   renderCustomNodeForm() {
-    const { entityFields, customQnode } = this.state;
+    const { entityFields, customQnode, disableDataType } = this.state;
     if (customQnode) {
       return (
         <Col sm="12" md="12">
           <CustomNodeForm
+            disableDataType={disableDataType}
             entityFields={entityFields}
             handleOnChange={(event: KeyboardEvent, key: "label" | "description" | "data_type" | "is_property") => this.handleOnChangeEntity(event, key)}
           />
@@ -477,7 +480,7 @@ class WikifyForm extends React.Component<WikifyFormProperties, WikifyFormState> 
         </Form.Group>
         <Form.Group as={Row} style={{ marginTop: "1rem" }} className="search-properties"
           onChange={(event: KeyboardEvent) => this.handleOnChangeEntity(event, "is_property")}>
-          <Form.Check id="check-property-search" type="checkbox" inline label="Is property?" checked={entityFields.is_property || field==="property"}
+          <Form.Check id="check-property-search" type="checkbox" inline label="Is property?" defaultChecked={entityFields.is_property || field==="property"}
             disabled={disabledIsProperty || !!field} />
         </Form.Group>
         <Form.Group as={Row}>

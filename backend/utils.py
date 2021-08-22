@@ -1,3 +1,4 @@
+from collections import defaultdict
 import csv
 from pathlib import Path
 import numpy as np
@@ -84,14 +85,9 @@ def get_empty_layers():
 
 def create_user_wikification(calc_params, project, selection, value, context, item):
     (col1, row1), (col2, row2) = selection
-    sheet_name = calc_params.sheet.name
-    data_file_name = calc_params.sheet.data_file_name
-    df_rows = []
-    for col in range(col1, col2+1):
+    wiki_dict = defaultdict(dict)
+    for column in range(col1, col2+1):
         for row in range(row1, row2+1):
-            df_rows.append([col, row, value, context, item,
-                            data_file_name, sheet_name])
-    df = pd.DataFrame(df_rows, columns=[
-                      "column", "row", "value", "context", "item", "file", "sheet"])
-    project.add_df_to_wikifier_file(calc_params.data_path, df, overwrite_existing=True)
-    return df
+            wiki_dict[context][(column, row, value)] = item
+    project.add_dict_to_wikifier_file(calc_params.sheet, wiki_dict, overwrite_existing=True)
+    return wiki_dict

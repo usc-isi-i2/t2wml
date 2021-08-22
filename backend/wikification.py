@@ -1,3 +1,4 @@
+from collections import defaultdict
 import os
 import pandas as pd
 import numpy as np
@@ -19,14 +20,10 @@ def wikify_selection(calc_params, selection, url="https://dsbox02.isi.edu:8888/w
     data_file_name = calc_params.sheet.data_file_name
     sheet=calc_params.sheet
 
-    df_rows = []
-    for col in range(col1, col2+1):
-        for row in range(row1, row2+1):
-            value=sheet[row, col]
-            if (value):
-                df_rows.append([col, row, value, data_file_name, sheet_name, ""])
-    df = pd.DataFrame(df_rows, columns=[
-                      "column", "row", "value", "file", "sheet", "context"])
+    values = list(set(sheet[row1:row2+1, col1:col2+1].flatten().tolist()))
+    df = pd.DataFrame([])
+    df['value'] = values
+
     csv_str = df.to_csv(index=None)
     binary = csv_str.encode()
     url += f'?k=1&columns={"value"}'
@@ -36,30 +33,48 @@ def wikify_selection(calc_params, selection, url="https://dsbox02.isi.edu:8888/w
     }
 
     resp = requests.post(url, files=files)
-    if resp.status_code==500:
-        raise ValueError("Failed to get response from wikifier service")
+    if resp.status_code >299 :
+        raise ValueError("Failed to get response from wikifier service or service errored out")
 
 
     s = str(resp.content, 'utf-8')
     data = StringIO(s)
 
-    df = pd.read_csv(data)
-    check_na = df['value_kg_id'].notna()
-    missing_values = df[np.invert(check_na)]
-    df = df[check_na] #trim anything that didn't wikify successfully
-    df = df[df["value_score"] > 0.9] #trim anything whose score is too low
-    ids=df.pop("value_kg_id")
-    df["item"]=ids
-    labels= df.pop("value_kg_label")
-    scores= df.pop("value_score")
-    aliases=df.pop("value_kg_aliases")
-    descriptions= df.pop("value_kg_descriptions")
-    entities_dict={}
-    for index, id in enumerate(ids):
-        entities_dict[id]={"label": labels.iloc[index], "description": descriptions.iloc[index]}
-    problem_cells=[]
-    for index, line in missing_values.iterrows():
-        problem_cells.append(to_excel(line.column, line.row))
-    return df, entities_dict, problem_cells
+    try:
+        df = pd.read_csv(data)
+        df = df.replace(r'^\s*$', np.nan, regex=True)
+        check_na = df['value_kg_id'].notna()
+        missing_values = df[np.invert(check_na)]
+        df = df[check_na] #trim anything that didn't wikify successfully
+        df = df[df["value_score"] > 0.9] #trim anything whose score is too low
+        ids=df.pop("value_kg_id")
+        values=df["value"]
+        labels= df.pop("value_kg_label")
+        scores= df.pop("value_score")
+        aliases=df.pop("value_kg_aliases")
+        descriptions= df.pop("value_kg_descriptions")
+        entities_dict={}
+        lookup_dict={}
+        for index, id in enumerate(ids):
+            entities_dict[id]={"label": labels.iloc[index], "description": descriptions.iloc[index]}
+            lookup_dict[values.iloc[index]]=id
+        problem_cells=[]
+        for index, line in missing_values.iterrows():
+            problem_cells.append(to_excel(line.column, line.row))
+
+        #df_rows = []
+        wiki_dict = {"":{}}
+        for col in range(col1, col2+1):
+            for row in range(row1, row2+1):
+                value=sheet[row, col]
+                if value in lookup_dict:
+                    #df_rows.append([col, row, value, data_file_name, sheet_name, "", lookup_dict[value]])
+                    wiki_dict[""][(col, row, value)]=lookup_dict[value]
+        #df = pd.DataFrame(df_rows, columns=["column", "row", "value", "file", "sheet", "context", "item"])
+
+        return wiki_dict, entities_dict, problem_cells
+    except Exception as e:
+        print(e)
+        raise e
 
 

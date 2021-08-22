@@ -34,772 +34,278 @@
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "The Bahamas",
-                    "Q778",
-                    "0.713955",
-                    "2012-01-01T00:00:00",
-                    "Q778",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObhs",
-                    "POINT(-76.4 23.7)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "The Bahamas",
-                    "Q778",
-                    "0.713955",
-                    "2013-01-01T00:00:00",
-                    "Q778",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObhs",
-                    "POINT(-76.4 23.7)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "The Bahamas",
-                    "Q778",
-                    "0.714",
-                    "2014-01-01T00:00:00",
-                    "Q778",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObhs",
-                    "POINT(-76.4 23.7)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Bahrain",
-                    "Q398",
-                    "0.425089",
+                    "Custom afghanistan",
+                    "Qworldeducation-custom_afghanistan",
+                    "0.0761",
                     "1980-01-01T00:00:00",
-                    "Q398",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObhr",
-                    "POINT(50.551111 26.0675)",
+                    "Qworldeducation-custom_afghanistan",
+                    null,
+                    null,
                     "my doc id"
                 ],
                 [
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "Bahrain",
-                    "Q398",
-                    "0.713967",
+                    "Custom afghanistan",
+                    "Qworldeducation-custom_afghanistan",
+                    "0.365333",
                     "2012-01-01T00:00:00",
-                    "Q398",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObhr",
-                    "POINT(50.551111 26.0675)",
+                    "Qworldeducation-custom_afghanistan",
+                    null,
+                    null,
                     "my doc id"
                 ],
                 [
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "Bahrain",
-                    "Q398",
-                    "0.713967",
+                    "Custom afghanistan",
+                    "Qworldeducation-custom_afghanistan",
+                    "0.365333",
                     "2013-01-01T00:00:00",
-                    "Q398",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObhr",
-                    "POINT(50.551111 26.0675)",
+                    "Qworldeducation-custom_afghanistan",
+                    null,
+                    null,
                     "my doc id"
                 ],
                 [
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "Bahrain",
-                    "Q398",
-                    "0.714",
+                    "Custom afghanistan",
+                    "Qworldeducation-custom_afghanistan",
+                    "0.365",
                     "2014-01-01T00:00:00",
-                    "Q398",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObhr",
-                    "POINT(50.551111 26.0675)",
+                    "Qworldeducation-custom_afghanistan",
+                    null,
+                    null,
                     "my doc id"
                 ],
                 [
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "Bangladesh",
-                    "Q902",
-                    "0.201944",
+                    "Albania",
+                    "Q222",
+                    "0.540589",
                     "1980-01-01T00:00:00",
-                    "Q902",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObgd",
-                    "POINT(89.866667 24.016667)",
+                    "Q222",
+                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOalb",
+                    "POINT(20 41)",
                     "my doc id"
                 ],
                 [
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "Bangladesh",
-                    "Q902",
-                    "0.44688",
+                    "Albania",
+                    "Q222",
+                    "0.608519",
                     "2012-01-01T00:00:00",
-                    "Q902",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObgd",
-                    "POINT(89.866667 24.016667)",
+                    "Q222",
+                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOalb",
+                    "POINT(20 41)",
                     "my doc id"
                 ],
                 [
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "Bangladesh",
-                    "Q902",
-                    "0.44688",
+                    "Albania",
+                    "Q222",
+                    "0.608519",
                     "2013-01-01T00:00:00",
-                    "Q902",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObgd",
-                    "POINT(89.866667 24.016667)",
+                    "Q222",
+                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOalb",
+                    "POINT(20 41)",
                     "my doc id"
                 ],
                 [
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "Bangladesh",
-                    "Q902",
-                    "0.446",
-                    "2014-01-01T00:00:00",
-                    "Q902",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObgd",
-                    "POINT(89.866667 24.016667)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Barbados",
-                    "Q244",
-                    "0.549156",
-                    "1980-01-01T00:00:00",
-                    "Q244",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObrb",
-                    "POINT(-59.55 13.16666667)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Barbados",
-                    "Q244",
-                    "0.739778",
-                    "2012-01-01T00:00:00",
-                    "Q244",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObrb",
-                    "POINT(-59.55 13.16666667)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Barbados",
-                    "Q244",
-                    "0.739778",
-                    "2013-01-01T00:00:00",
-                    "Q244",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObrb",
-                    "POINT(-59.55 13.16666667)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Barbados",
-                    "Q244",
-                    "0.777",
-                    "2014-01-01T00:00:00",
-                    "Q244",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObrb",
-                    "POINT(-59.55 13.16666667)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Belarus",
-                    "Q184",
-                    "0.819984",
-                    "2012-01-01T00:00:00",
-                    "Q184",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOblr",
-                    "POINT(28.04666667 53.52833333)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Belarus",
-                    "Q184",
-                    "0.819984",
-                    "2013-01-01T00:00:00",
-                    "Q184",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOblr",
-                    "POINT(28.04666667 53.52833333)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Belarus",
-                    "Q184",
-                    "0.834",
-                    "2014-01-01T00:00:00",
-                    "Q184",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOblr",
-                    "POINT(28.04666667 53.52833333)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Belgium",
-                    "Q31",
-                    "0.626017",
-                    "1980-01-01T00:00:00",
-                    "Q31",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObel",
-                    "POINT(4.668055556 50.64111111)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Belgium",
-                    "Q31",
-                    "0.812292",
-                    "2012-01-01T00:00:00",
-                    "Q31",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObel",
-                    "POINT(4.668055556 50.64111111)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Belgium",
-                    "Q31",
-                    "0.812292",
-                    "2013-01-01T00:00:00",
-                    "Q31",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObel",
-                    "POINT(4.668055556 50.64111111)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Belgium",
-                    "Q31",
-                    "0.829",
-                    "2014-01-01T00:00:00",
-                    "Q31",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObel",
-                    "POINT(4.668055556 50.64111111)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Belize",
-                    "Q242",
-                    "0.538053",
-                    "1980-01-01T00:00:00",
-                    "Q242",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOblz",
-                    "POINT(-88.7 17.06666667)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Belize",
-                    "Q242",
-                    "0.688889",
-                    "2012-01-01T00:00:00",
-                    "Q242",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOblz",
-                    "POINT(-88.7 17.06666667)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Belize",
-                    "Q242",
-                    "0.688889",
-                    "2013-01-01T00:00:00",
-                    "Q242",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOblz",
-                    "POINT(-88.7 17.06666667)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Belize",
-                    "Q242",
-                    "0.726",
-                    "2014-01-01T00:00:00",
-                    "Q242",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOblz",
-                    "POINT(-88.7 17.06666667)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Benin",
-                    "Q962",
-                    "0.143856",
-                    "1980-01-01T00:00:00",
-                    "Q962",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOben",
-                    "POINT(2.183333333 8.833333333)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Benin",
-                    "Q962",
-                    "0.413556",
-                    "2012-01-01T00:00:00",
-                    "Q962",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOben",
-                    "POINT(2.183333333 8.833333333)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Benin",
-                    "Q962",
-                    "0.413556",
-                    "2013-01-01T00:00:00",
-                    "Q962",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOben",
-                    "POINT(2.183333333 8.833333333)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Benin",
-                    "Q962",
-                    "0.418",
-                    "2014-01-01T00:00:00",
-                    "Q962",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOben",
-                    "POINT(2.183333333 8.833333333)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Bhutan",
-                    "Q917",
-                    "0.421244",
-                    "2012-01-01T00:00:00",
-                    "Q917",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObtn",
-                    "POINT(90.5 27.45)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Bhutan",
-                    "Q917",
-                    "0.421244",
-                    "2013-01-01T00:00:00",
-                    "Q917",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObtn",
-                    "POINT(90.5 27.45)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Bhutan",
-                    "Q917",
-                    "0.451",
-                    "2014-01-01T00:00:00",
-                    "Q917",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObtn",
-                    "POINT(90.5 27.45)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Bolivia",
-                    "Q750",
-                    "0.411215",
-                    "1980-01-01T00:00:00",
-                    "Q750",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObol",
-                    "POINT(-64.99122861 -17.05686961)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Bolivia",
-                    "Q750",
-                    "0.6735",
-                    "2012-01-01T00:00:00",
-                    "Q750",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObol",
-                    "POINT(-64.99122861 -17.05686961)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Bolivia",
-                    "Q750",
-                    "0.6735",
-                    "2013-01-01T00:00:00",
-                    "Q750",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObol",
-                    "POINT(-64.99122861 -17.05686961)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Bolivia",
-                    "Q750",
+                    "Albania",
+                    "Q222",
                     "0.637",
                     "2014-01-01T00:00:00",
-                    "Q750",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObol",
-                    "POINT(-64.99122861 -17.05686961)",
+                    "Q222",
+                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOalb",
+                    "POINT(20 41)",
                     "my doc id"
                 ],
                 [
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "Bosnia and Herzegovina",
-                    "Q225",
-                    "0.655318",
-                    "2012-01-01T00:00:00",
-                    "Q225",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObih",
-                    "POINT(18 44)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Bosnia and Herzegovina",
-                    "Q225",
-                    "0.655318",
-                    "2013-01-01T00:00:00",
-                    "Q225",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObih",
-                    "POINT(18 44)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Bosnia and Herzegovina",
-                    "Q225",
-                    "0.655",
-                    "2014-01-01T00:00:00",
-                    "Q225",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObih",
-                    "POINT(18 44)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Botswana",
-                    "Q963",
-                    "0.281856",
+                    "Algeria",
+                    "Q262",
+                    "0.321378",
                     "1980-01-01T00:00:00",
-                    "Q963",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObwa",
-                    "POINT(23.7 -22.2)",
+                    "Q262",
+                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOdza",
+                    "POINT(2 28)",
                     "my doc id"
                 ],
                 [
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "Botswana",
-                    "Q963",
-                    "0.619",
+                    "Algeria",
+                    "Q262",
+                    "0.642589",
                     "2012-01-01T00:00:00",
-                    "Q963",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObwa",
-                    "POINT(23.7 -22.2)",
+                    "Q262",
+                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOdza",
+                    "POINT(2 28)",
                     "my doc id"
                 ],
                 [
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "Botswana",
-                    "Q963",
-                    "0.619",
+                    "Algeria",
+                    "Q262",
+                    "0.642589",
                     "2013-01-01T00:00:00",
-                    "Q963",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObwa",
-                    "POINT(23.7 -22.2)",
+                    "Q262",
+                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOdza",
+                    "POINT(2 28)",
                     "my doc id"
                 ],
                 [
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "Botswana",
-                    "Q963",
-                    "0.643",
+                    "Algeria",
+                    "Q262",
+                    "0.642",
                     "2014-01-01T00:00:00",
-                    "Q963",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObwa",
-                    "POINT(23.7 -22.2)",
+                    "Q262",
+                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOdza",
+                    "POINT(2 28)",
                     "my doc id"
                 ],
                 [
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "Brazil",
-                    "Q155",
-                    "0.361502",
-                    "1980-01-01T00:00:00",
-                    "Q155",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObra",
-                    "POINT(-53 -14)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Brazil",
-                    "Q155",
-                    "0.661306",
+                    "Andorra",
+                    "Q228",
+                    "0.670287",
                     "2012-01-01T00:00:00",
-                    "Q155",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObra",
-                    "POINT(-53 -14)",
+                    "Q228",
+                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOand",
+                    "POINT(1.555277778 42.55833333)",
                     "my doc id"
                 ],
                 [
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "Brazil",
-                    "Q155",
-                    "0.661306",
+                    "Andorra",
+                    "Q228",
+                    "0.670287",
                     "2013-01-01T00:00:00",
-                    "Q155",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObra",
-                    "POINT(-53 -14)",
+                    "Q228",
+                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOand",
+                    "POINT(1.555277778 42.55833333)",
                     "my doc id"
                 ],
                 [
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "Brazil",
-                    "Q155",
-                    "0.677",
+                    "Andorra",
+                    "Q228",
+                    "0.695",
                     "2014-01-01T00:00:00",
-                    "Q155",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObra",
-                    "POINT(-53 -14)",
+                    "Q228",
+                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOand",
+                    "POINT(1.555277778 42.55833333)",
                     "my doc id"
                 ],
                 [
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "Brunei",
-                    "Q921",
-                    "0.5194",
-                    "1980-01-01T00:00:00",
-                    "Q921",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObrn",
-                    "POINT(114.566667 4.4)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Brunei",
-                    "Q921",
-                    "0.692111",
+                    "Angola",
+                    "Q916",
+                    "0.474212",
                     "2012-01-01T00:00:00",
-                    "Q921",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObrn",
-                    "POINT(114.566667 4.4)",
+                    "Q916",
+                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOago",
+                    "POINT(17.35 -12.35)",
                     "my doc id"
                 ],
                 [
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "Brunei",
-                    "Q921",
-                    "0.692111",
+                    "Angola",
+                    "Q916",
+                    "0.474212",
                     "2013-01-01T00:00:00",
-                    "Q921",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObrn",
-                    "POINT(114.566667 4.4)",
+                    "Q916",
+                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOago",
+                    "POINT(17.35 -12.35)",
                     "my doc id"
                 ],
                 [
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "Brunei",
-                    "Q921",
-                    "0.696",
+                    "Angola",
+                    "Q916",
+                    "0.474",
                     "2014-01-01T00:00:00",
-                    "Q921",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObrn",
-                    "POINT(114.566667 4.4)",
+                    "Q916",
+                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOago",
+                    "POINT(17.35 -12.35)",
                     "my doc id"
                 ],
                 [
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "Bulgaria",
-                    "Q219",
-                    "0.578594",
-                    "1980-01-01T00:00:00",
-                    "Q219",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObgr",
-                    "POINT(25.5 42.75)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Bulgaria",
-                    "Q219",
-                    "0.749407",
+                    "Antigua and Barbuda",
+                    "Q781",
+                    "0.681141",
                     "2012-01-01T00:00:00",
-                    "Q219",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObgr",
-                    "POINT(25.5 42.75)",
+                    "Q781",
+                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOatg",
+                    "POINT(-61.85 17.11666667)",
                     "my doc id"
                 ],
                 [
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "Bulgaria",
-                    "Q219",
-                    "0.749407",
+                    "Antigua and Barbuda",
+                    "Q781",
+                    "0.681141",
                     "2013-01-01T00:00:00",
-                    "Q219",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObgr",
-                    "POINT(25.5 42.75)",
+                    "Q781",
+                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOatg",
+                    "POINT(-61.85 17.11666667)",
                     "my doc id"
                 ],
                 [
                     "a_test_title",
                     "education_index",
                     "Education index",
-                    "Bulgaria",
-                    "Q219",
-                    "0.751",
+                    "Antigua and Barbuda",
+                    "Q781",
+                    "0.695",
                     "2014-01-01T00:00:00",
-                    "Q219",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObgr",
-                    "POINT(25.5 42.75)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Burkina Faso",
-                    "Q965",
-                    "0.250033",
-                    "2012-01-01T00:00:00",
-                    "Q965",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObfa",
-                    "POINT(-2.066667 12.266667)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Burkina Faso",
-                    "Q965",
-                    "0.250033",
-                    "2013-01-01T00:00:00",
-                    "Q965",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObfa",
-                    "POINT(-2.066667 12.266667)",
-                    "my doc id"
-                ],
-                [
-                    "a_test_title",
-                    "education_index",
-                    "Education index",
-                    "Burkina Faso",
-                    "Q965",
-                    "0.262",
-                    "2014-01-01T00:00:00",
-                    "Q965",
-                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEObfa",
-                    "POINT(-2.066667 12.266667)",
+                    "Q781",
+                    "http://ontology.causeex.com/cameo/CountryCodeOntology/CAMEOatg",
+                    "POINT(-61.85 17.11666667)",
                     "my doc id"
                 ]
             ],
             "dims": [
-                59,
+                21,
                 11
             ],
             "firstRowIndex": 0
@@ -807,7 +313,7 @@
     },
     "suggest_annotation": [
         {
-            "id": "b69d2028-8b02-49ed-ad2f-6fd141abbe82",
+            "id": "0dcf8712-06c7-413a-a233-b3252c4de169",
             "link": "",
             "links": {},
             "property": {
@@ -826,8 +332,8 @@
             "type": "time"
         },
         {
-            "id": "0f631bd5-3505-4d7f-82ca-e3254f8f6350",
-            "link": "00885292-2527-48a5-ac1d-e3f4f163e09c",
+            "id": "5bf3ae42-d546-45b2-bf9f-0560423a9484",
+            "link": "8c46f702-2eb4-43ed-bfc2-7719548f1d4d",
             "links": {},
             "role": "mainSubject",
             "selection": {
@@ -839,10 +345,10 @@
             "type": "wikibaseitem"
         },
         {
-            "id": "00885292-2527-48a5-ac1d-e3f4f163e09c",
+            "id": "8c46f702-2eb4-43ed-bfc2-7719548f1d4d",
             "link": "",
             "links": {
-                "mainSubject": "0f631bd5-3505-4d7f-82ca-e3254f8f6350"
+                "mainSubject": "5bf3ae42-d546-45b2-bf9f-0560423a9484"
             },
             "role": "dependentVar",
             "selection": {
@@ -873,7 +379,7 @@
     "upload_annotation": {
         "cells": {
             "mainSubject": [
-                15,
+                4,
                 1
             ],
             "property": [
@@ -884,31 +390,31 @@
                 {
                     "qualifier": [
                         3,
-                        3
+                        2
                     ]
                 }
             ]
         },
         "indices": [
             [
-                15,
-                3
+                4,
+                2
             ]
         ],
         "property": "Pworldeducation-education_index",
         "qualifier": [
             {
                 "property": "P585",
-                "value": "2012-01-01T00:00:00"
+                "value": "1980-01-01T00:00:00"
             }
         ],
-        "subject": "Q778",
-        "value": "0.713955"
+        "subject": "Qworldeducation-custom_afghanistan",
+        "value": "0.0761"
     },
     "upload_project": {
         "annotations": [
             {
-                "id": "b69d2028-8b02-49ed-ad2f-6fd141abbe82",
+                "id": "0dcf8712-06c7-413a-a233-b3252c4de169",
                 "link": "",
                 "links": {},
                 "property": {
@@ -927,8 +433,8 @@
                 "type": "time"
             },
             {
-                "id": "0f631bd5-3505-4d7f-82ca-e3254f8f6350",
-                "link": "00885292-2527-48a5-ac1d-e3f4f163e09c",
+                "id": "5bf3ae42-d546-45b2-bf9f-0560423a9484",
+                "link": "8c46f702-2eb4-43ed-bfc2-7719548f1d4d",
                 "links": {},
                 "role": "mainSubject",
                 "selection": {
@@ -940,11 +446,11 @@
                 "type": "wikibaseitem"
             },
             {
-                "id": "00885292-2527-48a5-ac1d-e3f4f163e09c",
+                "id": "8c46f702-2eb4-43ed-bfc2-7719548f1d4d",
                 "link": "",
                 "links": {
-                    "mainSubject": "0f631bd5-3505-4d7f-82ca-e3254f8f6350",
-                    "property": "95c4e5cd-e720-4d37-bff8-4834e827113a"
+                    "mainSubject": "5bf3ae42-d546-45b2-bf9f-0560423a9484",
+                    "property": "41c07f26-5644-4246-a6d5-4a838636e993"
                 },
                 "role": "dependentVar",
                 "selection": {
@@ -957,8 +463,8 @@
             },
             {
                 "children": {},
-                "id": "95c4e5cd-e720-4d37-bff8-4834e827113a",
-                "link": "00885292-2527-48a5-ac1d-e3f4f163e09c",
+                "id": "41c07f26-5644-4246-a6d5-4a838636e993",
+                "link": "8c46f702-2eb4-43ed-bfc2-7719548f1d4d",
                 "links": {},
                 "role": "property",
                 "selection": {
@@ -3929,7 +3435,7 @@
             },
             "datamart_api": null,
             "description": "a test description",
-            "directory": "C:\\Users\\devora\\C_sources\\pedro\\t2wml\\backend\\media\\d126fb79-aff2-432f-aea0-08c20ed4d3f1",
+            "directory": "C:\\Users\\devora\\C_sources\\pedro\\t2wml\\backend\\media\\ba14c938-0b95-483c-b827-7d0b01052ce1",
             "entity_files": [
                 "annotations/autogen-files-worldeducation/autogen_entities_world_education.xlsx.tsv",
                 "user_input_properties.tsv"
@@ -7688,2740 +7194,6 @@
                 "label": "The Bahamas",
                 "url": "https://www.wikidata.org/wiki/Q778",
                 "value": "Bahamas"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Southwest Asia",
-                "id": "Q398",
-                "indices": [
-                    [
-                        16,
-                        1
-                    ]
-                ],
-                "label": "Bahrain",
-                "url": "https://www.wikidata.org/wiki/Q398",
-                "value": "Bahrain"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in South Asia",
-                "id": "Q902",
-                "indices": [
-                    [
-                        17,
-                        1
-                    ]
-                ],
-                "label": "Bangladesh",
-                "url": "https://www.wikidata.org/wiki/Q902",
-                "value": "Bangladesh"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state situated on an island in the Western Atlantic Ocean",
-                "id": "Q244",
-                "indices": [
-                    [
-                        18,
-                        1
-                    ]
-                ],
-                "label": "Barbados",
-                "url": "https://www.wikidata.org/wiki/Q244",
-                "value": "Barbados"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in eastern Europe",
-                "id": "Q184",
-                "indices": [
-                    [
-                        19,
-                        1
-                    ]
-                ],
-                "label": "Belarus",
-                "url": "https://www.wikidata.org/wiki/Q184",
-                "value": "Belarus"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in western Europe",
-                "id": "Q31",
-                "indices": [
-                    [
-                        20,
-                        1
-                    ]
-                ],
-                "label": "Belgium",
-                "url": "https://www.wikidata.org/wiki/Q31",
-                "value": "Belgium"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Central America",
-                "id": "Q242",
-                "indices": [
-                    [
-                        21,
-                        1
-                    ]
-                ],
-                "label": "Belize",
-                "url": "https://www.wikidata.org/wiki/Q242",
-                "value": "Belize"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Africa",
-                "id": "Q962",
-                "indices": [
-                    [
-                        22,
-                        1
-                    ]
-                ],
-                "label": "Benin",
-                "url": "https://www.wikidata.org/wiki/Q962",
-                "value": "Benin"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in South Asia",
-                "id": "Q917",
-                "indices": [
-                    [
-                        23,
-                        1
-                    ]
-                ],
-                "label": "Bhutan",
-                "url": "https://www.wikidata.org/wiki/Q917",
-                "value": "Bhutan"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in South America",
-                "id": "Q750",
-                "indices": [
-                    [
-                        24,
-                        1
-                    ]
-                ],
-                "label": "Bolivia",
-                "url": "https://www.wikidata.org/wiki/Q750",
-                "value": "Bolivia (Plurinational State of)"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in southeastern Europe",
-                "id": "Q225",
-                "indices": [
-                    [
-                        25,
-                        1
-                    ]
-                ],
-                "label": "Bosnia and Herzegovina",
-                "url": "https://www.wikidata.org/wiki/Q225",
-                "value": "Bosnia and Herzegovina"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Southern Africa",
-                "id": "Q963",
-                "indices": [
-                    [
-                        26,
-                        1
-                    ]
-                ],
-                "label": "Botswana",
-                "url": "https://www.wikidata.org/wiki/Q963",
-                "value": "Botswana"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in South America",
-                "id": "Q155",
-                "indices": [
-                    [
-                        27,
-                        1
-                    ]
-                ],
-                "label": "Brazil",
-                "url": "https://www.wikidata.org/wiki/Q155",
-                "value": "Brazil"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Southeast Asia",
-                "id": "Q921",
-                "indices": [
-                    [
-                        28,
-                        1
-                    ]
-                ],
-                "label": "Brunei",
-                "url": "https://www.wikidata.org/wiki/Q921",
-                "value": "Brunei Darussalam"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in southeastern Europe",
-                "id": "Q219",
-                "indices": [
-                    [
-                        29,
-                        1
-                    ]
-                ],
-                "label": "Bulgaria",
-                "url": "https://www.wikidata.org/wiki/Q219",
-                "value": "Bulgaria"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Africa",
-                "id": "Q965",
-                "indices": [
-                    [
-                        30,
-                        1
-                    ]
-                ],
-                "label": "Burkina Faso",
-                "url": "https://www.wikidata.org/wiki/Q965",
-                "value": "Burkina Faso"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Africa",
-                "id": "Q967",
-                "indices": [
-                    [
-                        31,
-                        1
-                    ]
-                ],
-                "label": "Burundi",
-                "url": "https://www.wikidata.org/wiki/Q967",
-                "value": "Burundi"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Southeast Asia",
-                "id": "Q424",
-                "indices": [
-                    [
-                        32,
-                        1
-                    ]
-                ],
-                "label": "Cambodia",
-                "url": "https://www.wikidata.org/wiki/Q424",
-                "value": "Cambodia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in West Africa",
-                "id": "Q1009",
-                "indices": [
-                    [
-                        33,
-                        1
-                    ]
-                ],
-                "label": "Cameroon",
-                "url": "https://www.wikidata.org/wiki/Q1009",
-                "value": "Cameroon"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in North America",
-                "id": "Q16",
-                "indices": [
-                    [
-                        34,
-                        1
-                    ]
-                ],
-                "label": "Canada",
-                "url": "https://www.wikidata.org/wiki/Q16",
-                "value": "Canada"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state comprising ten islands off the Western coast of Africa",
-                "id": "Q1011",
-                "indices": [
-                    [
-                        35,
-                        1
-                    ]
-                ],
-                "label": "Cape Verde",
-                "url": "https://www.wikidata.org/wiki/Q1011",
-                "value": "Cape Verde"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Africa",
-                "id": "Q929",
-                "indices": [
-                    [
-                        36,
-                        1
-                    ]
-                ],
-                "label": "Central African Republic",
-                "url": "https://www.wikidata.org/wiki/Q929",
-                "value": "Central African Republic"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in central Africa",
-                "id": "Q657",
-                "indices": [
-                    [
-                        37,
-                        1
-                    ]
-                ],
-                "label": "Chad",
-                "url": "https://www.wikidata.org/wiki/Q657",
-                "value": "Chad"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in South America",
-                "id": "Q298",
-                "indices": [
-                    [
-                        38,
-                        1
-                    ]
-                ],
-                "label": "Chile",
-                "url": "https://www.wikidata.org/wiki/Q298",
-                "value": "Chile"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in East Asia",
-                "id": "Q148",
-                "indices": [
-                    [
-                        39,
-                        1
-                    ]
-                ],
-                "label": "People's Republic of China",
-                "url": "https://www.wikidata.org/wiki/Q148",
-                "value": "China"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in South America",
-                "id": "Q739",
-                "indices": [
-                    [
-                        40,
-                        1
-                    ]
-                ],
-                "label": "Colombia",
-                "url": "https://www.wikidata.org/wiki/Q739",
-                "value": "Colombia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state situated on an archipelago in the Indian Ocean off the eastern coast of Africa",
-                "id": "Q970",
-                "indices": [
-                    [
-                        41,
-                        1
-                    ]
-                ],
-                "label": "Comoros",
-                "url": "https://www.wikidata.org/wiki/Q970",
-                "value": "Comoros"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Central Africa",
-                "id": "Q971",
-                "indices": [
-                    [
-                        42,
-                        1
-                    ],
-                    [
-                        43,
-                        1
-                    ]
-                ],
-                "label": "Republic of the Congo",
-                "url": "https://www.wikidata.org/wiki/Q971",
-                "value": "Congo"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Central America",
-                "id": "Q800",
-                "indices": [
-                    [
-                        44,
-                        1
-                    ]
-                ],
-                "label": "Costa Rica",
-                "url": "https://www.wikidata.org/wiki/Q800",
-                "value": "Costa Rica"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in West Africa",
-                "id": "Q1008",
-                "indices": [
-                    [
-                        45,
-                        1
-                    ]
-                ],
-                "label": "Ivory Coast",
-                "url": "https://www.wikidata.org/wiki/Q1008",
-                "value": "Cote d'Ivoire"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in southeastern Europe",
-                "id": "Q224",
-                "indices": [
-                    [
-                        46,
-                        1
-                    ]
-                ],
-                "label": "Croatia",
-                "url": "https://www.wikidata.org/wiki/Q224",
-                "value": "Croatia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state situated on an island in the Caribbean Sea",
-                "id": "Q241",
-                "indices": [
-                    [
-                        47,
-                        1
-                    ]
-                ],
-                "label": "Cuba",
-                "url": "https://www.wikidata.org/wiki/Q241",
-                "value": "Cuba"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state situated on an island in the Eastern Mediterranean Sea",
-                "id": "Q229",
-                "indices": [
-                    [
-                        48,
-                        1
-                    ]
-                ],
-                "label": "Cyprus",
-                "url": "https://www.wikidata.org/wiki/Q229",
-                "value": "Cyprus"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in Central Europe",
-                "id": "Q213",
-                "indices": [
-                    [
-                        49,
-                        1
-                    ]
-                ],
-                "label": "Czech Republic",
-                "url": "https://www.wikidata.org/wiki/Q213",
-                "value": "Czech Republic"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in northern Europe",
-                "id": "Q35",
-                "indices": [
-                    [
-                        50,
-                        1
-                    ]
-                ],
-                "label": "Denmark",
-                "url": "https://www.wikidata.org/wiki/Q35",
-                "value": "Denmark"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Africa",
-                "id": "Q977",
-                "indices": [
-                    [
-                        51,
-                        1
-                    ]
-                ],
-                "label": "Djibouti",
-                "url": "https://www.wikidata.org/wiki/Q977",
-                "value": "Djibouti"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state in the Caribbean Sea",
-                "id": "Q784",
-                "indices": [
-                    [
-                        52,
-                        1
-                    ]
-                ],
-                "label": "Dominica",
-                "url": "https://www.wikidata.org/wiki/Q784",
-                "value": "Dominica"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state in the Caribbean Sea",
-                "id": "Q786",
-                "indices": [
-                    [
-                        53,
-                        1
-                    ]
-                ],
-                "label": "Dominican Republic",
-                "url": "https://www.wikidata.org/wiki/Q786",
-                "value": "Dominican Republic"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in South America",
-                "id": "Q736",
-                "indices": [
-                    [
-                        54,
-                        1
-                    ]
-                ],
-                "label": "Ecuador",
-                "url": "https://www.wikidata.org/wiki/Q736",
-                "value": "Ecuador"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in North Africa and Asia",
-                "id": "Q79",
-                "indices": [
-                    [
-                        55,
-                        1
-                    ]
-                ],
-                "label": "Egypt",
-                "url": "https://www.wikidata.org/wiki/Q79",
-                "value": "Egypt"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Central America",
-                "id": "Q792",
-                "indices": [
-                    [
-                        56,
-                        1
-                    ]
-                ],
-                "label": "El Salvador",
-                "url": "https://www.wikidata.org/wiki/Q792",
-                "value": "El Salvador"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Africa",
-                "id": "Q983",
-                "indices": [
-                    [
-                        57,
-                        1
-                    ]
-                ],
-                "label": "Equatorial Guinea",
-                "url": "https://www.wikidata.org/wiki/Q983",
-                "value": "Equatorial Guinea"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in the Horn of Africa",
-                "id": "Q986",
-                "indices": [
-                    [
-                        58,
-                        1
-                    ]
-                ],
-                "label": "Eritrea",
-                "url": "https://www.wikidata.org/wiki/Q986",
-                "value": "Eritrea"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in northeastern Europe",
-                "id": "Q191",
-                "indices": [
-                    [
-                        59,
-                        1
-                    ]
-                ],
-                "label": "Estonia",
-                "url": "https://www.wikidata.org/wiki/Q191",
-                "value": "Estonia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in East Africa",
-                "id": "Q115",
-                "indices": [
-                    [
-                        60,
-                        1
-                    ]
-                ],
-                "label": "Ethiopia",
-                "url": "https://www.wikidata.org/wiki/Q115",
-                "value": "Ethiopia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state in Oceania",
-                "id": "Q712",
-                "indices": [
-                    [
-                        61,
-                        1
-                    ]
-                ],
-                "label": "Fiji",
-                "url": "https://www.wikidata.org/wiki/Q712",
-                "value": "Fiji"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in northern Europe",
-                "id": "Q33",
-                "indices": [
-                    [
-                        62,
-                        1
-                    ]
-                ],
-                "label": "Finland",
-                "url": "https://www.wikidata.org/wiki/Q33",
-                "value": "Finland"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in Western Europe",
-                "id": "Q142",
-                "indices": [
-                    [
-                        63,
-                        1
-                    ]
-                ],
-                "label": "France",
-                "url": "https://www.wikidata.org/wiki/Q142",
-                "value": "France"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "equatorial country in West Africa",
-                "id": "Q1000",
-                "indices": [
-                    [
-                        64,
-                        1
-                    ]
-                ],
-                "label": "Gabon",
-                "url": "https://www.wikidata.org/wiki/Q1000",
-                "value": "Gabon"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in West Africa",
-                "id": "Q1005",
-                "indices": [
-                    [
-                        65,
-                        1
-                    ]
-                ],
-                "label": "The Gambia",
-                "url": "https://www.wikidata.org/wiki/Q1005",
-                "value": "Gambia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in the Caucasus between Europe and Asia",
-                "id": "Q230",
-                "indices": [
-                    [
-                        66,
-                        1
-                    ]
-                ],
-                "label": "Georgia",
-                "url": "https://www.wikidata.org/wiki/Q230",
-                "value": "Georgia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in Central Europe",
-                "id": "Q183",
-                "indices": [
-                    [
-                        67,
-                        1
-                    ]
-                ],
-                "label": "Germany",
-                "url": "https://www.wikidata.org/wiki/Q183",
-                "value": "Germany"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in West Africa",
-                "id": "Q117",
-                "indices": [
-                    [
-                        68,
-                        1
-                    ]
-                ],
-                "label": "Ghana",
-                "url": "https://www.wikidata.org/wiki/Q117",
-                "value": "Ghana"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in southeastern Europe",
-                "id": "Q41",
-                "indices": [
-                    [
-                        69,
-                        1
-                    ]
-                ],
-                "label": "Greece",
-                "url": "https://www.wikidata.org/wiki/Q41",
-                "value": "Greece"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state in the Caribbean Sea",
-                "id": "Q769",
-                "indices": [
-                    [
-                        70,
-                        1
-                    ]
-                ],
-                "label": "Grenada",
-                "url": "https://www.wikidata.org/wiki/Q769",
-                "value": "Grenada"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Central America",
-                "id": "Q774",
-                "indices": [
-                    [
-                        71,
-                        1
-                    ]
-                ],
-                "label": "Guatemala",
-                "url": "https://www.wikidata.org/wiki/Q774",
-                "value": "Guatemala"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in West Africa",
-                "id": "Q1006",
-                "indices": [
-                    [
-                        72,
-                        1
-                    ]
-                ],
-                "label": "Guinea",
-                "url": "https://www.wikidata.org/wiki/Q1006",
-                "value": "Guinea"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Western Africa",
-                "id": "Q1007",
-                "indices": [
-                    [
-                        73,
-                        1
-                    ]
-                ],
-                "label": "Guinea-Bissau",
-                "url": "https://www.wikidata.org/wiki/Q1007",
-                "value": "Guinea-Bissau"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in South America",
-                "id": "Q734",
-                "indices": [
-                    [
-                        74,
-                        1
-                    ]
-                ],
-                "label": "Guyana",
-                "url": "https://www.wikidata.org/wiki/Q734",
-                "value": "Guyana"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state in the Caribbean Sea",
-                "id": "Q790",
-                "indices": [
-                    [
-                        75,
-                        1
-                    ]
-                ],
-                "label": "Haiti",
-                "url": "https://www.wikidata.org/wiki/Q790",
-                "value": "Haiti"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Central America",
-                "id": "Q783",
-                "indices": [
-                    [
-                        76,
-                        1
-                    ]
-                ],
-                "label": "Honduras",
-                "url": "https://www.wikidata.org/wiki/Q783",
-                "value": "Honduras"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "special administrative region of China",
-                "id": "Q8646",
-                "indices": [
-                    [
-                        77,
-                        1
-                    ]
-                ],
-                "label": "Hong Kong",
-                "url": "https://www.wikidata.org/wiki/Q8646",
-                "value": "Hong Kong, China (SAR)"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in Central Europe",
-                "id": "Q28",
-                "indices": [
-                    [
-                        78,
-                        1
-                    ]
-                ],
-                "label": "Hungary",
-                "url": "https://www.wikidata.org/wiki/Q28",
-                "value": "Hungary"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Northern Europe, situated on an island in the far North Atlantic Ocean",
-                "id": "Q189",
-                "indices": [
-                    [
-                        79,
-                        1
-                    ]
-                ],
-                "label": "Iceland",
-                "url": "https://www.wikidata.org/wiki/Q189",
-                "value": "Iceland"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in South Asia",
-                "id": "Q668",
-                "indices": [
-                    [
-                        80,
-                        1
-                    ]
-                ],
-                "label": "India",
-                "url": "https://www.wikidata.org/wiki/Q668",
-                "value": "India"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Southeast Asia situated on more than 17,000 islands",
-                "id": "Q252",
-                "indices": [
-                    [
-                        81,
-                        1
-                    ]
-                ],
-                "label": "Indonesia",
-                "url": "https://www.wikidata.org/wiki/Q252",
-                "value": "Indonesia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Western Asia",
-                "id": "Q794",
-                "indices": [
-                    [
-                        82,
-                        1
-                    ]
-                ],
-                "label": "Iran",
-                "url": "https://www.wikidata.org/wiki/Q794",
-                "value": "Iran (Islamic Republic of)"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Western Asia",
-                "id": "Q796",
-                "indices": [
-                    [
-                        83,
-                        1
-                    ]
-                ],
-                "label": "Iraq",
-                "url": "https://www.wikidata.org/wiki/Q796",
-                "value": "Iraq"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in northwestern Europe covering five-sixths of the island of Ireland",
-                "id": "Q27",
-                "indices": [
-                    [
-                        84,
-                        1
-                    ]
-                ],
-                "label": "Ireland",
-                "url": "https://www.wikidata.org/wiki/Q27",
-                "value": "Ireland"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in western Asia",
-                "id": "Q801",
-                "indices": [
-                    [
-                        85,
-                        1
-                    ]
-                ],
-                "label": "Israel",
-                "url": "https://www.wikidata.org/wiki/Q801",
-                "value": "Israel"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in Southern Europe",
-                "id": "Q38",
-                "indices": [
-                    [
-                        86,
-                        1
-                    ]
-                ],
-                "label": "Italy",
-                "url": "https://www.wikidata.org/wiki/Q38",
-                "value": "Italy"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state in the Caribbean Sea",
-                "id": "Q766",
-                "indices": [
-                    [
-                        87,
-                        1
-                    ]
-                ],
-                "label": "Jamaica",
-                "url": "https://www.wikidata.org/wiki/Q766",
-                "value": "Jamaica"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in East Asia",
-                "id": "Q17",
-                "indices": [
-                    [
-                        88,
-                        1
-                    ]
-                ],
-                "label": "Japan",
-                "url": "https://www.wikidata.org/wiki/Q17",
-                "value": "Japan"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Western Asia",
-                "id": "Q810",
-                "indices": [
-                    [
-                        89,
-                        1
-                    ]
-                ],
-                "label": "Jordan",
-                "url": "https://www.wikidata.org/wiki/Q810",
-                "value": "Jordan"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Eastern Europe and Central Asia",
-                "id": "Q232",
-                "indices": [
-                    [
-                        90,
-                        1
-                    ]
-                ],
-                "label": "Kazakhstan",
-                "url": "https://www.wikidata.org/wiki/Q232",
-                "value": "Kazakhstan"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in East Africa",
-                "id": "Q114",
-                "indices": [
-                    [
-                        91,
-                        1
-                    ]
-                ],
-                "label": "Kenya",
-                "url": "https://www.wikidata.org/wiki/Q114",
-                "value": "Kenya"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state in the central Pacific Ocean",
-                "id": "Q710",
-                "indices": [
-                    [
-                        92,
-                        1
-                    ]
-                ],
-                "label": "Kiribati",
-                "url": "https://www.wikidata.org/wiki/Q710",
-                "value": "Kiribati"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in East Asia",
-                "id": "Q423",
-                "indices": [
-                    [
-                        93,
-                        1
-                    ]
-                ],
-                "label": "North Korea",
-                "url": "https://www.wikidata.org/wiki/Q423",
-                "value": "Korea (Democratic People's Republic of)"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in East Asia",
-                "id": "Q884",
-                "indices": [
-                    [
-                        94,
-                        1
-                    ]
-                ],
-                "label": "South Korea",
-                "url": "https://www.wikidata.org/wiki/Q884",
-                "value": "Korea (Republic of)"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Western Asia",
-                "id": "Q817",
-                "indices": [
-                    [
-                        95,
-                        1
-                    ]
-                ],
-                "label": "Kuwait",
-                "url": "https://www.wikidata.org/wiki/Q817",
-                "value": "Kuwait"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Central Asia",
-                "id": "Q813",
-                "indices": [
-                    [
-                        96,
-                        1
-                    ]
-                ],
-                "label": "Kyrgyzstan",
-                "url": "https://www.wikidata.org/wiki/Q813",
-                "value": "Kyrgyzstan"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Southeast Asia",
-                "id": "Q819",
-                "indices": [
-                    [
-                        97,
-                        1
-                    ]
-                ],
-                "label": "Laos",
-                "url": "https://www.wikidata.org/wiki/Q819",
-                "value": "Lao People's Democratic Republic"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in northeastern Europe",
-                "id": "Q211",
-                "indices": [
-                    [
-                        98,
-                        1
-                    ]
-                ],
-                "label": "Latvia",
-                "url": "https://www.wikidata.org/wiki/Q211",
-                "value": "Latvia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Western Asia",
-                "id": "Q822",
-                "indices": [
-                    [
-                        99,
-                        1
-                    ]
-                ],
-                "label": "Lebanon",
-                "url": "https://www.wikidata.org/wiki/Q822",
-                "value": "Lebanon"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in southern Africa",
-                "id": "Q1013",
-                "indices": [
-                    [
-                        100,
-                        1
-                    ]
-                ],
-                "label": "Lesotho",
-                "url": "https://www.wikidata.org/wiki/Q1013",
-                "value": "Lesotho"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in West Africa",
-                "id": "Q1014",
-                "indices": [
-                    [
-                        101,
-                        1
-                    ]
-                ],
-                "label": "Liberia",
-                "url": "https://www.wikidata.org/wiki/Q1014",
-                "value": "Liberia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in north Africa",
-                "id": "Q1016",
-                "indices": [
-                    [
-                        102,
-                        1
-                    ]
-                ],
-                "label": "Libya",
-                "url": "https://www.wikidata.org/wiki/Q1016",
-                "value": "Libya"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in Central Europe",
-                "id": "Q347",
-                "indices": [
-                    [
-                        103,
-                        1
-                    ]
-                ],
-                "label": "Liechtenstein",
-                "url": "https://www.wikidata.org/wiki/Q347",
-                "value": "Liechtenstein"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in northeastern Europe",
-                "id": "Q37",
-                "indices": [
-                    [
-                        104,
-                        1
-                    ]
-                ],
-                "label": "Lithuania",
-                "url": "https://www.wikidata.org/wiki/Q37",
-                "value": "Lithuania"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in Western Europe",
-                "id": "Q32",
-                "indices": [
-                    [
-                        105,
-                        1
-                    ]
-                ],
-                "label": "Luxembourg",
-                "url": "https://www.wikidata.org/wiki/Q32",
-                "value": "Luxembourg"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state off the coast of Southeast Africa, in the Indian Ocean",
-                "id": "Q1019",
-                "indices": [
-                    [
-                        106,
-                        1
-                    ]
-                ],
-                "label": "Madagascar",
-                "url": "https://www.wikidata.org/wiki/Q1019",
-                "value": "Madagascar"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Africa",
-                "id": "Q1020",
-                "indices": [
-                    [
-                        107,
-                        1
-                    ]
-                ],
-                "label": "Malawi",
-                "url": "https://www.wikidata.org/wiki/Q1020",
-                "value": "Malawi"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Southeast Asia",
-                "id": "Q833",
-                "indices": [
-                    [
-                        108,
-                        1
-                    ]
-                ],
-                "label": "Malaysia",
-                "url": "https://www.wikidata.org/wiki/Q833",
-                "value": "Malaysia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in South Asia, situated on an archipelago in the Arabian Sea",
-                "id": "Q826",
-                "indices": [
-                    [
-                        109,
-                        1
-                    ]
-                ],
-                "label": "Maldives",
-                "url": "https://www.wikidata.org/wiki/Q826",
-                "value": "Maldives"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in West Africa",
-                "id": "Q912",
-                "indices": [
-                    [
-                        110,
-                        1
-                    ]
-                ],
-                "label": "Mali",
-                "url": "https://www.wikidata.org/wiki/Q912",
-                "value": "Mali"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Southern Europe situated on an archipelago in the Mediterranean Sea",
-                "id": "Q233",
-                "indices": [
-                    [
-                        111,
-                        1
-                    ]
-                ],
-                "label": "Malta",
-                "url": "https://www.wikidata.org/wiki/Q233",
-                "value": "Malta"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state in Oceania",
-                "id": "Q709",
-                "indices": [
-                    [
-                        112,
-                        1
-                    ]
-                ],
-                "label": "Marshall Islands",
-                "url": "https://www.wikidata.org/wiki/Q709",
-                "value": "Marshall Islands"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Africa",
-                "id": "Q1025",
-                "indices": [
-                    [
-                        113,
-                        1
-                    ]
-                ],
-                "label": "Mauritania",
-                "url": "https://www.wikidata.org/wiki/Q1025",
-                "value": "Mauritania"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state in the Indian Ocean",
-                "id": "Q1027",
-                "indices": [
-                    [
-                        114,
-                        1
-                    ]
-                ],
-                "label": "Mauritius",
-                "url": "https://www.wikidata.org/wiki/Q1027",
-                "value": "Mauritius"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in North America",
-                "id": "Q96",
-                "indices": [
-                    [
-                        115,
-                        1
-                    ]
-                ],
-                "label": "Mexico",
-                "url": "https://www.wikidata.org/wiki/Q96",
-                "value": "Mexico"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state in Oceania",
-                "id": "Q702",
-                "indices": [
-                    [
-                        116,
-                        1
-                    ]
-                ],
-                "label": "Federated States of Micronesia",
-                "url": "https://www.wikidata.org/wiki/Q702",
-                "value": "Micronesia (Federated States of)"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in southeastern Europe",
-                "id": "Q217",
-                "indices": [
-                    [
-                        117,
-                        1
-                    ]
-                ],
-                "label": "Moldova",
-                "url": "https://www.wikidata.org/wiki/Q217",
-                "value": "Moldova (Republic of)"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign city-state on the French Riviera",
-                "id": "Q235",
-                "indices": [
-                    [
-                        118,
-                        1
-                    ]
-                ],
-                "label": "Monaco",
-                "url": "https://www.wikidata.org/wiki/Q235",
-                "value": "Monaco"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in East Asia",
-                "id": "Q711",
-                "indices": [
-                    [
-                        119,
-                        1
-                    ]
-                ],
-                "label": "Mongolia",
-                "url": "https://www.wikidata.org/wiki/Q711",
-                "value": "Mongolia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in southeastern Europe",
-                "id": "Q236",
-                "indices": [
-                    [
-                        120,
-                        1
-                    ]
-                ],
-                "label": "Montenegro",
-                "url": "https://www.wikidata.org/wiki/Q236",
-                "value": "Montenegro"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in North Africa",
-                "id": "Q1028",
-                "indices": [
-                    [
-                        121,
-                        1
-                    ]
-                ],
-                "label": "Morocco",
-                "url": "https://www.wikidata.org/wiki/Q1028",
-                "value": "Morocco"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Africa",
-                "id": "Q1029",
-                "indices": [
-                    [
-                        122,
-                        1
-                    ]
-                ],
-                "label": "Mozambique",
-                "url": "https://www.wikidata.org/wiki/Q1029",
-                "value": "Mozambique"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Southeast Asia",
-                "id": "Q836",
-                "indices": [
-                    [
-                        123,
-                        1
-                    ]
-                ],
-                "label": "Myanmar",
-                "url": "https://www.wikidata.org/wiki/Q836",
-                "value": "Myanmar"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in southern Africa",
-                "id": "Q1030",
-                "indices": [
-                    [
-                        124,
-                        1
-                    ]
-                ],
-                "label": "Namibia",
-                "url": "https://www.wikidata.org/wiki/Q1030",
-                "value": "Namibia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state in Oceania",
-                "id": "Q697",
-                "indices": [
-                    [
-                        125,
-                        1
-                    ]
-                ],
-                "label": "Nauru",
-                "url": "https://www.wikidata.org/wiki/Q697",
-                "value": "Nauru"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in South Asia",
-                "id": "Q837",
-                "indices": [
-                    [
-                        126,
-                        1
-                    ]
-                ],
-                "label": "Nepal",
-                "url": "https://www.wikidata.org/wiki/Q837",
-                "value": "Nepal"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state, constitutional monarchy",
-                "id": "Q29999",
-                "indices": [
-                    [
-                        127,
-                        1
-                    ]
-                ],
-                "label": "Kingdom of the Netherlands",
-                "url": "https://www.wikidata.org/wiki/Q29999",
-                "value": "Netherlands"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Oceania, situated on two main and around 600 smaller islands in the southwestern Pacific Ocean",
-                "id": "Q664",
-                "indices": [
-                    [
-                        128,
-                        1
-                    ]
-                ],
-                "label": "New Zealand",
-                "url": "https://www.wikidata.org/wiki/Q664",
-                "value": "New Zealand"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Central America",
-                "id": "Q811",
-                "indices": [
-                    [
-                        129,
-                        1
-                    ]
-                ],
-                "label": "Nicaragua",
-                "url": "https://www.wikidata.org/wiki/Q811",
-                "value": "Nicaragua"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Western Africa",
-                "id": "Q1032",
-                "indices": [
-                    [
-                        130,
-                        1
-                    ]
-                ],
-                "label": "Niger",
-                "url": "https://www.wikidata.org/wiki/Q1032",
-                "value": "Niger"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in West Africa",
-                "id": "Q1033",
-                "indices": [
-                    [
-                        131,
-                        1
-                    ]
-                ],
-                "label": "Nigeria",
-                "url": "https://www.wikidata.org/wiki/Q1033",
-                "value": "Nigeria"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in northern Europe",
-                "id": "Q20",
-                "indices": [
-                    [
-                        132,
-                        1
-                    ]
-                ],
-                "label": "Norway",
-                "url": "https://www.wikidata.org/wiki/Q20",
-                "value": "Norway"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Western Asia",
-                "id": "Q842",
-                "indices": [
-                    [
-                        133,
-                        1
-                    ]
-                ],
-                "label": "Oman",
-                "url": "https://www.wikidata.org/wiki/Q842",
-                "value": "Oman"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in South Asia",
-                "id": "Q843",
-                "indices": [
-                    [
-                        134,
-                        1
-                    ]
-                ],
-                "label": "Pakistan",
-                "url": "https://www.wikidata.org/wiki/Q843",
-                "value": "Pakistan"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state in Oceania",
-                "id": "Q695",
-                "indices": [
-                    [
-                        135,
-                        1
-                    ]
-                ],
-                "label": "Palau",
-                "url": "https://www.wikidata.org/wiki/Q695",
-                "value": "Palau"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "",
-                "id": "Qworldeducation-palestine_state_of",
-                "indices": [
-                    [
-                        136,
-                        1
-                    ]
-                ],
-                "label": "Palestine (State of)",
-                "url": "",
-                "value": "Palestine (State of)"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Central America",
-                "id": "Q804",
-                "indices": [
-                    [
-                        137,
-                        1
-                    ]
-                ],
-                "label": "Panama",
-                "url": "https://www.wikidata.org/wiki/Q804",
-                "value": "Panama"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state in Oceania",
-                "id": "Q691",
-                "indices": [
-                    [
-                        138,
-                        1
-                    ]
-                ],
-                "label": "Papua New Guinea",
-                "url": "https://www.wikidata.org/wiki/Q691",
-                "value": "Papua New Guinea"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in South America",
-                "id": "Q733",
-                "indices": [
-                    [
-                        139,
-                        1
-                    ]
-                ],
-                "label": "Paraguay",
-                "url": "https://www.wikidata.org/wiki/Q733",
-                "value": "Paraguay"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in South America",
-                "id": "Q419",
-                "indices": [
-                    [
-                        140,
-                        1
-                    ]
-                ],
-                "label": "Peru",
-                "url": "https://www.wikidata.org/wiki/Q419",
-                "value": "Peru"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Southeast Asia",
-                "id": "Q928",
-                "indices": [
-                    [
-                        141,
-                        1
-                    ]
-                ],
-                "label": "Philippines",
-                "url": "https://www.wikidata.org/wiki/Q928",
-                "value": "Philippines"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in Central Europe",
-                "id": "Q36",
-                "indices": [
-                    [
-                        142,
-                        1
-                    ]
-                ],
-                "label": "Poland",
-                "url": "https://www.wikidata.org/wiki/Q36",
-                "value": "Poland"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in southwestern Europe",
-                "id": "Q45",
-                "indices": [
-                    [
-                        143,
-                        1
-                    ]
-                ],
-                "label": "Portugal",
-                "url": "https://www.wikidata.org/wiki/Q45",
-                "value": "Portugal"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in western Asia",
-                "id": "Q846",
-                "indices": [
-                    [
-                        144,
-                        1
-                    ]
-                ],
-                "label": "Qatar",
-                "url": "https://www.wikidata.org/wiki/Q846",
-                "value": "Qatar"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in Central and Eastern Europe",
-                "id": "Q218",
-                "indices": [
-                    [
-                        145,
-                        1
-                    ]
-                ],
-                "label": "Romania",
-                "url": "https://www.wikidata.org/wiki/Q218",
-                "value": "Romania"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Eastern Europe and Northern Asia",
-                "id": "Q159",
-                "indices": [
-                    [
-                        146,
-                        1
-                    ]
-                ],
-                "label": "Russia",
-                "url": "https://www.wikidata.org/wiki/Q159",
-                "value": "Russian Federation"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Africa",
-                "id": "Q1037",
-                "indices": [
-                    [
-                        147,
-                        1
-                    ]
-                ],
-                "label": "Rwanda",
-                "url": "https://www.wikidata.org/wiki/Q1037",
-                "value": "Rwanda"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state in the Caribbean Sea",
-                "id": "Q763",
-                "indices": [
-                    [
-                        148,
-                        1
-                    ]
-                ],
-                "label": "Saint Kitts and Nevis",
-                "url": "https://www.wikidata.org/wiki/Q763",
-                "value": "Saint Kitts and Nevis"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state in the Caribbean Sea",
-                "id": "Q760",
-                "indices": [
-                    [
-                        149,
-                        1
-                    ]
-                ],
-                "label": "Saint Lucia",
-                "url": "https://www.wikidata.org/wiki/Q760",
-                "value": "Saint Lucia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state in the Caribbean Sea",
-                "id": "Q757",
-                "indices": [
-                    [
-                        150,
-                        1
-                    ]
-                ],
-                "label": "Saint Vincent and the Grenadines",
-                "url": "https://www.wikidata.org/wiki/Q757",
-                "value": "Saint Vincent and the Grenadines"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state situated on six islands in the Pacific Ocean",
-                "id": "Q683",
-                "indices": [
-                    [
-                        151,
-                        1
-                    ]
-                ],
-                "label": "Samoa",
-                "url": "https://www.wikidata.org/wiki/Q683",
-                "value": "Samoa"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Southern Europe, enclaved within Italy",
-                "id": "Q238",
-                "indices": [
-                    [
-                        152,
-                        1
-                    ]
-                ],
-                "label": "San Marino",
-                "url": "https://www.wikidata.org/wiki/Q238",
-                "value": "San Marino"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state in Africa",
-                "id": "Q1039",
-                "indices": [
-                    [
-                        153,
-                        1
-                    ]
-                ],
-                "label": "S\u00e3o Tom\u00e9 and Pr\u00edncipe",
-                "url": "https://www.wikidata.org/wiki/Q1039",
-                "value": "Sao Tome and Principe"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Western Asia",
-                "id": "Q851",
-                "indices": [
-                    [
-                        154,
-                        1
-                    ]
-                ],
-                "label": "Saudi Arabia",
-                "url": "https://www.wikidata.org/wiki/Q851",
-                "value": "Saudi Arabia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Western Africa",
-                "id": "Q1041",
-                "indices": [
-                    [
-                        155,
-                        1
-                    ]
-                ],
-                "label": "Senegal",
-                "url": "https://www.wikidata.org/wiki/Q1041",
-                "value": "Senegal"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in southeastern Europe",
-                "id": "Q403",
-                "indices": [
-                    [
-                        156,
-                        1
-                    ]
-                ],
-                "label": "Serbia",
-                "url": "https://www.wikidata.org/wiki/Q403",
-                "value": "Serbia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state off the eastern coast of Africa",
-                "id": "Q1042",
-                "indices": [
-                    [
-                        157,
-                        1
-                    ]
-                ],
-                "label": "Seychelles",
-                "url": "https://www.wikidata.org/wiki/Q1042",
-                "value": "Seychelles"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in West Africa",
-                "id": "Q1044",
-                "indices": [
-                    [
-                        158,
-                        1
-                    ]
-                ],
-                "label": "Sierra Leone",
-                "url": "https://www.wikidata.org/wiki/Q1044",
-                "value": "Sierra Leone"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign city-state in Southeast Asia",
-                "id": "Q334",
-                "indices": [
-                    [
-                        159,
-                        1
-                    ]
-                ],
-                "label": "Singapore",
-                "url": "https://www.wikidata.org/wiki/Q334",
-                "value": "Singapore"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in Central Europe",
-                "id": "Q214",
-                "indices": [
-                    [
-                        160,
-                        1
-                    ]
-                ],
-                "label": "Slovakia",
-                "url": "https://www.wikidata.org/wiki/Q214",
-                "value": "Slovakia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in Central Europe",
-                "id": "Q215",
-                "indices": [
-                    [
-                        161,
-                        1
-                    ]
-                ],
-                "label": "Slovenia",
-                "url": "https://www.wikidata.org/wiki/Q215",
-                "value": "Slovenia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state in Oceania",
-                "id": "Q685",
-                "indices": [
-                    [
-                        162,
-                        1
-                    ]
-                ],
-                "label": "Solomon Islands",
-                "url": "https://www.wikidata.org/wiki/Q685",
-                "value": "Solomon Islands"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Africa",
-                "id": "Q1045",
-                "indices": [
-                    [
-                        163,
-                        1
-                    ]
-                ],
-                "label": "Somalia",
-                "url": "https://www.wikidata.org/wiki/Q1045",
-                "value": "Somalia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Southern Africa",
-                "id": "Q258",
-                "indices": [
-                    [
-                        164,
-                        1
-                    ]
-                ],
-                "label": "South Africa",
-                "url": "https://www.wikidata.org/wiki/Q258",
-                "value": "South Africa"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Africa",
-                "id": "Q958",
-                "indices": [
-                    [
-                        165,
-                        1
-                    ]
-                ],
-                "label": "South Sudan",
-                "url": "https://www.wikidata.org/wiki/Q958",
-                "value": "South Sudan"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in southwestern Europe",
-                "id": "Q29",
-                "indices": [
-                    [
-                        166,
-                        1
-                    ]
-                ],
-                "label": "Spain",
-                "url": "https://www.wikidata.org/wiki/Q29",
-                "value": "Spain"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in South Asia, situated on an island in the Indian Ocean",
-                "id": "Q854",
-                "indices": [
-                    [
-                        167,
-                        1
-                    ]
-                ],
-                "label": "Sri Lanka",
-                "url": "https://www.wikidata.org/wiki/Q854",
-                "value": "Sri Lanka"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Northeast Africa",
-                "id": "Q1049",
-                "indices": [
-                    [
-                        168,
-                        1
-                    ]
-                ],
-                "label": "Sudan",
-                "url": "https://www.wikidata.org/wiki/Q1049",
-                "value": "Sudan"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in South America",
-                "id": "Q730",
-                "indices": [
-                    [
-                        169,
-                        1
-                    ]
-                ],
-                "label": "Suriname",
-                "url": "https://www.wikidata.org/wiki/Q730",
-                "value": "Suriname"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "Kingdom in southern Africa",
-                "id": "Q1050",
-                "indices": [
-                    [
-                        170,
-                        1
-                    ]
-                ],
-                "label": "Eswatini",
-                "url": "https://www.wikidata.org/wiki/Q1050",
-                "value": "Swaziland"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in northern Europe",
-                "id": "Q34",
-                "indices": [
-                    [
-                        171,
-                        1
-                    ]
-                ],
-                "label": "Sweden",
-                "url": "https://www.wikidata.org/wiki/Q34",
-                "value": "Sweden"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "federal state in Western Europe",
-                "id": "Q39",
-                "indices": [
-                    [
-                        172,
-                        1
-                    ]
-                ],
-                "label": "Switzerland",
-                "url": "https://www.wikidata.org/wiki/Q39",
-                "value": "Switzerland"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Western Asia",
-                "id": "Q858",
-                "indices": [
-                    [
-                        173,
-                        1
-                    ]
-                ],
-                "label": "Syria",
-                "url": "https://www.wikidata.org/wiki/Q858",
-                "value": "Syrian Arab Republic"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Central Asia",
-                "id": "Q863",
-                "indices": [
-                    [
-                        174,
-                        1
-                    ]
-                ],
-                "label": "Tajikistan",
-                "url": "https://www.wikidata.org/wiki/Q863",
-                "value": "Tajikistan"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Africa",
-                "id": "Q924",
-                "indices": [
-                    [
-                        175,
-                        1
-                    ]
-                ],
-                "label": "Tanzania",
-                "url": "https://www.wikidata.org/wiki/Q924",
-                "value": "Tanzania (United Republic of)"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Southeast Asia",
-                "id": "Q869",
-                "indices": [
-                    [
-                        176,
-                        1
-                    ]
-                ],
-                "label": "Thailand",
-                "url": "https://www.wikidata.org/wiki/Q869",
-                "value": "Thailand"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "",
-                "id": "Qworldeducation-the_former_yugoslav_republic_of_macedonia",
-                "indices": [
-                    [
-                        177,
-                        1
-                    ]
-                ],
-                "label": "The former Yugoslav Republic of Macedonia",
-                "url": "",
-                "value": "The former Yugoslav Republic of Macedonia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state situated on several islands in Southeast Asia",
-                "id": "Q574",
-                "indices": [
-                    [
-                        178,
-                        1
-                    ]
-                ],
-                "label": "East Timor",
-                "url": "https://www.wikidata.org/wiki/Q574",
-                "value": "Timor-Leste"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Africa",
-                "id": "Q945",
-                "indices": [
-                    [
-                        179,
-                        1
-                    ]
-                ],
-                "label": "Togo",
-                "url": "https://www.wikidata.org/wiki/Q945",
-                "value": "Togo"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Oceania, situated on an archipelago",
-                "id": "Q678",
-                "indices": [
-                    [
-                        180,
-                        1
-                    ]
-                ],
-                "label": "Tonga",
-                "url": "https://www.wikidata.org/wiki/Q678",
-                "value": "Tonga"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state in the Caribbean Sea",
-                "id": "Q754",
-                "indices": [
-                    [
-                        181,
-                        1
-                    ]
-                ],
-                "label": "Trinidad and Tobago",
-                "url": "https://www.wikidata.org/wiki/Q754",
-                "value": "Trinidad and Tobago"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Northern Africa",
-                "id": "Q948",
-                "indices": [
-                    [
-                        182,
-                        1
-                    ]
-                ],
-                "label": "Tunisia",
-                "url": "https://www.wikidata.org/wiki/Q948",
-                "value": "Tunisia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state straddling Southeastern Europe and Western Asia",
-                "id": "Q43",
-                "indices": [
-                    [
-                        183,
-                        1
-                    ]
-                ],
-                "label": "Turkey",
-                "url": "https://www.wikidata.org/wiki/Q43",
-                "value": "Turkey"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Central Asia",
-                "id": "Q874",
-                "indices": [
-                    [
-                        184,
-                        1
-                    ]
-                ],
-                "label": "Turkmenistan",
-                "url": "https://www.wikidata.org/wiki/Q874",
-                "value": "Turkmenistan"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "island sovereign state in Oceania",
-                "id": "Q672",
-                "indices": [
-                    [
-                        185,
-                        1
-                    ]
-                ],
-                "label": "Tuvalu",
-                "url": "https://www.wikidata.org/wiki/Q672",
-                "value": "Tuvalu"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in East Africa",
-                "id": "Q1036",
-                "indices": [
-                    [
-                        186,
-                        1
-                    ]
-                ],
-                "label": "Uganda",
-                "url": "https://www.wikidata.org/wiki/Q1036",
-                "value": "Uganda"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in eastern Europe",
-                "id": "Q212",
-                "indices": [
-                    [
-                        187,
-                        1
-                    ]
-                ],
-                "label": "Ukraine",
-                "url": "https://www.wikidata.org/wiki/Q212",
-                "value": "Ukraine"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Southwest Asia",
-                "id": "Q878",
-                "indices": [
-                    [
-                        188,
-                        1
-                    ]
-                ],
-                "label": "United Arab Emirates",
-                "url": "https://www.wikidata.org/wiki/Q878",
-                "value": "United Arab Emirates"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "country in Western Europe",
-                "id": "Q145",
-                "indices": [
-                    [
-                        189,
-                        1
-                    ]
-                ],
-                "label": "United Kingdom",
-                "url": "https://www.wikidata.org/wiki/Q145",
-                "value": "United Kingdom"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in North America",
-                "id": "Q30",
-                "indices": [
-                    [
-                        190,
-                        1
-                    ]
-                ],
-                "label": "United States of America",
-                "url": "https://www.wikidata.org/wiki/Q30",
-                "value": "United States"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in South America",
-                "id": "Q77",
-                "indices": [
-                    [
-                        191,
-                        1
-                    ]
-                ],
-                "label": "Uruguay",
-                "url": "https://www.wikidata.org/wiki/Q77",
-                "value": "Uruguay"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Central Asia",
-                "id": "Q265",
-                "indices": [
-                    [
-                        192,
-                        1
-                    ]
-                ],
-                "label": "Uzbekistan",
-                "url": "https://www.wikidata.org/wiki/Q265",
-                "value": "Uzbekistan"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state situated on an archipelago in the South Pacific Ocean",
-                "id": "Q686",
-                "indices": [
-                    [
-                        193,
-                        1
-                    ]
-                ],
-                "label": "Vanuatu",
-                "url": "https://www.wikidata.org/wiki/Q686",
-                "value": "Vanuatu"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in northern South America",
-                "id": "Q717",
-                "indices": [
-                    [
-                        194,
-                        1
-                    ]
-                ],
-                "label": "Venezuela",
-                "url": "https://www.wikidata.org/wiki/Q717",
-                "value": "Venezuela (Bolivarian Republic of)"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Southeast Asia",
-                "id": "Q881",
-                "indices": [
-                    [
-                        195,
-                        1
-                    ]
-                ],
-                "label": "Vietnam",
-                "url": "https://www.wikidata.org/wiki/Q881",
-                "value": "Vietnam"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Western Asia",
-                "id": "Q805",
-                "indices": [
-                    [
-                        196,
-                        1
-                    ]
-                ],
-                "label": "Yemen",
-                "url": "https://www.wikidata.org/wiki/Q805",
-                "value": "Yemen"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in Southern Africa",
-                "id": "Q953",
-                "indices": [
-                    [
-                        197,
-                        1
-                    ]
-                ],
-                "label": "Zambia",
-                "url": "https://www.wikidata.org/wiki/Q953",
-                "value": "Zambia"
-            },
-            {
-                "context": "",
-                "data_type": null,
-                "description": "sovereign state in southern Africa",
-                "id": "Q954",
-                "indices": [
-                    [
-                        198,
-                        1
-                    ]
-                ],
-                "label": "Zimbabwe",
-                "url": "https://www.wikidata.org/wiki/Q954",
-                "value": "Zimbabwe"
             }
         ],
         "layerType": "qNode"

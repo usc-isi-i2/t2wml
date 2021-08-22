@@ -1,10 +1,12 @@
 from pathlib import Path
-from t2wml.api import Sheet, SpreadsheetFile, Wikifier
+from t2wml.api import SpreadsheetFile, Wikifier
 from caching import CacheHolder
-
+from web_sheet import Sheet
 
 class CalcParams:
-    def __init__(self, project, data_path, sheet_name, yaml_path=None, annotation_path=None):
+    def __init__(self, project, data_path, sheet_name, yaml_path=None, annotation_path=None,
+                data_start=0, data_end=None, map_start=0, map_end=None,
+                part_start=0, part_end=None, part_count=100):
         self.project = project
         self.project_path = project.directory
         self._data_path = data_path
@@ -13,6 +15,14 @@ class CalcParams:
         self._sheet = None
         self._yaml_path = yaml_path
         self._annotation_path = annotation_path or ""
+
+        self.data_start=data_start
+        self.data_end=data_end
+        self.map_start=map_start
+        self.map_end=map_end
+        self.part_start=part_start
+        self.part_end=part_end
+        self.part_count=part_count
 
 
     @property
@@ -42,11 +52,11 @@ class CalcParams:
 
     @property
     def wikifier(self):
-        wikifier = Wikifier()
-        wikifier_file, exists = self.project.get_wikifier_file(self.data_path)
+        wikifier_file, exists = self.project.get_wikifier_file(self.sheet)
         if exists:
-            wikifier.add_file(wikifier_file)
-        return wikifier
+            return Wikifier.load_from_file(filepath=wikifier_file)
+        else:
+            return Wikifier()
 
     @property
     def sheet_names(self):

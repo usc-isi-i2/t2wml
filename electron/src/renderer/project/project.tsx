@@ -163,7 +163,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     this.loadProject();
   }
 
-  onUploadWikifier(){
+  onUploadWikifier() {
     this.uploadWikifier();
   }
 
@@ -184,14 +184,14 @@ class Project extends Component<ProjectProps, ProjectState> {
         this.requestService.getPartialCsv();
       } catch (error) {
         console.log(error);
-      }finally{
+      } finally {
         wikiStore.table.showSpinner = false;
         wikiStore.yaml.showSpinner = false;
       }
     }
   }
 
-  onUploadEntities(){
+  onUploadEntities() {
     this.uploadEntities();
   }
 
@@ -212,7 +212,7 @@ class Project extends Component<ProjectProps, ProjectState> {
         this.requestService.getPartialCsv();
       } catch (error) {
         console.log(error);
-      }finally{
+      } finally {
         wikiStore.table.showSpinner = false;
         wikiStore.yaml.showSpinner = false;
       }

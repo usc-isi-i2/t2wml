@@ -1,69 +1,98 @@
 import React from 'react';
+import 'react-virtualized/styles.css'
+import { Column, Table as VirtualizedTable, TableCellDataGetterParams, TableCellProps } from 'react-virtualized/dist/commonjs/Table';
+
 import * as utils from './table-utils';
-import { TableData } from '../../common/dtos';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { TableCell, TableData } from '../../common/dtos';
+import TableCellItem from './tableCellItem';
+import './table-virtual.css'
+import wikiStore from '@/renderer/data/store';
+import { AutoSizer } from 'react-virtualized';
+import { IReactionDisposer, reaction } from 'mobx';
 
-
-const MIN_NUM_ROWS = 100;
-const CHARACTERS = [...Array(26)].map((a, i) => String.fromCharCode(97 + i).toUpperCase());
-
+export const DEFAULT_CELL_STATE = {
+  active: false,
+  activeTop: false,
+  activeLeft: false,
+  activeRight: false,
+  activeBottom: false,
+  activeCorner: false,
+  highlight: false,
+  maxWidth: false,
+  qnode: false
+}
 
 interface TableProperties {
-  tableData?: TableData;
+  tableData: TableData;
+  ableActivated?: boolean;
   onMouseUp?: (event: React.MouseEvent) => void;
   onMouseDown?: (event: React.MouseEvent) => void;
   onMouseMove?: (event: React.MouseEvent) => void;
   onClickHeader?: (event: React.MouseEvent) => void;
-  setTableReference: any;
-  optionalClassNames?: string;
-  minCols?: number;
+  MIN_ROWS: number;
+  MIN_COLUMNS: number;
+
+  rowCount: number;
+  rowGetter: (index: number) => TableCell[];
 }
 
 
-class Table extends React.Component<TableProperties>{
+class Table extends React.Component<TableProperties, { rowHeight: number, columnWidth: number, activeTable: boolean}>{
+
+  private tableRef: any;
+  private disposers: IReactionDisposer[] = [];
 
   constructor(props: TableProperties) {
     super(props);
+
+    this.state = {
+      rowHeight: 25,
+      columnWidth: 75,
+      activeTable: false
+    }
+
+    this.tableRef = null;
   }
 
-  renderEmptyTable() {
-    const {
-      onMouseUp,
-      onMouseDown,
-      onMouseMove,
-      setTableReference,
-      optionalClassNames,
-      minCols
-    } = this.props;
-    let minimumColumns = 26;
-    if (minCols) {
-      minimumColumns = minCols
+  componentDidMount() {
+    this.disposers.push(reaction(() => wikiStore.table.showQnodes, () => this.updateShowQNodes()));
+    this.disposers.push(reaction(() => wikiStore.table.table, () => this.scrolToTop()));
+    this.disposers.push(reaction(() => wikiStore.table.selection, (selection) => this.setState({activeTable: selection.selectionArea ? true: false})));
+  }
+
+  componentWillUnmount() {
+    for (const disposer of this.disposers) {
+      disposer();
     }
-    return (
-      <div className={`table-wrapper ${optionalClassNames ? optionalClassNames : ''}`}>
-        <table ref={setTableReference}
-          onMouseUp={(event) => (onMouseUp ? onMouseUp(event) : null)}
-          onMouseDown={(event) => (onMouseDown ? onMouseDown(event) : null)}
-          onMouseMove={(event) => (onMouseMove ? onMouseMove(event) : null)}>
-          <thead>
-            <tr>
-              <th></th>
-              {CHARACTERS.slice(0, minimumColumns).map(c => <th key={c}><div>{c}</div></th>)}
-            </tr>
-          </thead>
-          <tbody>
-            {[...Array(MIN_NUM_ROWS)].map((e, i) => (
-              <tr key={`row-${i}`}>
-                <td>{i + 1}</td>
-                {CHARACTERS.slice(0, minimumColumns).map((c, j) => (
-                  <td key={`cell-${j}`}></td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    )
+  }
+
+  scrolToTop(){
+    this.tableRef.scrollToPosition(0);
+    wikiStore.table.currentRowIndex = 0;
+  }
+
+  updateShowQNodes() {
+    console.log("updateShowQNodes");
+    if (wikiStore.table.showQnodes) {
+      this.setState({ rowHeight: 60, columnWidth: 90 }, () => {
+        this.tableRef.recomputeRowHeights();
+        this.tableRef.forceUpdateGrid();
+      })
+    } else {
+      this.setState({ rowHeight: 25, columnWidth: 75 }, () => {
+        this.tableRef.recomputeRowHeights();
+        this.tableRef.forceUpdateGrid();
+      })
+    }
+  }
+
+  setTableReference(reference: VirtualizedTable | null) {
+    if (!reference) { return; }
+    this.tableRef = reference;
+  }
+
+  rowGetter(index: number) {
+    return this.props.rowGetter(index);
   }
 
   render() {
@@ -73,84 +102,88 @@ class Table extends React.Component<TableProperties>{
       onMouseDown,
       onMouseMove,
       onClickHeader,
-      setTableReference,
-      optionalClassNames,
-      minCols
+      ableActivated,
+      // MIN_COLUMNS,
+      // MIN_ROWS,
+
+      rowCount
     } = this.props;
 
-    let minimumColumns = 26;
-    if (minCols) {
-      minimumColumns = minCols
-    }
-
-    if (!tableData) {
-      return this.renderEmptyTable();
-    }
-
-    const rows = [...Array(Math.max(tableData.length, MIN_NUM_ROWS))];
-    const cols = [...Array(Math.max(tableData[0] ? tableData[0].length : 0, minimumColumns))];
+    const { rowHeight, columnWidth } = this.state;
 
     return (
-      <div className={`table-wrapper ${optionalClassNames ? optionalClassNames : ''}`}>
-        <table ref={setTableReference}
-          onMouseUp={(event) => (onMouseUp ? onMouseUp(event) : null)}
-          onMouseDown={(event) => (onMouseDown ? onMouseDown(event) : null)}
-          onMouseMove={(event) => (onMouseMove ? onMouseMove(event) : null)}>
-          <thead>
-            <tr>
-              <th></th>
-              {cols.map((r, i) => (
-                <th key={i}>
-                  <div onDoubleClick={(event) => (onClickHeader ? onClickHeader(event) : null)}>
-                    {utils.columnToLetter(i + 1)}
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((e, i) => (
-              <tr key={`row-${i}`}>
-                <td>{i + 1}</td>
-                {cols.map((r, j) => {
-                  if (i < tableData.length && j < tableData[i].length && tableData[i][j]) {
-                    const { rawContent, content, classNames, overlay } = tableData[i][j];
-                    if (overlay) {
-                      return (
-                        <OverlayTrigger
-                        key={`overlay-trigger cell-${j} row-${i}`}
-                          placement="right"
-                          delay={{ show: 50, hide: 200 }}
-                          overlay={(props) => (
-                            <Tooltip id="button-tooltip" {...props} key={`tooltip cell-${j} row-${i}`}>
-                              {overlay}
-                            </Tooltip>
-                          )}
-                        >
-                          <td key={`cell-${j}`} title={rawContent}
-                            className={classNames ? classNames.join(' ') : ''}>
-                            {content}
+      <div
+        className='table-wrapper'
+        onMouseUp={(event) => (onMouseUp ? onMouseUp(event) : null)}
+        onMouseDown={(event) => (onMouseDown ? onMouseDown(event) : null)}
+        onMouseMove={(event) => (onMouseMove ? onMouseMove(event) : null)}
+      >
+        <AutoSizer disableWidth>
+          {
+            (Size: { height: number }) => {
+              return (
+                <VirtualizedTable id="virtualized-table"
+                  height={Size.height}
+                  width={tableData[0].length * columnWidth}
+                  className={this.state.activeTable && ableActivated ? 'active' : ''}
+                  headerHeight={rowHeight}
+                  rowHeight={rowHeight}
+                  // scrollTop
+                  ref={(ref: VirtualizedTable | null) => this.setTableReference(ref)}
+                  rowCount={rowCount}
+                  rowGetter={({ index }) => this.rowGetter(index)}
+                >
 
-                          </td>
-                        </OverlayTrigger>
-                      )
-                    }
-                    else return (<td key={`cell-${j}`} title={rawContent}
-                      className={classNames ? classNames.join(' ') : ''}>
-                      {content}
-                    </td>)
-                  } else {
-                    return <td key={`cell-${j}`} />
-                  }
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                  <Column
+                    label=''
+                    dataKey=''
+                    headerRenderer={() => <div>&nbsp;</div>}
+                    width={50}
+                    cellDataGetter={data => {
+                      return data.rowData[data.dataKey]
+                    }}
+                    cellRenderer={data => {
+                      return <div>{data.rowIndex + 1}</div>
+                    }}
+                  />
+
+                  {Object.keys(tableData[0]).map((r, i) => (
+                    <Column key={`col-${i}`}
+                      label={utils.columnToLetter(i + 1)}
+                      dataKey={i.toString()}
+                      headerRenderer={data => {
+                        return (
+                          <div
+                            data-row-index={0}
+                            data-col-index={i + 1}
+                            onDoubleClick={(event) => (onClickHeader ? onClickHeader(event) : null)}>
+                            {data.label}
+                          </div>
+                        )
+                      }}
+                      width={columnWidth}
+                      cellDataGetter={(data: TableCellDataGetterParams) => {
+                        return data.rowData[data.dataKey]
+                      }}
+                      cellRenderer={(data: TableCellProps) => {
+                        if (data.isScrolling && data.cellData && data.cellData.length && data.cellData[1].content) {
+                          return (<div style={{ color: 'lightgray' }}> scrolling... </div>);
+                        }
+                        return (
+                          <TableCellItem cellData={data.cellData} rowIndex={data.rowIndex} columnIndex={data.columnIndex} />
+                        );
+                      }
+                      }
+                    />
+                  ))}
+
+                </VirtualizedTable>
+              )
+            }}
+        </AutoSizer>
+      </div >
     )
   }
 }
-
 
 export default Table

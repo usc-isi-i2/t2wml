@@ -69,8 +69,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   componentDidMount() {
     this.disposers.push(reaction(() => currentFilesService.currentState.mappingType, (mappingType) => { this.setState({ mappingType }) }));
-    this.disposers.push(reaction(() => wikiStore.table.selectedBlock, (selectedBlock) => this.updateSelectedBlock(selectedBlock)));
-    this.disposers.push(reaction(() => wikiStore.table.selection, (selection) => this.updateSelection(selection)));
+    this.disposers.push(reaction(() => wikiStore.table.selection.selectedBlock, (selectedBlock) => this.updateSelectedBlock(selectedBlock)));
+    this.disposers.push(reaction(() => wikiStore.table.selection.selectionArea, (selection) => this.updateSelection(selection)));
   }
 
   componentWillUnmount() {
@@ -128,12 +128,22 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     this.setState({ showWikifyBlockMenu: false });
   }
 
+  compareSelections(s1?: CellSelection, s2?: CellSelection): boolean {
+    if (!s1 && s2) { return false; }
+    if (s1 && !s2) { return false; }
+    if (s1?.x1 !== s2?.x1 || s1?.x2 !== s2?.x2 || s1?.y1 !== s2?.y1 || s1?.y2 !== s2?.y2) {
+      return false;
+    }
+    return true;
+  }
+
 
   updateSelection(selection?: CellSelection) {
-    if ((!wikiStore.table.selectedBlock) || wikiStore.table.selectedBlock.selection !== selection) {
+    this.setState({ validArea: true });
+    if ((!wikiStore.table.selection.selectedBlock) || !this.compareSelections(wikiStore.table.selection.selectedBlock?.selection, selection)) {
       const selectedArea = selection ? utils.humanReadableSelection(selection) : undefined;
       const fields = { ...this.state.fields }
-      if ((!wikiStore.table.selectedBlock)) {
+      if ((!wikiStore.table.selection.selectedBlock)) {
         /* eslint-disable */
         for (const [key, val] of Object.entries(fields)) {
           fields[key as keyof AnnotationFields] = undefined;
@@ -184,7 +194,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   }
 
   async updateSuggestion(suggestion: ResponseWithSuggestion) {
-    if (suggestion && !wikiStore.table.selectedBlock) {
+    if (suggestion && !wikiStore.table.selection.selectedBlock) {
       this.setState({
         fields: {
           ...this.state.fields,
@@ -198,7 +208,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   async getAnnotationSuggestionsForSelection(selection?: { 'x1': number, 'x2': number, 'y1': number, 'y2': number }) {
     if (!selection) { return; }
-    if (wikiStore.table.selectedBlock) { console.log("returned because state had a block"); return; }
+    if (wikiStore.table.selection.selectedBlock) { console.log("returned because state had a block"); return; }
     // data should be a json dictionary, with fields:
     // {
     //   "selection": The block,
@@ -232,14 +242,15 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       } else { //| "metadata" | "property" | "mainSubject" | "unit"
         updatedFields['type'] = undefined;
       }
-
     }
 
-    this.setState({ fields: updatedFields });
+    this.setState({ fields: updatedFields }, () => this.handleOnSubmit());
   }
 
+
   validationSelectionArea(selection: CellSelection) {
-    if (selection.x1 <= selection.x2 && selection.y1 <= selection.y2) {
+    if (selection.x1 <= selection.x2 && selection.y1 <= selection.y2 &&
+      selection.x2 <= wikiStore.table.table.dims[1] && selection.y2 <= wikiStore.table.table.dims[0]) {
       this.setState({ validArea: true });
     } else {
       this.setState({ validArea: false });
@@ -267,7 +278,8 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       }
       this.timeoutChangeAreaId = window.setTimeout(() => {
         if (this.state.validArea) {
-          wikiStore.table.selection = selection;
+          wikiStore.table.updateSelection(selection)
+          this.handleOnSubmit()
         }
       }, 500);
     } else {
@@ -275,7 +287,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     }
   }
 
-  async postAnnotations(annotations: AnnotationBlock[], annotation?: AnnotationBlock) {
+  async postAnnotations(annotations: AnnotationBlock[], newAnnotationSelection?: CellSelection) {
     wikiStore.table.showSpinner = true;
     try {
       await this.requestService.call(this, () => (
@@ -287,21 +299,12 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
       error.errorDescription += "\n\nCannot submit annotations!";
       this.setState({ errorMessage: error });
     }
-
-    if (annotation) {
-      if (annotation.role && annotation.selection && annotation.role == "mainSubject") {
-        try {
-          await this.requestService.call(this, () => (
-            this.requestService.callCountryWikifier({ "selection": annotation.selection })
-          ))
-        }
-        catch (error) {
-          //do nothing...
-        }
-      }
-      wikiStore.table.selectBlock(utils.checkSelectedAnnotationBlocks(annotation.selection))
-    } else {
-      wikiStore.table.resetSelections();
+    if (newAnnotationSelection) { // select the block that just created
+      const currentAnnotation = wikiStore.annotations.blocks.filter(block => {
+        return this.compareSelections(newAnnotationSelection, block.selection)
+      })
+      const newBlock = currentAnnotation ? currentAnnotation[0] : undefined;
+      wikiStore.table.selectNewBlock(newBlock)
     }
 
     wikiStore.table.showSpinner = false;
@@ -319,19 +322,30 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     if (event) event.preventDefault();
     const { fields, selectedBlock, selection } = this.state;
     if (!fields.selectedArea || !(selection && fields.role)) { return null; }
+    let newAnnotationSelection = undefined;
 
     const annotations = wikiStore.annotations.blocks.filter(block => {
       return block.id !== selectedBlock?.id;
     });
-    const annotation: any = {
-      selection: selection
-    };
+
+    let annotation: any = {}
+    if (selectedBlock) {
+      const currentAnnotation = wikiStore.annotations.blocks.filter(block => {
+        return block.id == selectedBlock?.id;
+      });
+      if (currentAnnotation) {
+        annotation = currentAnnotation[0]
+      }
+    }
+    else {
+      newAnnotationSelection = selection;
+    }
+    annotation["selection"] = selection
 
     // Add all updated values from the annotation form
     for (const [key, value] of Object.entries(fields)) {
       annotation[key] = value;
     }
-
     // if (!fields.property && searchFields.property && searchFields.property.startsWith("P")) {
     //   try {
     //     const response = await this.requestService.call(this, () => (
@@ -363,7 +377,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     // }
 
     annotations.push(annotation);
-    this.postAnnotations(annotations, annotation);
+    this.postAnnotations(annotations, newAnnotationSelection);
 
   }
 
@@ -376,6 +390,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     const annotations = wikiStore.annotations.blocks.filter(block => {
       return block.id !== selectedBlock.id;
     });
+    wikiStore.table.resetSelections()
     this.postAnnotations(annotations);
 
   }
@@ -442,7 +457,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           selectedBlock={selectedBlock}
           fields={fields}
           type={type}
-          onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields })}
+          onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields }, () => this.handleOnSubmit())}
           changeShowEditFieldMenu={(newTypeEditFieldMenu: string) => this.changeShowEditFieldMenu(newTypeEditFieldMenu)}
         />
 
@@ -551,13 +566,14 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
     if (listQNodeFields.includes(key)) {
       const fields = { ...this.state.fields };
       fields[(key as keyof AnnotationFields) as nameQNodeFields] = value;
-      this.setState({ fields });
+      this.setState({ fields }, () => this.handleOnSubmit());
     }
   }
 
 
   renderSubmitButton() {
     const { role, type } = this.state.fields;
+    const { selectedBlock, selection } = this.state;
     return (
       <Form.Group as={Row}>
         {(role === 'unit' || role === 'mainSubject' || type === 'wikibaseitem' || role === "property") ?
@@ -573,20 +589,24 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
           : null
         }
         <Col sm="12" md="12" style={{ marginTop: "0.5rem" }}>
-          <Button
-            size="sm"
-            type="submit"
-            variant="outline-dark">
-            Submit
-          </Button>
-          {this.renderDeleteButton()}
+          {
+            !selectedBlock && selection ?
+              <Button
+                size="sm"
+                type="submit"
+                variant="outline-dark">
+                Submit
+              </Button> :
+              selectedBlock ?
+                this.renderDeleteButton(selectedBlock)
+                : null
+          }
         </Col>
       </Form.Group>
     )
   }
 
-  renderDeleteButton() {
-    const { selectedBlock } = this.state;
+  renderDeleteButton(selectedBlock?: AnnotationBlock) {
     if (selectedBlock) {
       return (
         <Button
@@ -603,7 +623,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
   render() {
     const { selection, showEditFieldMenu, typeEditFieldMenu, errorMessage, fields, showWikifyBlockMenu, selectedBlock } = this.state;
-    const { type: data_type } = this.state.fields;
     if (this.state.mappingType == "Yaml") { return <div>Block mode not relevant when working with a yaml file</div> }
     if (!selection) { return <div>Please select a block</div>; }
     return (
@@ -622,7 +641,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
               selectedBlock={selectedBlock}
               fields={fields}
               type={{ label: "Subject", value: "subject" }}
-              onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields })}
+              onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields }, () => this.handleOnSubmit())}
               changeShowEditFieldMenu={(newTypeEditFieldMenu: string) => this.changeShowEditFieldMenu(newTypeEditFieldMenu)}
             />
             : null
@@ -635,7 +654,6 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
               selection={selection}
               onClose={(key: string, entityFields?: EntityFields) => this.handleOnCloseEditFieldMenu(key, entityFields)}
               title={typeEditFieldMenu}
-              data_type={data_type}
               // showResults={this.state.showResult1}
               onSelectNode={this.handleOnSelectNode.bind(this)}
             />
