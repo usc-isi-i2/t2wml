@@ -1218,7 +1218,6 @@ class CombinedTable extends Component<{}, TableState> {
         if (!tableData) { return [] as TableCell[]; }
         if (!wikiStore.table.loadedRows.has(index) && index < wikiStore.table.table.dims[0]) {
             this.fetchRows(index);
-            // return [] as TableCell[];
         }
         return tableData[index];
     }

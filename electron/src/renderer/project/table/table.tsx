@@ -37,7 +37,7 @@ interface TableProperties {
 }
 
 
-class Table extends React.Component<TableProperties, { rowHeight: number, columnWidth: number, activeTable: boolean}>{
+class Table extends React.Component<TableProperties, { rowHeight: number, columnWidth: number, activeTable: boolean, showQnode?: boolean }>{
 
   private tableRef: any;
   private disposers: IReactionDisposer[] = [];
@@ -57,7 +57,7 @@ class Table extends React.Component<TableProperties, { rowHeight: number, column
   componentDidMount() {
     this.disposers.push(reaction(() => wikiStore.table.showQnodes, () => this.updateShowQNodes()));
     this.disposers.push(reaction(() => wikiStore.table.table, () => this.scrolToTop()));
-    this.disposers.push(reaction(() => wikiStore.table.selection, (selection) => this.setState({activeTable: selection.selectionArea ? true: false})));
+    this.disposers.push(reaction(() => wikiStore.table.selection, (selection) => this.setState({ activeTable: selection.selectionArea ? true : false })));
   }
 
   componentWillUnmount() {
@@ -66,23 +66,24 @@ class Table extends React.Component<TableProperties, { rowHeight: number, column
     }
   }
 
-  scrolToTop(){
+  scrolToTop() {
     this.tableRef.scrollToPosition(0);
     wikiStore.table.currentRowIndex = 0;
   }
 
   updateShowQNodes() {
-    console.log("updateShowQNodes");
-    if (wikiStore.table.showQnodes) {
-      this.setState({ rowHeight: 60, columnWidth: 90 }, () => {
-        this.tableRef.recomputeRowHeights();
-        this.tableRef.forceUpdateGrid();
-      })
-    } else {
-      this.setState({ rowHeight: 25, columnWidth: 75 }, () => {
-        this.tableRef.recomputeRowHeights();
-        this.tableRef.forceUpdateGrid();
-      })
+    if (this.props.ableActivated) {
+      if (wikiStore.table.showQnodes) {
+        this.setState({ rowHeight: 45, columnWidth: 100, showQnode: true }, () => {
+          this.tableRef.recomputeRowHeights();
+          this.tableRef.forceUpdateGrid();
+        })
+      } else {
+        this.setState({ rowHeight: 25, columnWidth: 75, showQnode: false }, () => {
+          this.tableRef.recomputeRowHeights();
+          this.tableRef.forceUpdateGrid();
+        })
+      }
     }
   }
 
@@ -103,20 +104,17 @@ class Table extends React.Component<TableProperties, { rowHeight: number, column
       onMouseMove,
       onClickHeader,
       ableActivated,
-      // MIN_COLUMNS,
-      // MIN_ROWS,
-
       rowCount
     } = this.props;
 
-    const { rowHeight, columnWidth } = this.state;
-
+    const { rowHeight, columnWidth, showQnode } = this.state;
     return (
       <div
         className='table-wrapper'
         onMouseUp={(event) => (onMouseUp ? onMouseUp(event) : null)}
         onMouseDown={(event) => (onMouseDown ? onMouseDown(event) : null)}
         onMouseMove={(event) => (onMouseMove ? onMouseMove(event) : null)}
+        key={showQnode ? "showQnode" : "not showQnode"}
       >
         <AutoSizer disableWidth>
           {
@@ -128,10 +126,10 @@ class Table extends React.Component<TableProperties, { rowHeight: number, column
                   className={this.state.activeTable && ableActivated ? 'active' : ''}
                   headerHeight={rowHeight}
                   rowHeight={rowHeight}
-                  // scrollTop
                   ref={(ref: VirtualizedTable | null) => this.setTableReference(ref)}
                   rowCount={rowCount}
                   rowGetter={({ index }) => this.rowGetter(index)}
+                  // showQnode={showQnode}
                 >
 
                   <Column

@@ -115,7 +115,7 @@
   height: inherit;
   min-width: 50px;
   min-height: 25px;
-  max-height: 60px;
+  max-height: 45px;
 }
 
 .ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn:nth-child(1)>div {
@@ -147,9 +147,9 @@
 
 .ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn {
   min-width: 75px;
-  max-width: 90px;
+  max-width: 100px;
   height: inherit;
-  width:90px;
+  width:100px;
 }
 
 .ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn>div {
