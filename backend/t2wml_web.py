@@ -29,6 +29,7 @@ def get_project_instance(project_folder):
     update_t2wml_settings(project)
     return project
 
+
 def set_web_settings():
     if not os.path.isdir(CACHE_FOLDER):
         os.makedirs(CACHE_FOLDER, exist_ok=True)
