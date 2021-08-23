@@ -176,7 +176,7 @@ async function waitForBackend() {
       console.log(`Backend is ready`);
       return;
     } catch(error) {
-      await sleep(500); // Wait a bit before trying again
+      await sleep(1000); // Wait a bit before trying again
     }
   }
 
