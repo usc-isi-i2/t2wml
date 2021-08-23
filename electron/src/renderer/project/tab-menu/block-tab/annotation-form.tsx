@@ -633,7 +633,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
         {
           !selection
             ?
-            (<div style={{marginTop: '1rem'}}>Please select a block</div>) :
+            (<div style={{ marginTop: '1rem' }}>Please select a block</div>) :
             (<div>
               {this.renderSelectionAreas()}
               {this.renderRolesDropdown()}
@@ -683,3 +683,4 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
 
 export default AnnotationForm;
+
