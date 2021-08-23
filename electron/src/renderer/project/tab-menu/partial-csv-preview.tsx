@@ -1,10 +1,10 @@
 import React, { Component, Fragment } from 'react';
 
-import { Card, Spinner} from 'react-bootstrap';
+import { Card, Spinner } from 'react-bootstrap';
 import { observer } from "mobx-react"
 import wikiStore from '../../data/store';
 import { reaction, IReactionDisposer } from 'mobx';
-import Table from '../table/table';
+import Table, { DEFAULT_CELL_STATE } from '../table/table';
 import { TableCell, TableData, TableDTO } from '@/renderer/common/dtos';
 import "../project.css";
 
@@ -47,31 +47,50 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
   }
 
   updateTableData(table?: TableDTO) {
-    if ( !table || !table.cells ) {
+    if (!table || !table.cells) {
       this.setState({ partialCsv: undefined });
       return;
     }
     const tableData = [];
-    for ( let i = 0; i < table.cells.length; i++ ) {
+    const emptyCell: TableCell = {
+      content: '',
+      classNames: [],
+      ...DEFAULT_CELL_STATE
+    };
+    const tableLength = table.cells.length
+    for (let i = 0; i < Math.min(tableLength, 150); i++) {
       const rowData = [];
-      for ( let j = 0; j < table.cells[i].length; j++ ) {
+      let j = 0;
+      for (; j < table.cells[0].length + 1; j++) {
         const cell: TableCell = {
-          content: table.cells[i][j],
+          content: i > tableLength ? '' : table.cells[i][j],
           classNames: [],
+          ...DEFAULT_CELL_STATE
         };
         rowData.push(cell);
       }
+      for (; j < 10; j++) {
+        rowData.push(emptyCell);
+      }
+      rowData.push(emptyCell);
       tableData.push(rowData);
     }
+    const rowData = [];
+    for (let k = 0; k < Math.max(table.cells[0].length, 10) + 1; k++) { // add one extra row
+      rowData.push(emptyCell);
+    }
+    tableData.push(rowData);
     this.setState({ partialCsv: tableData });
   }
 
   render() {
+    const { partialCsv } = this.state;
     return (
       <Fragment>
         <Card
           className="shadow-sm"
-          style={{ height: "88vh"}}>
+          style={{ height: "100%", position: 'absolute' }}
+          >
 
           {/* wikifier */}
           <Card.Body className="p-0">
@@ -82,10 +101,31 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
 
             {/* wikifier output */}
             <div className="w-100 h-100">
-              <Table
-              minCols={6}
-              tableData={this.state.partialCsv}
-              setTableReference={()=>(null)}/>
+              {
+                partialCsv && Object.keys(partialCsv).length > 1 ?
+                  <Table
+                    tableData={partialCsv}
+                    MIN_ROWS={0}
+                    MIN_COLUMNS={6}
+                    rowGetter={(index: number) => { return partialCsv[index]; }}
+                    rowCount={Object.keys(partialCsv).length} />
+                  :
+                  <div style={{ padding: '2rem' }}>
+                    <h6>
+                      In order to annotate the data:
+                    </h6>
+                    <h6>
+                      1. Select the main subject
+                    </h6>
+                    <h6>
+                      2. Select the dependent variable
+                    </h6>
+                    <h6>
+                      3. Select data properties and qualifiers
+                    </h6>
+                  </div>
+              }
+
             </div>
           </Card.Body>
         </Card >

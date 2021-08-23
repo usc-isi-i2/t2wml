@@ -1,0 +1,500 @@
+.table-wrapper {
+  overflow-y: hidden;
+  height: 100%;
+}
+
+.ReactVirtualized__Table {
+  table-layout: fixed;
+  transform: rotateX(0deg);
+  border-collapse: collapse;
+  display: table;
+  border-spacing: 0;
+  font-weight: 400;
+  user-select: none;
+  position: relative;
+  cursor: crosshair;
+}
+
+.ReactVirtualized__Table.active .ReactVirtualized__Grid .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn>div {
+  opacity: 0.5;
+}
+
+.ReactVirtualized__Table.active .ReactVirtualized__Grid .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn>.active {
+  opacity: 1;
+}
+
+.ReactVirtualized__Table.active .ReactVirtualized__Grid .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn>.linked-block {
+  opacity: 0.9;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Grid.ReactVirtualized__Table__Grid {
+  overflow: hidden;
+  outline: none;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__headerColumn:nth-child(1) {
+  text-align: center;
+  background: #f9f9f9;
+  color: #777;
+  min-width: 50px;
+  max-width: 50px;
+  width: 50px;
+  height: inherit;
+  position: sticky;
+  z-index: 5;
+  left: -1px;
+  top: -1px;
+  box-shadow: inset -1px 0px 0px 0px #c7c7c7;
+  pointer-events: none;
+  margin-left: 0;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__headerColumn:nth-child(1)::before {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  width: 0;
+  height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid #ddd;
+  border-top: 20px solid transparent;
+  pointer-events: none;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__headerColumn {
+  display: table-cell;
+  border: 1px solid #c7c7c7;
+  white-space: nowrap;
+  text-align: center;
+  background: #f9f9f9;
+  color: #777;
+  position: sticky;
+  z-index: 3;
+  top: -1px;
+  margin-right: 0;
+  height: inherit;
+  min-width: 50px;
+  max-width: 300px;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__headerColumn::after {
+  content: '';
+  display: block;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  position: absolute;
+  background: #c7c7c7;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__headerColumn>div {
+  padding: 0.15em 0.5em;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row {
+  display: flex;
+  /* -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal; */
+  flex-direction: row;
+  /* -webkit-box-align: center; */
+  flex-wrap: nowrap;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn:nth-child(1) {
+  display: table-cell;
+  text-align: center;
+  background: #f9f9f9;
+  color: #777;
+  position: sticky;
+  left: -1px;
+  z-index: 3;
+  width: 50px;
+  height: inherit;
+  min-width: 50px;
+  min-height: 25px;
+  max-height: 55px;
+  margin-left: 0;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn:nth-child(1)>div {
+  padding: 0.15em 0.5em;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn:nth-child(1)::after {
+  content: "";
+  display: block;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 1px;
+  position: absolute;
+  background: #c7c7c7;
+  pointer-events: none;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn {
+  display: table-cell;
+  color: 111;
+  border: 1px solid #c7c7c7;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  position: relative;
+  z-index: 1;
+  margin-right: 0;
+  min-width: 50px;
+  max-width: 300px;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn {
+  height: inherit;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn>div {
+  padding: 0.15em 0.5em;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn>div.maxWidth {
+  background: #efefef;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .qnode {
+  color: #006699 !important;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-mainSubject {
+  background: #D9EAF2;
+  color: #111;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-mainSubject.highlight {
+  background: #a0cbdf;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-mainSubject-no-link {
+  background: repeating-linear-gradient( 55deg, #D9EAF2, #D9EAF2 5px, #ffffff 5px, #ffffff 10px);
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-dependentVar {
+  background: #D9F2E6;
+  color: #111;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-dependentVar.highlight {
+  background: #a0dfc1;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-dependentVar-no-property {
+  background: repeating-linear-gradient( 55deg, #D9F2E6, #D9F2E6 5px, #ffffff 5px, #ffffff 10px);
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-qualifier {
+  background: #DDD9F2;
+  color: #111;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-qualifier.highlight {
+  background: #aaa0df;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-qualifier-no-property {
+  background: repeating-linear-gradient( 55deg, #DDD9F2, #DDD9F2 5px, #ffffff 5px, #ffffff 10px);
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-property {
+  background: #fbe5ce;
+  color: #111;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-property.highlight {
+  background: #f5bf87;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-property-no-link {
+  background: repeating-linear-gradient( 55deg, #fbe5ce, #fbe5ce 5px, #ffffff 5px, #ffffff 10px);
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-metadata {
+  background: #d8dfe7;
+  color: #111;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-metadata.highlight {
+  background: #a9b8ca;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-unit {
+  background: #fff2ce;
+  color: #111;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-unit.highlight {
+  background: #ffde82;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-unit-no-link {
+  background: repeating-linear-gradient( 55deg, #fff2ce, #fff2ce 5px, #ffffff 5px, #ffffff 10px);
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn div.cell-border-top {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  pointer-events: none;
+  background: #555;
+  z-index: 5;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .active div.cell-border-top {
+  height: 2px;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-mainSubject div.cell-border-top {
+  background: #499bc1;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-dependentVar div.cell-border-top {
+  background: #3bab75;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-qualifier div.cell-border-top {
+  background: #8867cb;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-property div.cell-border-top {
+  background: #f1a655;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-metadata div.cell-border-top {
+  background: #556e8b;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-unit div.cell-border-top {
+  background: #ffca38;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn div.cell-border-left {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 1px;
+  pointer-events: none;
+  background: #555;
+  z-index: 5;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .active div.cell-border-left {
+  width: 2px;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-mainSubject div.cell-border-left {
+  background: #499bc1;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-dependentVar div.cell-border-left {
+  background: #3bab75;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-qualifier div.cell-border-left {
+  background: #8867cb;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-property div.cell-border-left {
+  background: #f1a655;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-metadata div.cell-border-left {
+  background: #556e8b;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-unit div.cell-border-left {
+  background: #ffca38;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn div.cell-border-right {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 1px;
+  pointer-events: none;
+  background: #555;
+  z-index: 5;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .active div.cell-border-right {
+  width: 2px;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-mainSubject div.cell-border-right {
+  background: #499bc1;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-dependentVar div.cell-border-right {
+  background: #3bab75;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-qualifier div.cell-border-right {
+  background: #8867cb;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-property div.cell-border-right {
+  background: #f1a655;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-metadata div.cell-border-right {
+  background: #556e8b;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-unit div.cell-border-right {
+  background: #ffca38;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn div.cell-border-bottom {
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  pointer-events: none;
+  background: #555;
+  z-index: 5;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .active div.cell-border-bottom {
+  height: 2px;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-mainSubject div.cell-border-bottom {
+  background: #499bc1;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-dependentVar div.cell-border-bottom {
+  background: #3bab75;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-qualifier div.cell-border-bottom {
+  background: #8867cb;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-property div.cell-border-bottom {
+  background: #f1a655;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-metadata div.cell-border-bottom {
+  background: #556e8b;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-unit div.cell-border-bottom {
+  background: #ffca38;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn div.cell-resize-corner {
+  display: block;
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 9px;
+  height: 9px;
+  cursor: pointer;
+  background: #555;
+  border: 1px solid #fefefe;
+  z-index: 25;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-mainSubject div.cell-resize-corner {
+  background: #499bc1;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-dependentVar div.cell-resize-corner {
+  background: #3bab75;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-qualifier div.cell-resize-corner {
+  background: #8867cb;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-property div.cell-resize-corner {
+  background: #f1a655;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-metadata div.cell-resize-corner {
+  background: #556e8b;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-unit div.cell-resize-corner {
+  background: #ffca38;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .expects-wiki {
+  color: #fd4800
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .wikified {
+  color: #006699 !important;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .error::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  display: block;
+  border-left: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-top: 10px solid #FF3333;
+}
+
+.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .active .error::after {
+  top: 2px;
+  right: 2px;
+}
+
+.ReactVirtualized__Table__headerTruncatedText {
+  flex: auto;
+}
+
+.DragHandle {
+  flex: 0 0 16px;
+  z-index: 200;
+  cursor: col-resize;
+  transform: translate(0px, 0px) !important;
+  color: grey;
+}
+
+/* .DragHandle:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+} */
+
+.DragHandleActive, .DragHandleActive:hover {
+  color: #0b6fcc;
+  z-index: 300;
+}
+
+.DragHandleIcon {
+  flex: 0 0 12px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  right: 1px;
+  top: 2px;
+}

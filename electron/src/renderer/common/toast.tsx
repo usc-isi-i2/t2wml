@@ -26,9 +26,10 @@ class ToastMessage extends Component<ToastProperties, ToastState> {
         const style = {
             position: 'absolute',
             zIndex: 999,
-            top: 0,
-            right: '40%',
-            maxHeight: '100px',
+            top: '15%',
+            // right: '10%',
+            left: '5%',
+            maxHeight: '200px',
             maxWidth: '300px',
             background: 'light-green'
         }

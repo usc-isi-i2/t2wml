@@ -7,10 +7,10 @@ from io import BytesIO
 from pathlib import Path
 from flask import request
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
-from causx.wikification import wikify_countries #temporary?
+from causx.wikification import wikify_countries  # temporary?
 import web_exceptions
 from app_config import app
-from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
+from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode, t2wml_settings, Wikifier
 from t2wml_web import (create_zip, get_kg, autocreate_items, get_kgtk_download_and_variables,
                        set_web_settings, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, get_partial_csv, get_qnodes_layer,
@@ -105,7 +105,20 @@ def get_calc_params(project, data_required=True, mapping_type=None, mapping_file
         else:
             return None
 
-    calc_params = CalcParams(project, data_file, sheet_name)
+    start_end_kwargs = {}
+    for key in ["data_start", "map_start"]:#, "part_start"]:
+        start_end_kwargs[key] = int(request.args.get(key, 0))
+    for key in ["data_end", "map_end"]:
+        end = int(request.args.get(key, 0))
+        if end == 0:
+            end = None
+        start_end_kwargs[key] = end
+
+    #start_end_kwargs["part_end"] = int(request.args.get("part_end", 30))
+    start_end_kwargs["part_count"] = int(request.args.get("part_count", 100))
+
+    calc_params = CalcParams(
+        project, data_file, sheet_name, **start_end_kwargs)
 
     mapping_type = mapping_type or request.args.get("mapping_type")
     mapping_file = mapping_file or request.args.get("mapping_file")
@@ -115,12 +128,7 @@ def get_calc_params(project, data_required=True, mapping_type=None, mapping_file
     return calc_params
 
 
-@app.route('/api/project', methods=['GET'])
-@json_response
-def get_project_files():
-    project = get_project()
-    response = dict(project=get_project_dict(project))
-    return response, 200
+############# heavy getters: ###############
 
 
 @app.route('/api/mapping', methods=['GET'])
@@ -134,18 +142,13 @@ def get_mapping(mapping_file=None, mapping_type=None):
 
     response = dict(project=get_project_dict(project))
 
-    start = int(request.args.get("map_start", 0))
-    end = int(request.args.get("map_end", 0))
-    if end == 0:
-        end = None
-
     if calc_params.yaml_path:
         response["yamlContent"] = get_yaml_content(calc_params)
         response["annotations"] = []
     else:
         response["annotations"], response["yamlContent"] = get_annotations(
             calc_params)
-    get_layers(response, calc_params, start, end)
+    get_layers(response, calc_params)
     return response, 200
 
 
@@ -159,15 +162,20 @@ def get_data():
         return response, 200
     calc_params = get_calc_params(project)
     response = dict()
-    start = int(request.args.get("data_start", 0))
-    end = int(request.args.get("data_end", 0))
-    if end == 0:
-        end = None
 
-    response["table"] = get_table(calc_params, start, end)
+    response["table"] = get_table(calc_params)
     calc_response, code = get_mapping()
     response.update(calc_response)
     return response, code
+
+
+@app.route('/api/annotation/guess-blocks', methods=['GET'])
+@json_response
+def guess_all_annotation_blocks():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    suggest_annotations(calc_params)
+    return get_mapping()
 
 
 @app.route('/api/partialcsv', methods=['GET'])
@@ -177,244 +185,14 @@ def partial_csv():
     calc_params = get_calc_params(project)
     response = dict()
 
-    start = int(request.args.get("part_start", 0))
-    end = int(request.args.get("part_end", 150))
-
     try:
-        response["partialCsv"] = get_partial_csv(calc_params, start, end)
+        response["partialCsv"] = get_partial_csv(calc_params)
     except Exception as e:
         # print(e)
         response["partialCsv"] = dict(dims=[1, 3],
                                       firstRowIndex=0,
                                       cells=[["subject", "property", "value"]])
     return response, 200
-
-
-@app.route('/api/project', methods=['POST'])
-@json_response
-def create_project():
-    """
-    This route creates a project
-    :return:
-    """
-    project_folder = get_project_folder()
-    # check we're not overwriting existing project
-    project_file = Path(project_folder) / "project.t2wml"
-    if project_file.is_file():
-        raise web_exceptions.ProjectAlreadyExistsException(project_folder)
-    title = request.get_json()["title"]
-    if not title:
-        raise web_exceptions.InvalidRequestException(
-            "title required to create project")
-    description = request.get_json().get("description", "")
-    url = request.get_json().get("url", "")
-    # create project
-    project = create_api_project(project_folder, title, description, url)
-    response = dict(project=get_project_dict(project))
-    return response, 201
-
-
-@app.route('/api/data', methods=['POST'])
-@json_response
-def upload_data_file():
-    """
-    This function uploads the data file.
-    :return:
-    """
-    project = get_project()
-
-    file_path = file_upload_validator({'.xlsx', '.xls', '.csv', '.tsv'})
-    data_file = project.add_data_file(
-        file_path, copy_from_elsewhere=True, overwrite=True)
-    project.save()
-    response = dict(project=get_project_dict(project))
-    sheet_name = project.data_files[data_file]["val_arr"][0]
-
-    annotations_dir = os.path.join(project.directory, "annotations")
-    if not os.path.isdir(annotations_dir):
-        os.mkdir(annotations_dir)
-    annotations_path = os.path.join(annotations_dir, Path(
-        data_file).stem+"_"+sheet_name+".annotation")
-
-    save_annotations(project, [], os.path.join(
-        annotations_path), data_file, sheet_name)
-
-    calc_params = CalcParams(project, data_file, sheet_name, None)
-
-    start = int(request.args.get("data_start", 0))
-    end = int(request.args.get("data_end", 0))
-    if end == 0:
-        end = None
-
-    response["table"] = get_table(calc_params, start, end)
-    get_layers(response, calc_params) #this will just return empty layers and any wikification if it exists
-
-    return response, 200
-
-
-@app.route('/api/project/entities', methods=['POST'])
-@json_response
-def upload_entities():
-    project = get_project()
-
-    file_path = file_upload_validator({".tsv"})
-    project.add_entity_file(
-        file_path, copy_from_elsewhere=True, overwrite=True)
-    project.save()
-
-    entities_stats = add_entities_from_file(file_path)
-    response = dict(entitiesStats=entities_stats,
-                    project=get_project_dict(project))
-    calc_params = get_calc_params(project, data_required=False)
-    if calc_params:
-        response["layers"] = get_qnodes_layer(calc_params)
-    return response, 200
-
-
-@app.route('/api/project/entities', methods=['GET'])
-@json_response
-def get_project_entities():
-    project = get_project()
-    response = get_entities(project)
-    return response, 200
-
-
-@app.route('/api/project/entities', methods=['PUT'])
-@json_response
-def edit_entities():
-    project = get_project()
-    entity_file = request.get_json()["entity_file"]
-    updated_entries = request.get_json()["updated_entries"]
-    response = update_entities(project, entity_file, updated_entries)
-    return response, 200
-
-
-
-@app.route('/api/web/wikify_region', methods=['POST']) #V
-@json_response
-def causx_wikify():
-    project = get_project()
-    region = request.get_json()["selection"]
-    overwrite_existing = request.get_json().get("overwrite", False)
-    #context = request.get_json()["context"]
-    calc_params = get_calc_params(project)
-
-    cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
-    project.add_df_to_wikifier_file(calc_params.data_path, cell_qnode_map, overwrite_existing)
-
-    calc_params = get_calc_params(project)
-    response = dict(project=get_project_dict(project))
-    response["layers"] = get_qnodes_layer(calc_params)
-
-    if problem_cells:
-        response['wikifierError'] = "Failed to wikify: " + \
-            ",".join(problem_cells)
-
-    return response, 200
-
-    
-@app.route('/api/wikifier', methods=['POST'])
-@json_response
-def upload_wikifier_output():
-    """
-    This function uploads the wikifier output
-    :return:
-    """
-    project = get_project()
-
-    file_path = file_upload_validator({".csv"})
-    project.add_old_style_wikifier_to_project(file_path)
-    project.save()
-
-    response = dict(project=get_project_dict(project))
-    calc_params = get_calc_params(project, data_required=False)
-    if calc_params:
-        response["layers"] = get_qnodes_layer(calc_params)
-    return response, 200
-
-
-@app.route('/api/wikifier_service', methods=['POST'])
-@json_response
-def call_wikifier_service():
-    """
-    This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
-    :return:
-    """
-    project = get_project()
-    calc_params = get_calc_params(project)
-    overwrite_existing = request.get_json().get("overwrite", False)
-    selection = request.get_json()['selection']
-    selection = (selection["x1"]-1, selection["y1"] -
-                 1), (selection["x2"]-1, selection["y2"]-1)
-
-    df, entities_dict, problem_cells = wikify_selection(calc_params, selection)
-    t2wml_settings.wikidata_provider.cache.update(entities_dict)
-    project.add_df_to_wikifier_file(
-        calc_params.data_path, df, overwrite_existing)
-
-    calc_params = get_calc_params(project)
-    response = dict(project=get_project_dict(project))
-    response["layers"] = get_qnodes_layer(calc_params)
-
-    if problem_cells:
-        response['wikifierError'] = "Failed to wikify: " + \
-            ",".join(problem_cells)
-
-    return response, 200
-
-
-@app.route('/api/auto_wikinodes', methods=['POST'])
-@json_response
-def create_auto_nodes():
-    """
-    This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
-    :return:
-    """
-    project = get_project()
-    calc_params = get_calc_params(project)
-    selection = request.get_json()['selection']
-    selection = (selection["x1"]-1, selection["y1"] -
-                 1), (selection["x2"]-1, selection["y2"]-1)
-    is_property = request.get_json()['is_property']
-    data_type = request.get_json().get("data_type", None)
-    autocreate_items(calc_params, selection, is_property, data_type)
-    response = dict(project=get_project_dict(project))
-    response["layers"] = get_qnodes_layer(calc_params)
-    return response, 200
-
-
-@app.route('/api/yaml/save', methods=['POST'])
-@json_response
-def upload_yaml():
-    project = get_project()
-    dataFile = request.get_json()["dataFile"]
-    sheet_name = request.get_json()["sheetName"]
-    yaml_data = request.get_json()["yaml"]
-    title = request.get_json()["title"]
-    filename = save_yaml(project, yaml_data, dataFile, sheet_name, title)
-    response = dict(project=get_project_dict(project), filename=filename)
-    return response, 200
-
-
-@app.route('/api/yaml/apply', methods=['POST'])
-@json_response
-def apply_yaml():
-    """
-    This function uploads and processes the yaml file
-    :return:
-    """
-    project = get_project()
-    calc_params = get_calc_params(project)
-    yaml_data = request.get_json()["yaml"]
-    title = request.get_json()["title"]
-    save_yaml(project, yaml_data, calc_params.data_path,
-              calc_params.sheet_name, title)
-    yaml_title = request.get_json()["title"]
-    yaml_path = Path(project.directory) / yaml_title
-    response = dict(project=get_project_dict(project))
-    calc_response, code = get_mapping(yaml_path, "Yaml")
-    response.update(calc_response)
-    return response, code
 
 
 @app.route('/api/project/download/<filetype>/<filename>/all', methods=['GET'])
@@ -509,6 +287,190 @@ def load_to_datamart():
     return data, 201
 
 
+# POSTS/PUTS:
+
+
+@app.route('/api/data', methods=['POST'])
+@json_response
+def upload_data_file():
+    """
+    This function uploads the data file.
+    :return:
+    """
+    project = get_project()
+
+    file_path = file_upload_validator({'.xlsx', '.xls', '.csv', '.tsv'})
+    data_file = project.add_data_file(
+        file_path, copy_from_elsewhere=True, overwrite=True)
+    project.save()
+    response = dict(project=get_project_dict(project))
+    sheet_name = project.data_files[data_file]["val_arr"][0]
+
+    annotations_dir = os.path.join(project.directory, "annotations")
+    if not os.path.isdir(annotations_dir):
+        os.mkdir(annotations_dir)
+    annotations_path = os.path.join(annotations_dir, Path(
+        data_file).stem+"_"+sheet_name+".annotation")
+
+    save_annotations(project, [], os.path.join(
+        annotations_path), data_file, sheet_name)
+
+    calc_params = CalcParams(project, data_file, sheet_name, None)
+
+    response["table"] = get_table(calc_params)
+    # this will just return empty layers and any wikification if it exists
+    get_layers(response, calc_params)
+
+    return response, 200
+
+
+@app.route('/api/project/entities', methods=['POST'])
+@json_response
+def upload_entities():
+    project = get_project()
+
+    file_path = file_upload_validator({".tsv"})
+    project.add_entity_file(
+        file_path, copy_from_elsewhere=True, overwrite=True)
+    project.save()
+
+    entities_stats = add_entities_from_file(file_path)
+    response = dict(entitiesStats=entities_stats,
+                    project=get_project_dict(project))
+    calc_params = get_calc_params(project, data_required=False)
+    if calc_params:
+        response["layers"] = get_qnodes_layer(calc_params)
+    return response, 200
+
+
+@app.route('/api/web/wikify_region', methods=['POST'])  # V
+@json_response
+def causx_wikify():
+    project = get_project()
+    region = request.get_json()["selection"]
+    overwrite_existing = request.get_json().get("overwrite", False)
+    #context = request.get_json()["context"]
+    calc_params = get_calc_params(project)
+
+    cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
+    project.add_df_to_wikifier_file(
+        calc_params.sheet, cell_qnode_map, overwrite_existing)
+
+    calc_params = get_calc_params(project)
+    response = dict(project=get_project_dict(project))
+    response["layers"] = get_qnodes_layer(calc_params)
+
+    if problem_cells:
+        response['wikifierError'] = "Failed to wikify: " + \
+            ",".join(problem_cells)
+
+    return response, 200
+
+
+@app.route('/api/wikifier', methods=['POST'])
+@json_response
+def upload_wikifier_output():
+    """
+    This function uploads the wikifier output
+    :return:
+    """
+    project = get_project()
+
+    file_path = file_upload_validator({".csv"})
+    project.add_old_style_wikifier_to_project(file_path)
+    project.save()
+
+    response = dict(project=get_project_dict(project))
+    calc_params = get_calc_params(project, data_required=False)
+    if calc_params:
+        response["layers"] = get_qnodes_layer(calc_params)
+    return response, 200
+
+
+@app.route('/api/wikifier_service', methods=['POST'])
+@json_response
+def call_wikifier_service():
+    """
+    This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
+    :return:
+    """
+    project = get_project()
+    calc_params = get_calc_params(project)
+    overwrite_existing = request.get_json().get("overwrite", False)
+    selection = request.get_json()['selection']
+    selection = (selection["x1"]-1, selection["y1"] -
+                 1), (selection["x2"]-1, selection["y2"]-1)
+
+    wiki_dict, entities_dict, problem_cells = wikify_selection(calc_params, selection)
+    t2wml_settings.wikidata_provider.cache.update(entities_dict)
+    project.add_dict_to_wikifier_file(
+        calc_params.sheet, wiki_dict, overwrite_existing)
+
+    calc_params = get_calc_params(project)
+    response = dict(project=get_project_dict(project))
+    response["layers"] = get_qnodes_layer(calc_params)
+
+    if problem_cells:
+        response['wikifierError'] = "Failed to wikify: " + \
+            ",".join(problem_cells)
+
+    return response, 200
+
+
+@app.route('/api/auto_wikinodes', methods=['POST'])
+@json_response
+def create_auto_nodes():
+    """
+    This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
+    :return:
+    """
+    project = get_project()
+    calc_params = get_calc_params(project)
+    selection = request.get_json()['selection']
+    selection = (selection["x1"]-1, selection["y1"] -
+                 1), (selection["x2"]-1, selection["y2"]-1)
+    is_property = request.get_json()['is_property']
+    data_type = request.get_json().get("data_type", None)
+    autocreate_items(calc_params, selection, is_property, data_type)
+    response = dict(project=get_project_dict(project))
+    response["layers"] = get_qnodes_layer(calc_params)
+    return response, 200
+
+
+@app.route('/api/yaml/save', methods=['POST'])
+@json_response
+def upload_yaml():
+    project = get_project()
+    dataFile = request.get_json()["dataFile"]
+    sheet_name = request.get_json()["sheetName"]
+    yaml_data = request.get_json()["yaml"]
+    title = request.get_json()["title"]
+    filename = save_yaml(project, yaml_data, dataFile, sheet_name, title)
+    response = dict(project=get_project_dict(project), filename=filename)
+    return response, 200
+
+
+@app.route('/api/yaml/apply', methods=['POST'])
+@json_response
+def apply_yaml():
+    """
+    This function uploads and processes the yaml file
+    :return:
+    """
+    project = get_project()
+    calc_params = get_calc_params(project)
+    yaml_data = request.get_json()["yaml"]
+    title = request.get_json()["title"]
+    save_yaml(project, yaml_data, calc_params.data_path,
+              calc_params.sheet_name, title)
+    yaml_title = request.get_json()["title"]
+    yaml_path = Path(project.directory) / yaml_title
+    response = dict(project=get_project_dict(project))
+    calc_response, code = get_mapping(yaml_path, "Yaml")
+    response.update(calc_response)
+    return response, code
+
+
 @app.route('/api/annotation/create', methods=['POST'])
 @json_response
 def save_annotation():
@@ -540,9 +502,208 @@ def upload_annotation():
     return response, code
 
 
+@app.route('/api/set_qnode', methods=['POST'])
+@json_response
+def set_qnodes():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    qnode_dict = request.get_json()['qnode']
+    if not qnode_dict:
+        raise web_exceptions.InvalidRequestException('No qnode provided')
+    item = qnode_dict["id"]
+    value = request.get_json()['value']
+    context = request.get_json().get("context", "")
+    selection = request.get_json()['selection']
+
+    if not selection:
+        raise web_exceptions.InvalidRequestException('No selection provided')
+
+    create_user_wikification(calc_params, project,
+                             selection, value, context, item)
+
+    # build response-- projectDTO in case we added a file, qnodes layer to update qnodes with new stuff
+    # if we want to update statements to reflect the changes to qnode we might need to rerun the whole calculation?
+
+    response = dict(project=get_project_dict(project))
+    response["layers"] = get_qnodes_layer(calc_params)
+
+    return response, 200
+
+
+@app.route('/api/delete_wikification', methods=['POST'])
+@json_response
+def delete_wikification():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    sheet_name = calc_params.sheet.name
+    data_file_name = calc_params.sheet.data_file_name
+
+    selection = request.get_json()['selection']
+    if not selection:
+        raise web_exceptions.InvalidRequestException('No selection provided')
+
+    value = request.get_json().get('value', None)
+    #context = request.get_json().get("context", "")
+
+    filepath, exists=project.get_wikifier_file(calc_params.sheet)
+    if exists:
+        wikifier = Wikifier.load_from_file(filepath)
+        wikifier.delete_wikification(selection, value, context="", sheet=calc_params.sheet)
+        wikifier.save_to_file(filepath)
+
+    response = dict(project=get_project_dict(project))
+    response["layers"] = get_qnodes_layer(calc_params)
+
+    return response, 200
+
+
+@app.route('/api/create_node', methods=['POST'])
+@json_response
+def create_qnode():
+    project = get_project()
+    request_json = request.get_json()
+    try:
+        label = request_json.pop("label")
+        # is_prop=node_id[0].lower()=="p"
+        is_prop = request_json.pop("is_property")
+        if is_prop:
+            data_type = request_json.pop("data_type")
+            if data_type not in ["globecoordinate", "quantity", "time", "string", "monolingualtext", "externalid", "wikibaseitem", "wikibaseproperty", "url"]:
+                raise web_exceptions.InvalidRequestException(
+                    "Invalid data type")
+    except KeyError:
+        raise web_exceptions.InvalidRequestException(
+            "Missing required fields in entity definition")
+
+    filepath = Path(project.directory)/"user_input_properties.tsv"
+    if os.path.isfile(filepath):
+        custom_nodes = kgtk_to_dict(filepath)
+    else:
+        custom_nodes = dict()
+
+    id = request.json.get("id", None)
+    if not id:
+        if is_prop:
+            node_id = get_Pnode(project, label)
+        else:
+            node_id = get_Qnode(project, label)
+
+    entity_dict = {
+        "id": node_id,
+        "label": label,
+    }
+    if is_prop:
+        entity_dict["data_type"] = data_type
+    entity_dict["description"] = request_json.get("description", "")
+
+    for key in ["P31"]:  # may add more
+        if request_json.get(key, None):
+            entity_dict[key] = request_json[key]
+
+    custom_nodes[node_id] = entity_dict
+    dict_to_kgtk(custom_nodes, filepath)
+    project.add_entity_file(filepath)
+    project.save()
+    t2wml_settings.wikidata_provider.save_entry(node_id, **entity_dict)
+
+    response = dict(entity=entity_dict, project=get_project_dict(project))
+
+    selection = request_json.get("selection", None)
+    if selection:
+        calc_params = get_calc_params(project)
+        context = request.get_json().get("context", "")
+        value = request_json.pop("value")
+        create_user_wikification(calc_params, project, selection, value,
+                                 context, node_id)
+        response["layers"] = get_qnodes_layer(calc_params)
+    else:
+        response["layers"] = {}
+    return response, 200
+
+
+# Small getters that return small things and *should* be cheap operations
+
+@app.route('/api/project', methods=['GET'])
+@json_response
+def get_project_files():
+    project = get_project()
+    response = dict(project=get_project_dict(project))
+    return response, 200
+
+
+# sure, it's technically a post, but functionally it's "getting" a working project dir
+@app.route('/api/project', methods=['POST'])
+@json_response
+def create_project():
+    """
+    This route creates a project
+    :return:
+    """
+    project_folder = get_project_folder()
+    # check we're not overwriting existing project
+    project_file = Path(project_folder) / "project.t2wml"
+    if project_file.is_file():
+        raise web_exceptions.ProjectAlreadyExistsException(project_folder)
+    title = request.get_json()["title"]
+    if not title:
+        raise web_exceptions.InvalidRequestException(
+            "title required to create project")
+    description = request.get_json().get("description", "")
+    url = request.get_json().get("url", "")
+    # create project
+    project = create_api_project(project_folder, title, description, url)
+    response = dict(project=get_project_dict(project))
+    return response, 201
+
+# all it returns is a project
+
+
+@app.route('/api/files/add_mapping', methods=['POST'])
+@json_response
+def add_existing_mapping_file_to_project():
+    project = get_project()
+    dataFile = request.get_json()["dataFile"]
+    sheet_name = request.get_json()["sheetName"]
+    title = request.get_json()["title"]
+    type = request.get_json()["type"]
+
+    if type == "yaml":
+        filename = project.add_yaml_file(title, dataFile, sheet_name, True)
+
+    if type == "annotation":
+        filename = project.add_annotation_file(
+            title, dataFile, sheet_name, True)
+
+    project.save()
+    response = dict(project=get_project_dict(project), filename=filename)
+    return response, 200
+
+# returns entity dict
+
+
+@app.route('/api/project/entities', methods=['GET'])
+@json_response
+def get_project_entities():
+    project = get_project()
+    response = get_entities(project)
+    return response, 200
+
+# returns the same as get entities
+
+
+@app.route('/api/project/entities', methods=['PUT'])
+@json_response
+def edit_entities():
+    project = get_project()
+    entity_file = request.get_json()["entity_file"]
+    updated_entries = request.get_json()["updated_entries"]
+    response = update_entities(project, entity_file, updated_entries)
+    return response, 200
+
+
 @app.route('/api/annotation/suggest', methods=['PUT'])
 @json_response
-def suggest_annotation_block():
+def guess_block_type_role():
     project = get_project()
     calc_params = get_calc_params(project)
     block = request.get_json()["selection"]
@@ -561,15 +722,6 @@ def suggest_annotation_block():
     except Exception as e:
         pass  # print(e)
     return response, 200
-
-
-@app.route('/api/annotation/guess-blocks', methods=['GET'])
-@json_response
-def guess_annotation_blocks():
-    project = get_project()
-    calc_params = get_calc_params(project)
-    suggest_annotations(calc_params)
-    return get_mapping()
 
 
 @app.route('/api/project/globalsettings', methods=['PUT', 'GET'])
@@ -683,141 +835,6 @@ def get_qnodes():
     return {'qnodes': qnodes}, 200
 
 
-@app.route('/api/set_qnode', methods=['POST'])
-@json_response
-def set_qnodes():
-    project = get_project()
-    calc_params = get_calc_params(project)
-    qnode_dict = request.get_json()['qnode']
-    if not qnode_dict:
-        raise web_exceptions.InvalidRequestException('No qnode provided')
-    item = qnode_dict["id"]
-    value = request.get_json()['value']
-    context = request.get_json().get("context", "")
-    selection = request.get_json()['selection']
-
-    if not selection:
-        raise web_exceptions.InvalidRequestException('No selection provided')
-
-    create_user_wikification(calc_params, project,
-                             selection, value, context, item)
-
-    # build response-- projectDTO in case we added a file, qnodes layer to update qnodes with new stuff
-    # if we want to update statements to reflect the changes to qnode we might need to rerun the whole calculation?
-
-    response = dict(project=get_project_dict(project))
-    response["layers"] = get_qnodes_layer(calc_params)
-
-    return response, 200
-
-
-@app.route('/api/delete_wikification', methods=['POST'])
-@json_response
-def delete_wikification():
-    project = get_project()
-    calc_params = get_calc_params(project)
-    sheet_name = calc_params.sheet.name
-    data_file_name = calc_params.sheet.data_file_name
-
-    selection = request.get_json()['selection']
-    if not selection:
-        raise web_exceptions.InvalidRequestException('No selection provided')
-
-    value = request.get_json().get('value', None)
-    #context = request.get_json().get("context", "")
-
-    top_left, bottom_right = selection
-    col1, row1 = top_left
-    col2, row2 = bottom_right
-
-    filepath, exists = project.get_wikifier_file(calc_params.data_path)
-    if exists:
-        df = pd.read_csv(filepath)
-        for col in range(col1, col2+1):
-            for row in range(row1, row2+1):
-                if value:
-                    df = df.drop(df[(df['column'] == col)
-                                    & (df['row'] == row)
-                                    & (df['value'] == value)
-                                    & (df['file'] == data_file_name)
-                                    & (df['sheet'] == sheet_name)].index)
-                else:
-                    df = df.drop(df[(df['column'] == col)
-                                    & (df['row'] == row)
-                                    & (df['file'] == data_file_name)
-                                    & (df['sheet'] == sheet_name)].index)
-        df.to_csv(filepath, index=False, header=True)
-
-    response = dict(project=get_project_dict(project))
-    response["layers"] = get_qnodes_layer(calc_params)
-
-    return response, 200
-
-
-@app.route('/api/create_node', methods=['POST'])
-@json_response
-def create_qnode():
-    project = get_project()
-    request_json = request.get_json()
-    try:
-        label = request_json.pop("label")
-        # is_prop=node_id[0].lower()=="p"
-        is_prop = request_json.pop("is_property")
-        if is_prop:
-            data_type = request_json.pop("data_type")
-            if data_type not in ["globecoordinate", "quantity", "time", "string", "monolingualtext", "externalid", "wikibaseitem", "wikibaseproperty", "url"]:
-                raise web_exceptions.InvalidRequestException(
-                    "Invalid data type")
-    except KeyError:
-        raise web_exceptions.InvalidRequestException(
-            "Missing required fields in entity definition")
-
-    filepath = Path(project.directory)/"user_input_properties.tsv"
-    if os.path.isfile(filepath):
-        custom_nodes = kgtk_to_dict(filepath)
-    else:
-        custom_nodes = dict()
-
-    id = request.json.get("id", None)
-    if not id:
-        if is_prop:
-            node_id = get_Pnode(project, label)
-        else:
-            node_id = get_Qnode(project, label)
-
-    entity_dict = {
-        "id": node_id,
-        "label": label,
-    }
-    if is_prop:
-        entity_dict["data_type"] = data_type
-    entity_dict["description"] = request_json.get("description", "")
-
-    for key in ["P31"]:  # may add more
-        if request_json.get(key, None):
-            entity_dict[key] = request_json[key]
-
-    custom_nodes[node_id] = entity_dict
-    dict_to_kgtk(custom_nodes, filepath)
-    project.add_entity_file(filepath)
-    project.save()
-    t2wml_settings.wikidata_provider.save_entry(node_id, **entity_dict)
-
-    response = dict(entity=entity_dict, project=get_project_dict(project))
-
-    selection = request_json.get("selection", None)
-    if selection:
-        calc_params = get_calc_params(project)
-        context = request.get_json().get("context", "")
-        value=request_json.pop("value")
-        create_user_wikification(calc_params, project, selection, value,
-                                 context, node_id)
-        response["layers"] = get_qnodes_layer(calc_params)
-    else:
-        response["layers"] = {}
-    return response, 200
-
-
 @app.route('/api/query_node/<id>', methods=['GET'])
 @json_response
 def query_qnode(id):
@@ -861,29 +878,6 @@ def delete_file():
 
     response = dict(project=get_project_dict(project))
     return response, 200
-
-
-@app.route('/api/files/add_mapping', methods=['POST'])
-@json_response
-def add_mapping_file():
-    project = get_project()
-    dataFile = request.get_json()["dataFile"]
-    sheet_name = request.get_json()["sheetName"]
-    title = request.get_json()["title"]
-    type = request.get_json()["type"]
-
-    if type == "yaml":
-        filename = project.add_yaml_file(title, dataFile, sheet_name, True)
-
-    if type == "annotation":
-        filename = project.add_annotation_file(
-            title, dataFile, sheet_name, True)
-
-    project.save()
-    response = dict(project=get_project_dict(project), filename=filename)
-    return response, 200
-
-
 
 
 # app utils

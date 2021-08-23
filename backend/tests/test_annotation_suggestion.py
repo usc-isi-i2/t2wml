@@ -89,5 +89,5 @@ def test_one(client):
     #final round of annotating
     annotations, data=annotate(client, annotations)
 
-    assert data["layers"]["statement"]["entries"][0]["value"]=='10000000'
+    assert len(data["layers"]["statement"]["entries"]) and data["layers"]["statement"]["entries"][0]["value"]=='10000000'
 

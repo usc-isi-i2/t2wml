@@ -17,7 +17,8 @@ test_cases = [
     {'source_sheet': 'india_wheat', 'target_sheet': 'india_wheat', 'source_annotation': 'source_india_wheat.json', 'target_annotation': 'expected_india_wheat.json'},
     {'source_sheet': 'india_wheat', 'target_sheet': 'shifted_india_wheat', 'source_annotation': 'source_india_wheat.json', 'target_annotation': 'expected_shifted_india_wheat.json'},
     # needs minimum number of anchor for passing test
-    {'source_sheet': 'india_wheat', 'target_sheet': 'shifted_india_wheat_wo_anchors', 'source_annotation': 'source_india_wheat.json','target_annotation': 'expected_shifted_india_wheat_wo_anchors.json'}
+    {'source_sheet': 'india_wheat', 'target_sheet': 'shifted_india_wheat_wo_anchors', 'source_annotation': 'source_india_wheat.json','target_annotation': 'expected_shifted_india_wheat_wo_anchors.json'},
+    {'source_sheet': 'education_index', 'target_sheet': 'education_index', 'source_annotation': 'source_education_index.json','target_annotation': 'expected_education_index.json'}
 ]
 
 files_dir = os.path.join(os.path.dirname(__file__), "files_for_tests", "copy_annotations")

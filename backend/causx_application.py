@@ -17,14 +17,14 @@ from app_config import app, BASEDIR, NumpyEncoder
 from t2wml.project import Project, FileNotPresentInProject, InvalidProjectDirectory
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
 from t2wml.spreadsheets.utilities import PandasLoader
-from t2wml.api import annotation_suggester, get_Pnode, get_Qnode, t2wml_settings
+from t2wml.api import annotation_suggester, get_Pnode, get_Qnode, t2wml_settings, Wikifier
 from copy_annotations.copy_annotations import copy_annotation
 from t2wml_web import ( get_kg, autocreate_items, set_web_settings,
                         get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, get_qnodes_layer,
                        suggest_annotations,  update_t2wml_settings, get_entities)
 import web_exceptions
-from causx.causx_utils import AnnotationNodeGenerator, causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, create_fidil_json, get_causx_partial_csv, causx_create_canonical_spreadsheet, get_causx_tags, preload
+from causx.causx_utils import AnnotationNodeGenerator, causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, create_fidil_json, get_causx_partial_csv, causx_create_canonical_spreadsheet, get_causx_tags, preload, upload_fidil_json
 from causx.wikification import wikify_countries
 from utils import create_user_wikification
 from web_exceptions import WebException, make_frontend_err_dict
@@ -155,7 +155,17 @@ def get_calc_params(project, data_required=True):
         else:
             return None
 
-    calc_params = CalcParams(project, data_file, sheet_name)
+    start_end_kwargs = {}
+    for key in ["data_start", "map_start"]:#, "part_start"]:
+        start_end_kwargs[key] = int(request.args.get(key, 0))
+    for key in ["data_end", "map_end"]:
+        end = int(request.args.get(key, 0))
+        if end == 0:
+            end = None
+        start_end_kwargs[key] = end
+    #start_end_kwargs["part_end"] = int(request.args.get("part_end", 30))
+    start_end_kwargs["part_count"] = int(request.args.get("part_count", 100))
+    calc_params = CalcParams(project, data_file, sheet_name, **start_end_kwargs)
 
     calc_params._annotation_path = get_annotation_name(calc_params)
 
@@ -165,10 +175,6 @@ def get_calc_params(project, data_required=True):
 def get_mapping(preload=False):
     project = get_project()
     calc_params = get_calc_params(project)
-    start = int(request.args.get("map_start", 0))
-    end = int(request.args.get("map_end", 0))
-    if end == 0:
-        end = None
     response = dict(project=get_project_dict(project))
     response["annotations"], response["yamlContent"] = get_annotations(
             calc_params)
@@ -178,7 +184,7 @@ def get_mapping(preload=False):
             preload(calc_params)
         except Exception as e:
             pass
-    get_layers(response, calc_params, start, end)
+    get_layers(response, calc_params)
     return response, 200
 
 @app.route('/api/causx/token', methods=['GET'])
@@ -323,28 +329,11 @@ def delete_wikification_for_causx():
     value = request.get_json().get('value', None)
     #context = request.get_json().get("context", "")
 
-
-    top_left, bottom_right = selection
-    col1, row1 = top_left
-    col2, row2 = bottom_right
-
-    filepath, exists=project.get_wikifier_file(calc_params.data_path)
+    filepath, exists=project.get_wikifier_file(calc_params.sheet)
     if exists:
-        df=pd.read_csv(filepath)
-        for col in range(col1, col2+1):
-            for row in range(row1, row2+1):
-                if value:
-                    df = df.drop(df[(df['column'] == col)
-                                    & (df['row'] == row)
-                                    & (df['value'] == value)
-                                    & (df['file'] == data_file_name)
-                                    & (df['sheet'] == sheet_name)].index)
-                else:
-                    df = df.drop(df[(df['column'] == col)
-                                    & (df['row'] == row)
-                                    & (df['file'] == data_file_name)
-                                    & (df['sheet'] == sheet_name)].index)
-        df.to_csv(filepath, index=False, header=True)
+        wikifier = Wikifier.load_from_file(filepath)
+        wikifier.delete_wikification(selection, value, context="")
+        wikifier.save_to_file(filepath)
 
     response = dict(project=get_project_dict(project))
     response["layers"] = get_qnodes_layer(calc_params)
@@ -446,7 +435,7 @@ def causx_wikify_for_causx():
     calc_params = get_calc_params(project)
 
     cell_qnode_map, problem_cells = wikify_countries(calc_params, selection)
-    project.add_df_to_wikifier_file(calc_params.data_path, cell_qnode_map, overwrite_existing)
+    project.add_df_to_wikifier_file(calc_params.sheet, cell_qnode_map, overwrite_existing)
 
     #auto-create nodes for anything that failed to wikify
     tuple_selection = ((selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1))
@@ -485,12 +474,7 @@ def causx_upload_data():
     project.save()
     response["sheetName"] = sheet_name
     calc_params = CalcParams(project, file_path, sheet_name)
-    start = int(request.args.get("data_start", 0))
-    end = int(request.args.get("data_end", 0))
-    if end == 0:
-        end = None
-
-    response["table"] = get_table(calc_params, start, end)
+    response["table"] = get_table(calc_params)
     project.title=Path(file_path).stem
     project.save()
     response.update(dict(project=get_project_dict(project), filepath=file_path))
@@ -516,12 +500,8 @@ def causx_upload_project():
     sheet_name=filemap["sheet"]
     calc_params=CalcParams(project, filemap["data"], sheet_name, annotation_path=filemap["annotation"])
     response=dict()
-    start = int(request.args.get("data_start", 0))
-    end = int(request.args.get("data_end", 0))
-    if end == 0:
-        end = None
 
-    response["table"] = get_table(calc_params, start, end)
+    response["table"] = get_table(calc_params)
     response["annotations"], response["yamlContent"] = get_annotations(calc_params)
     response["layers"] = get_qnodes_layer(calc_params)
     response["project"]=get_project_dict(project)
@@ -599,10 +579,8 @@ def causx_download_project():
 def causx_partial_csv():
     project = get_project()
     calc_params = get_calc_params(project)
-    start = int(request.args.get("part_start", 0))
-    end = int(request.args.get(")part_end", 150))
     response = dict()
-    response["partialCsv"] = get_causx_partial_csv(calc_params, start, end)
+    response["partialCsv"] = get_causx_partial_csv(calc_params)
     return response, 200
 
 @app.route('/api/causx/download_zip_results', methods=['GET'])
@@ -668,8 +646,8 @@ def causx_edit_an_entity(id):
 
 
 
-@app.route('/api/causx/project/download/<filetype>/<filename>', methods=['GET'])
-def download_results_for_causx(filetype, filename):
+@app.route('/api/causx/project/download/<filetype>', methods=['GET'])
+def download_results_for_causx(filetype):
     """
     return as attachment
     """
@@ -678,7 +656,6 @@ def download_results_for_causx(filetype, filename):
         "csv": "text/csv",
         "json": "application/json"
     }
-    attachment_filename = filename
     project = get_project()
     calc_params = get_calc_params(project)
     annotation_path = calc_params.annotation_path
@@ -688,18 +665,26 @@ def download_results_for_causx(filetype, filename):
     data = kg.get_output(filetype, calc_params.project)
     stream = BytesIO(data.encode('utf-8'))
     stream.seek(0)
+    attachment_filename = request.args.get('data_file')
     return send_file(stream, attachment_filename=attachment_filename, as_attachment=True, mimetype=mimetype_dict[filetype]), 200
 
 
-
-@app.route('/api/causx/project/fidil_json/<filename>', methods=['GET'])
-def download_fidil_json(filename):
+@app.route('/api/causx/project/fidil_json', methods=['GET'])
+def download_fidil_json():
     project = get_project()
     calc_params = get_calc_params(project)
-    data = create_fidil_json(calc_params)
+    data = json.dumps(create_fidil_json(calc_params))
     stream = BytesIO(data.encode('utf-8'))
     stream.seek(0)
+    filename = request.args.get('data_file')
     return send_file(stream, attachment_filename=filename, as_attachment=True, mimetype="application/json"), 200
+
+@app.route('/api/causx/project/upload_fidil_json/', methods=['PUT'])
+def upload_fidil():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    status_code = upload_fidil_json(calc_params)
+    return {}, status_code
 
 
 ###################end of section##############################

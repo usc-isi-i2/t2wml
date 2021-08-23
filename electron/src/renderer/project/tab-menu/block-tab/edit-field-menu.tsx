@@ -19,7 +19,6 @@ interface EditFieldMenuProps {
     onClose: (key:string, entityFields?: EntityFields) => void,
     selection: CellSelection,
     title: string,
-    data_type?: string,
     // showResults: boolean,
     onSelectNode: (key: string, value?: QNode) => void,
 }
@@ -28,8 +27,6 @@ interface EditFieldMenuProps {
 class EditFieldMenu extends Component<EditFieldMenuProps, EditFieldMenuState> {
 
     private requestService: RequestService;
-    private timeoutSearch?: number;
-
 
     constructor(props: any) {
         super(props);
@@ -93,7 +90,8 @@ class EditFieldMenu extends Component<EditFieldMenuProps, EditFieldMenuState> {
         const { onClose, selection, title } = this.props;
         const position = { x: 0, y: 0 }; //window.innerWidth * 0.05
 
-        const selectedCell = wikiStore.table.selectedCell;
+        const selectedCell = wikiStore.table.selection.selectedCell;
+
         return (
             <Draggable handle=".handle"
                 defaultPosition={position}>

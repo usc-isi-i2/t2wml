@@ -48,8 +48,8 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
         }
     }
 
-    setErrorToTrue(){
-        this.setState({hasError: true})
+    setErrorToTrue() {
+        this.setState({ hasError: true })
     }
 
     getPropertyData(file: string, property: string) {
@@ -68,50 +68,50 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
     }
 
 
-    updatePropertyData(key: "label"|"description"|"data_type", value: string, hasError:boolean) {
-        const propertyData={...this.state.propertyData!};
-        propertyData[key]=value;
-        this.setState({propertyData, hasError, labelContent: ""})
+    updatePropertyData(key: "label" | "description" | "data_type", value: string, hasError: boolean) {
+        const propertyData = { ...this.state.propertyData! };
+        propertyData[key] = value;
+        this.setState({ propertyData, hasError, labelContent: "" })
     }
 
-    updateTags(tags: string[]) {
-        const propertyData={...this.state.propertyData!};
-        propertyData["tags"]=tags;
-        this.setState({propertyData, labelContent: ""})
+    updateTags(tags?: { [key: string]: string }) {
+        const { propertyData } = this.state;
+        console.log('updateTags', propertyData, tags)
+        if (!tags || !propertyData) { return; }
+        propertyData["tags"] = tags;
+        this.setState({ propertyData, labelContent: "" })
     }
 
-    updateTag (index:number, value:string, hasError:boolean){
-        const propertyData={...this.state.propertyData!};
-        if (propertyData["tags"]==undefined || propertyData["tags"][index]==undefined){
-            console.log("editing tag that doesn't exist");
+    updateTag(key: string, part: 'key' | 'value', hasError: boolean, newPart: string) {
+        const { propertyData } = this.state;
+        if (!propertyData || propertyData["tags"] == undefined || propertyData["tags"][key] == undefined) {
+            console.log("editing tag that doesn't exist", propertyData);
             return;
         }
-        propertyData["tags"][index] = value;
-        this.setState({propertyData, hasError, labelContent: ""});
+        if (part === 'key') {
+            propertyData["tags"][newPart] = propertyData["tags"][key].slice() // make a copy- by value
+            delete propertyData["tags"][key];
+        } else {
+            propertyData["tags"][key] = newPart;
+        }
+        this.setState({ propertyData, hasError, labelContent: "" });
     }
 
     handleSaveEntities() {
-        if (!this.state.propertyData){
+        const { propertyData, entityFile, selectedProperty } = this.state;
+        if (!propertyData || !selectedProperty) {
             return;
         }
-        const file = this.state.entityFile;
-        const property = this.state.selectedProperty!;
-        const propertyVals = {...this.state.propertyData};
-        let tags = propertyVals["tags"];
-        if (tags) {
-            tags = tags.filter(tag => tag.length > 0);
-            propertyVals["tags"] = tags;
-        }
-        this.props.handleSaveEntities(file, property, propertyVals);
+        this.props.handleSaveEntities(entityFile, selectedProperty, propertyData);
 
         this.setState({
-                labelContent: "Entity fields have been updated. Refresh the project to see changes."
-            })
+            labelContent: "Entity fields have been updated. Refresh the project to see changes."
+        })
 
     }
 
-    handleClose(){
-        //reset window when closing:
+    handleClose() {
+        // reset window when closing:
         this.setState({
             selectedProperty: undefined,
             entityFile: '',
@@ -124,8 +124,9 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
 
 
     render() {
-        const handleClose= ()=>this.handleClose()
-        const enabled = !this.state.hasError && this.state.selectedProperty!=undefined;
+        const { selectedProperty, propertyData } = this.state;
+        const handleClose = () => this.handleClose()
+        const enabled = !this.state.hasError && selectedProperty != undefined;
 
         return (
             <Modal show={this.props.showEntities} size="lg" onHide={handleClose}>
@@ -142,29 +143,32 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
                         <Form.Group as={Row} style={{ marginTop: "1rem" }}>
                             <Col sm="12" md="4">
                                 <EntitiesList
-                                    selectedProperty={this.state.selectedProperty}
+                                    selectedProperty={selectedProperty}
                                     handleSelectEntity={(f: string, prop: string) => this.getPropertyData(f, prop)}
                                 />
                             </Col>
                             <Col sm="12" md="8">
                                 <Row>
-                                    {!this.state.selectedProperty ?
+                                    {!selectedProperty ?
                                         <Form.Label>Select a property to see its details</Form.Label> :
                                         <EntityFields
-                                            property={this.state.selectedProperty}
-                                            propertyData={this.state.propertyData}
+                                            property={selectedProperty}
+                                            propertyData={propertyData}
                                             updateField={(key, value, hasError) => this.updatePropertyData(key, value, hasError)}
                                         />
                                     }
                                 </Row>
                                 <Row>
-                                    {!this.state.selectedProperty ? null :
+                                    {selectedProperty && propertyData ?
                                         <Tags
-                                            property={this.state.selectedProperty}
-                                            propertyData={this.state.propertyData}
+                                            property={selectedProperty}
+                                            propertyData={propertyData}
                                             updateTags={(tags) => this.updateTags(tags)}
-                                            updateTag={(index, value, hasError) => this.updateTag(index, value, hasError)}
-                                        />}
+                                            updateTag={(key: string, part: 'key' | 'value', hasError: boolean, newPart: string) => this.updateTag(key, part, hasError, newPart)}
+                                        />
+                                        :
+                                        null
+                                    }
                                 </Row>
                             </Col>
                         </Form.Group>
@@ -181,7 +185,7 @@ class EntitiesWindow extends Component<EntitiesProperties, EntitiesState> {
                     </Button>
                     <Button variant="dark" disabled={!enabled} onClick={() => this.handleSaveEntities()}>
                         Save
-          </Button>
+                    </Button>
                 </Modal.Footer>
 
             </Modal>

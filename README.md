@@ -10,7 +10,7 @@
 
 <table>
   <tr><td><b>Operating system:</b></td><td>macOS / OS X, Linux, Windows</td></tr>
-  <tr><td><b>Python version:</b></td><td>Python 3.6+</td></tr>
+  <tr><td><b>Python version:</b></td><td>Python 3.8+</td></tr>
 </table>
 
 This is the repository for the T2WMl server-based GUI. You may be looking for the [T2WML API](https://github.com/usc-isi-i2/t2wml-api)

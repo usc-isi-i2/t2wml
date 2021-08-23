@@ -18,7 +18,7 @@ annotations = []
 
 
 def get_data_url():
-    return f"?data_file={data_file}&sheet_name={sheet_name}"
+    return f"?data_file={data_file}&sheet_name={sheet_name}&map_start=0&map_end=15&data_start=0&data_end=15&part_count=23"
 
 
 stored_results = dict()
@@ -86,7 +86,7 @@ class TestCausxWorkflow:
                                json=dict(selection=dict(x1=1, x2=1, y1=2, y2=2), is_property=True, data_type='quantity'))
 
         #check property was created
-        id = "Pworldeducation-education_index"
+        id = "PCustomNode-education_index"
         url = f"/api/causx/entity/{id}"
         url = url+get_data_url()
         response = client.get(url, headers=headers)
@@ -183,7 +183,7 @@ class TestCausxWorkflow:
 
 
     def test_15_put_entity(self, client):
-        id = "Pworldeducation-education_index"
+        id = "PCustomNode-education_index"
         url = f"/api/causx/entity/{id}"
         url = url+get_data_url()
         response = client.put(url, headers=headers,
@@ -227,6 +227,20 @@ class TestCausxWorkflow:
         with open(os.path.join(self.files_dir, "results.tsv"), 'wb') as f:
             f.write(response.data)
 
+    def test_17_download_fidil(self, client):
+        url = "/api/causx/project/fidil_json/"
+        url = url+get_data_url()
+        response = client.get(url, headers=headers)
+        with open(os.path.join(self.files_dir, "results.fidil"), 'wb') as f:
+            f.write(response.data)
+
+    def xtest_18_upload_fidil(self, client):
+        url = "/api/causx/project/upload_fidil_json/"
+        url = url+get_data_url()
+        response = client.put(url, headers=headers)
+        with open(os.path.join(self.files_dir, "results.tsv"), 'wb') as f:
+            f.write(response.data)
+
     def test_20_download_project(self, client):
         url = "/api/causx/download_project"
         url = url+get_data_url()
@@ -241,6 +255,10 @@ class TestCausxWorkflow:
                                   data=dict(file=f))
         data = response.data.decode("utf-8")
         data = json.loads(data)
+        try:
+            data["project"].pop("directory")
+        except:
+            pass
         stored_results["upload_project"] = data
         assert self.expected_results["upload_project"]["layers"] == data["layers"]
 
@@ -258,4 +276,4 @@ class TestCausxWorkflow:
 
     def xtest_99_save_results(self):
         with open(os.path.join(self.files_dir, "expected_results.json"), 'w') as f:
-            f.write(json.dumps(stored_results))
+            f.write(json.dumps(stored_results, sort_keys=True, indent=4))

@@ -7,106 +7,79 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusSquare } from '@fortawesome/free-solid-svg-icons'
 
 import { observer } from "mobx-react";
-import TagRow, { Tag } from './tag-row';
-
+import TagRow from './tag-row';
+import { QNode } from '@/renderer/common/dtos';
 
 
 interface TagsProperties {
     property: string;
-    propertyData: any;
-    updateTags: (tags: string[]) => void;
-    updateTag: (index:number, value:string, hasError:boolean) => void;
+    propertyData: QNode;
+    updateTags: (tags?: { [key: string]: string }) => void;
+    updateTag: (key: string, part: 'key' | 'value', hasError: boolean, newValue: string) => void;
 }
 
 
 @observer
-class Tags extends Component <TagsProperties, {}> {
-    private listItemKey = 0; // list-item key - for making sure each <li> has a specific key
+class Tags extends Component<TagsProperties, {}> {
+
     constructor(props: TagsProperties) {
         super(props);
-        /*let is_property = false;
-
-        if (is_property) {
-
-        } */
     }
 
     onPlusClick() {
-        let tagArr = [] as string[];
-        if (this.props.propertyData["tags"]) {
-            tagArr = [...this.props.propertyData["tags"]];
+        let tags: { [key: string]: string } = {};
+        const { propertyData } = this.props;
+        console.log("onPlusClick", propertyData, propertyData["tags"])
+        if (propertyData["tags"]) {
+            tags = propertyData["tags"];
         }
-        tagArr.push("")
-        this.props.updateTags(tagArr)
+        tags[""] = ""
+        this.props.updateTags(tags)
     }
 
-    onMinusClick(index: number) {
-        const tagArr = [...this.props.propertyData["tags"]];
-        tagArr.splice(index, 1)
-        this.listItemKey+=1
-        this.props.updateTags(tagArr)
+    onMinusClick(key: string) {
+        const { propertyData } = this.props
+        const tags = propertyData["tags"];
+        if (tags && tags[key]) {
+            delete tags[key]
+        }
+        this.props.updateTags(tags)
     }
 
-    onEditField(index: number, part: "part1" | "part2", value: string, errorMsg:string) {
-        let hasError=false;
-        if (errorMsg){
-            hasError=true;
-        }
-        if (errorMsg.includes("colon")){
-            //we can't split it properly, we don't send updated value at all
-            this.props.updateTag(index, this.props.propertyData["tags"][index], hasError);
-            return;
-        }
-        const tag = this.backTagtoTag(index, this.props.propertyData["tags"][index])
-        tag[part] = value
-        this.props.updateTag(index, tag.part1 + ":" + tag.part2, hasError);
-    }
-
-    backTagtoTag(index:number, backTag:string): Tag{
-        let tag;
-        if (backTag == "") {
-            tag = { part1: "", part2: "", index: index }
-        } else {
-            const splitParts = backTag.split(":")
-            const part1= splitParts[0] || "";
-            const part2= splitParts[splitParts.length-1] || "";
-            tag = { part1: part1, part2: part2, index: index }
-        }
-        return tag
-
+    onEditField(key: string, part: 'key' | 'value', newValue: string, errorMsg: string) {
+        this.props.updateTag(key, part, errorMsg? true : false, newValue);
     }
 
 
     render() {
-        if (this.props.propertyData["data_type"] == undefined) {
+        const { propertyData } = this.props;
+        if (propertyData["data_type"] == undefined) {
             return null;
         }
-        const renderedTags = [];
+        const tags = propertyData["tags"];
 
-        const backendTags = this.props.propertyData["tags"];
-        if (backendTags) {
-            for (const [index, backTag] of backendTags.entries()) {
-
-                const tag = this.backTagtoTag(index, backTag)
-                const key = `${index}_${this.listItemKey}`;
-
-                renderedTags.push(
-                    <li key={key}>
+        const renderedTags = tags
+            ?
+            Object.keys(tags).map((k, i) => {
+                console.log("render tags", i, k, tags[k])
+                return (
+                    <li key={i}>
                         <TagRow
-                            tag={tag}
-                            updateField={(index, part, value, errorMsg) => this.onEditField(index, part, value, errorMsg)}
-                            minusClick={(index) => this.onMinusClick(index)}
+                            tag={{ key: k, value: tags[k] }}
+                            updateField={(key: string, part: "key" | "value", newValue: string, errorMsg: string) => this.onEditField(key, part, newValue, errorMsg)}
+                            minusClick={(key: string) => this.onMinusClick(key)}
                         />
                     </li>
-                );
-            }
-        }
+                )
+            })
+            : [];
+
 
         return (
-                <ul>
+            <ul>
                 <label>Tags:  <FontAwesomeIcon icon={faPlusSquare} size="lg" onClick={() => this.onPlusClick()} /></label>
-                    {renderedTags}
-                </ul>
+                {renderedTags}
+            </ul>
         );
     }
 }
