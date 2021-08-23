@@ -7,6 +7,7 @@ Changes in version 2.11.0:
 * a virtualized table capable of handling large files (tested on ~400,000 rows and ~60 columns)
 * performance improvements to support the virtualized table
 * no need to press submit when making changes in an existing block
+* add load time for slower macs
 
 Changes in version 2.10.2:
 ------------------------
