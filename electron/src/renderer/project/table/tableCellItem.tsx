@@ -45,7 +45,8 @@ class TableCellItem extends Component<{ rowIndex: number, columnIndex: number, c
     )
 
     return (
-      <div className={classNames} data-row-index={rowIndex + 1} data-col-index={columnIndex}>
+      <div className={classNames} data-row-index={rowIndex + 1} data-col-index={columnIndex} 
+      key={`cell col-${columnIndex} row-${rowIndex} content-${data.content}`}>
         {
           data.overlay ?
             <OverlayTrigger

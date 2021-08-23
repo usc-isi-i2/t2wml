@@ -624,53 +624,58 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   render() {
     const { selection, showEditFieldMenu, typeEditFieldMenu, errorMessage, fields, showWikifyBlockMenu, selectedBlock } = this.state;
     if (this.state.mappingType == "Yaml") { return <div>Block mode not relevant when working with a yaml file</div> }
-    if (!selection) { return <div>Please select a block</div>; }
+
     return (
       <Form className="container annotation-form"
         onSubmit={this.handleOnSubmit.bind(this)}>
 
         {errorMessage.errorDescription ? <ToastMessage message={errorMessage} /> : null}
-        {this.renderSelectionAreas()}
-        {this.renderRolesDropdown()}
-        {this.renderNestedOptions()}
-        {/* render subject: */}
         {
-          fields.role === "dependentVar" ?
-            <NodeField
-              key={"subject"}
-              selectedBlock={selectedBlock}
-              fields={fields}
-              type={{ label: "Subject", value: "subject" }}
-              onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields }, () => this.handleOnSubmit())}
-              changeShowEditFieldMenu={(newTypeEditFieldMenu: string) => this.changeShowEditFieldMenu(newTypeEditFieldMenu)}
-            />
-            : null
-        }
-        {this.renderSubmitButton()}
+          !selection
+            ?
+            (<div style={{ marginTop: '1rem' }}>Please select a block</div>) :
+            (<div>
+              {this.renderSelectionAreas()}
+              {this.renderRolesDropdown()}
+              {this.renderNestedOptions()}
+              {/* render subject: */}
+              {
+                fields.role === "dependentVar" ?
+                  <NodeField
+                    key={"subject"}
+                    selectedBlock={selectedBlock}
+                    fields={fields}
+                    type={{ label: "Subject", value: "subject" }}
+                    onChangeFields={(fields: AnnotationFields) => this.setState({ fields: fields }, () => this.handleOnSubmit())}
+                    changeShowEditFieldMenu={(newTypeEditFieldMenu: string) => this.changeShowEditFieldMenu(newTypeEditFieldMenu)}
+                  />
+                  : null
+              }
+              {this.renderSubmitButton()}
 
-        {
-          showEditFieldMenu && selection ?
-            <EditFieldMenu
-              selection={selection}
-              onClose={(key: string, entityFields?: EntityFields) => this.handleOnCloseEditFieldMenu(key, entityFields)}
-              title={typeEditFieldMenu}
-              // showResults={this.state.showResult1}
-              onSelectNode={this.handleOnSelectNode.bind(this)}
-            />
-            : null
-        }
-        {
-          showWikifyBlockMenu ?
-            <WikiBlockMenu
-              selection={selection}
-              onClose={() => { this.setState({ showWikifyBlockMenu: false }); }}
-              onGetError={(error: ErrorMessage) => { this.setState({ errorMessage: error }); }}
-              role={fields.role}
-              type={fields.type}
-            />
-            : null
-        }
-
+              {
+                showEditFieldMenu && selection ?
+                  <EditFieldMenu
+                    selection={selection}
+                    onClose={(key: string, entityFields?: EntityFields) => this.handleOnCloseEditFieldMenu(key, entityFields)}
+                    title={typeEditFieldMenu}
+                    // showResults={this.state.showResult1}
+                    onSelectNode={this.handleOnSelectNode.bind(this)}
+                  />
+                  : null
+              }
+              {
+                showWikifyBlockMenu ?
+                  <WikiBlockMenu
+                    selection={selection}
+                    onClose={() => { this.setState({ showWikifyBlockMenu: false }); }}
+                    onGetError={(error: ErrorMessage) => { this.setState({ errorMessage: error }); }}
+                    role={fields.role}
+                    type={fields.type}
+                  />
+                  : null
+              }
+            </div>)}
       </Form>
     )
   }
@@ -678,3 +683,4 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
 
 
 export default AnnotationForm;
+

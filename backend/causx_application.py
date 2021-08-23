@@ -579,8 +579,6 @@ def causx_download_project():
 def causx_partial_csv():
     project = get_project()
     calc_params = get_calc_params(project)
-    start = int(request.args.get("part_start", 0))
-    end = int(request.args.get("part_end", 40))
     response = dict()
     response["partialCsv"] = get_causx_partial_csv(calc_params)
     return response, 200

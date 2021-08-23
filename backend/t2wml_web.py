@@ -6,11 +6,10 @@ import pandas as pd
 import zipfile
 from t2wml.input_processing.annotation_parsing import create_nodes_from_selection
 from t2wml.mapping.canonical_spreadsheet import get_cells_and_columns
-from t2wml.api import (WikifierService, t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper,
+from t2wml.api import (t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper,
                        kgtk_to_dict, dict_to_kgtk, Annotation, block_finder, Project)
 from t2wml.mapping.kgtk import get_all_variables
 from t2wml.mapping.statement_mapper import PartialAnnotationMapper
-from t2wml.spreadsheets.conversions import cell_str_to_tuple
 from calc_params import CalcParams
 from app_config import CACHE_FOLDER
 from web_dict_provider import WebDictionaryProvider
@@ -29,12 +28,6 @@ def get_project_instance(project_folder):
     project = Project.load(project_folder)
     update_t2wml_settings(project)
     return project
-
-
-def wikify(calc_params, region, context):
-    ws = WikifierService()
-    df, problem_cells = ws.wikify_region(region, calc_params.sheet, context)
-    return df, problem_cells
 
 
 def set_web_settings():
@@ -125,7 +118,7 @@ def get_qnodes_layer(calc_params):
 
 
 def indexer(cell):
-    col, row = cell_str_to_tuple(cell)
+    col, row = (cell)
     return [row, col]
 
 
