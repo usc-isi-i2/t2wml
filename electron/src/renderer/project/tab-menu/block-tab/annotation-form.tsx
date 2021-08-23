@@ -624,7 +624,7 @@ class AnnotationForm extends React.Component<{}, AnnotationFormState> {
   render() {
     const { selection, showEditFieldMenu, typeEditFieldMenu, errorMessage, fields, showWikifyBlockMenu, selectedBlock } = this.state;
     if (this.state.mappingType == "Yaml") { return <div>Block mode not relevant when working with a yaml file</div> }
-    // if (!selection) { return <div>Please select a block</div>; }
+
     return (
       <Form className="container annotation-form"
         onSubmit={this.handleOnSubmit.bind(this)}>
