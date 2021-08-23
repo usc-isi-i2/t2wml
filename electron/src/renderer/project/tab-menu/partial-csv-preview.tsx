@@ -89,7 +89,8 @@ class PartialCsvPreview extends Component<{}, PartialCsvState> {
       <Fragment>
         <Card
           className="shadow-sm"
-          style={{ height: "88vh" }}>
+          style={{ height: "90vh" }}
+          >
 
           {/* wikifier */}
           <Card.Body className="p-0">
