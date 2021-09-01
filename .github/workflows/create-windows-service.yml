@@ -1,4 +1,4 @@
-name: Create Windows Installer
+name: Create Windows Service
 on:
   push:
     tags:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   windows:
-    name: Create the Windows Backend service
+    name: Create the Windows Service
     runs-on: windows-latest
     steps:
       - name: Checkout

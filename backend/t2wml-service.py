@@ -37,21 +37,15 @@ from waitress import serve
 import socket
 import threading
 
-from application import app
-
-
-def runApp():
-    app.run(port=13000, debug=False, host=None, use_reloader=False)
-
-
+from causx_application import app
 class WaitressService(threading.Thread):
-    
+
     def __init__(self):
         threading.Thread.__init__(self)
 
     def run(self):
         print('thread start\n')
-        serve(runApp(), listen='localhost:*', host='localhost', port=13000)
+        serve(app, host='localhost', port=13000, trusted_proxy='localhost')
         print('thread done\n')
 
     def get_id(self):
@@ -73,9 +67,9 @@ class WaitressService(threading.Thread):
 
 class MyServiceFramework(win32serviceutil.ServiceFramework):
 
-    _svc_name_ = 'WaitressService'
-    _svc_display_name_ = 'Waitress service'
-    _svc_description_ = 'Python waitress WSGI service'
+    _svc_name_ = 't2wml_backend'
+    _svc_display_name_ = 'T2WML Backend Service'
+    _svc_description_ = 'T2WML Backend Service for Causx'
 
     def __init__(self, args):
         win32serviceutil.ServiceFramework.__init__(self, args)
