@@ -187,6 +187,15 @@ def get_mapping(preload=False):
     get_layers(response, calc_params)
     return response, 200
 
+
+@app.route('/api/is-alive')
+def is_alive1():
+    return 'Causx Backend is here', 200
+
+@app.route('/api/causx/is-alive')
+def is_alive2():
+    return 'Causx Backend is here', 200
+
 @app.route('/api/causx/token', methods=['GET'])
 def get_token():
     return {"token": encode_auth_token()}, 200
