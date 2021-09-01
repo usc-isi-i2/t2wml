@@ -35,7 +35,6 @@ jobs:
           PYTHONLEGACYWINDOWSIOENCODING: true
           CI: false   # Otherwise React stops on warnings
           CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
-
         run: |
           pyinstaller  --clean --noupx t2wml-service.spec
       - name: Get the version
@@ -52,3 +51,4 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true
           body: "Windows Setup"
+
