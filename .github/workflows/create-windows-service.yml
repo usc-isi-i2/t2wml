@@ -1,0 +1,53 @@
+name: Create Windows Installer
+on:
+  push:
+    tags:
+      - v*
+
+# For Code Signing please make sure the following secrets are defined in the repository:
+# WINDOWS_CERTIFICATE_BASE64 - The Windows code signing certificate, base64 encoded
+# WINDOWS_CERTIFICATE_PASSWORD - The password for Windows the certificate
+
+jobs:
+  windows:
+    name: Create the Windows Backend service
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Set backend environment
+        working-directory: backend
+        run: |
+          pip install --upgrade setuptools pip wheel
+          pip install t2wml-api
+          pip install -r requirements.txt
+          pip install pyinstaller pywin32 semver requests
+          pip uninstall -y typing typing-extensions
+          pip install waitress
+      - name: Create installer
+        working-directory: backend
+        env:  # Replace unicode characters with ?
+          PYTHONIOENCODING: :replace
+          PYTHONLEGACYWINDOWSIOENCODING: true
+          CI: false   # Otherwise React stops on warnings
+          CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+        run: |
+          pyinstaller  --clean --noupx t2wml-service.spec
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+        shell: bash
+      - name: Upload to Release
+        id: upload-release-asset
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: backend/dist/t2wml-service.exe
+          asset_name: t2wml-service-${{ steps.get_version.outputs.VERSION }}.exe
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "Windows Setup"

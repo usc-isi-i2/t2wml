@@ -131,6 +131,20 @@ You can also open the Chrome Developers Tools from the GUI's `Debug` menu.
 #### Backend Development
 To develop the backend, you need to launch the `Backend` from the debug menu. You will be able to set breakpoints and debug properly. If you want to run the GUI, start the `Build and Watch GUI` and `t2wml GUI` tasks, as well.
 
+### Windows service  
+To run the backend as a service on windows:  
+Download the file windows-service.exe, and run with Administrator privilges:  
+Install:
+`t2wml-service.exe install`  
+Start:
+`t2wml-service.exe start`    
+Debug:
+`t2wml-service.exe debug`  
+Stop:
+`t2wml-service.exe stop`  
+Uninstall:
+`t2wml-service.exe remove`  
+
 ## Usage with GUI
 <span id="usage_with_gui"></span>
 
