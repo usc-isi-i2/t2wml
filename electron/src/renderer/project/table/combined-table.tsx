@@ -150,6 +150,7 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     updateQnodeCells(showQnode: boolean, tableData?: TableData, upadateQnodeContent = false, returnTableData = false) {
+        const t0updateQnodeCells = performance.now();
         if (!tableData) {
             if (!this.state.tableData) {
                 return;
@@ -186,6 +187,7 @@ class CombinedTable extends Component<{}, TableState> {
         }
         if (returnTableData) { return tableData; }
         this.setState({ tableData });
+        console.log("updateQnodeCells took " + (performance.now() - t0updateQnodeCells) + " milliseconds.")
     }
 
 
@@ -258,6 +260,7 @@ class CombinedTable extends Component<{}, TableState> {
 
 
     updateStatement(tableData?: TableData, returnTableData = false) {
+        const t0updateStatement = performance.now();
         const { loadedRows } = wikiStore.table;
         if (!tableData) {
             if (!this.state.tableData) {
@@ -307,6 +310,7 @@ class CombinedTable extends Component<{}, TableState> {
         tableData = this.updateQnode(tableData, true);
         if (returnTableData) { return tableData; }
         this.setState({ tableData })
+        console.log("updateStatement took " + (performance.now() - t0updateStatement) + " milliseconds.")
     }
 
     updateQnode(tableData?: TableData, returnTableData = false) {
@@ -357,6 +361,7 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     setAnnotationColors(tableData?: TableData, returnTableData = false) {
+        const t0setAnnotationColors = performance.now();
         const { loadedRows } = wikiStore.table;
         if (!tableData) {
             if (!this.state.tableData) {
@@ -467,6 +472,7 @@ class CombinedTable extends Component<{}, TableState> {
         }
         if (returnTableData) { return tableData; }
         this.setState({ tableData })
+        console.log("setAnnotationColors took " + (performance.now() - t0setAnnotationColors) + " milliseconds.")
     }
 
     applyCsstoBlock(tableData: TableData, selection: CellSelection, classNames: string[]) {
@@ -616,9 +622,10 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     updateSelection(selection: { selectionArea?: CellSelection, selectedBlock?: AnnotationBlock, selectedCell?: Cell }) {
-        // let { tableData } = this.state;
+        const t0updateSelection = performance.now();
         this.updateSelectionStyle(selection.selectionArea);
         this.updateActiveCellStyle(selection.selectedCell);
+        console.log("updateSelection took " + (performance.now() - t0updateSelection) + " milliseconds.")
     }
 
     updateSelectionStyle(selection?: CellSelection) {
@@ -844,6 +851,7 @@ class CombinedTable extends Component<{}, TableState> {
     }
 
     handleOnMouseDown(event: React.MouseEvent) {
+        const t0handleOnMouseDown = performance.now()
         const element = event.target as any;
         // Allow users to select the resize-corner of the cell
         if (element.className === 'cell-resize-corner') {
@@ -918,10 +926,13 @@ class CombinedTable extends Component<{}, TableState> {
 
         // Initialize the previous element with the one selected
         this.prevElement = element;
+
+        console.log("handleOnMouseDown took " + (performance.now() - t0handleOnMouseDown) + " milliseconds.")
     }
 
 
     handleOnMouseMove(event: React.MouseEvent) {
+        // const t0handleOnMouseMove = performance.now();
         const element = event.target as any;
         if (element === this.prevElement) { return; }
 
@@ -952,9 +963,11 @@ class CombinedTable extends Component<{}, TableState> {
             // Update reference to the previous element
             this.prevElement = element;
         }
+        // console.log("handleOnMouseMove took " + (performance.now() - t0handleOnMouseMove) + " milliseconds.");
     }
 
     handleOnKeyDown(event: KeyboardEvent) {
+        const t0handleOnKeyDown = performance.now();
 
         // remove selections
         if (event.code === 'Escape') {
@@ -1098,31 +1111,7 @@ class CombinedTable extends Component<{}, TableState> {
                 }
             }
         }
-    }
-
-    handleOnClickHeader(event: React.MouseEvent) {
-        const element = event.target as any;
-        const colIndex = parseInt(element.dataset.colIndex)
-        const { tableData } = this.state;
-        const { loadedRows } = wikiStore.table;
-        if (!tableData) { return; }
-
-        for (const indexRow of loadedRows) {
-            tableData[indexRow][colIndex - 1].maxWidth = true;
-        }
-
-        // const element = event.target as any;
-        element.setAttribute('style', 'width: 100%;');
-        element.parentElement.setAttribute('style', 'max-width: 1%');
-
-        // const index = element.dataset.colIndex;
-        // tableData.forEach((row: any) => {
-        //     row[index].setAttribute('style', 'max-width: 1%');
-        // });
-
-        setTimeout(() => {
-            element.setAttribute('style', `min-width: ${element.clientWidth}px`);
-        }, 100);
+        console.log("handleOnKeyDown took " + (performance.now() - t0handleOnKeyDown) + " milliseconds.");
     }
 
     renderErrorMessage() {
@@ -1319,7 +1308,6 @@ class CombinedTable extends Component<{}, TableState> {
                                         onMouseUp={this.handleOnMouseUp.bind(this)}
                                         onMouseDown={this.handleOnMouseDown.bind(this)}
                                         onMouseMove={this.handleOnMouseMove.bind(this)}
-                                        onClickHeader={this.handleOnClickHeader.bind(this)}
                                         MIN_ROWS={100}
                                         MIN_COLUMNS={26}
                                         rowGetter={(index: number) => this.rowGetter(index)}
