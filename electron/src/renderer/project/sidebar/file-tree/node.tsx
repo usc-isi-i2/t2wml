@@ -5,6 +5,7 @@ import { IconDefinition, faChevronDown, faChevronRight, faTable, faStream, faCol
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import './node.css';
 import path from "path";
+import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 
 
 export type NodeType = "DataFile" | "SingleSheetDataFile" | "Sheet" | "Label" | "Yaml" | "Annotation" | "Wikifier" | "Entity"
@@ -32,6 +33,8 @@ export interface NodeProps {
 
 interface NodeState {
   expanded: boolean;
+  activeDrags: number;
+  deltaPosition: { x: number; y: number };
 }
 
 class FileNode extends Component<NodeProps, NodeState> {
@@ -39,7 +42,11 @@ class FileNode extends Component<NodeProps, NodeState> {
   constructor(props: NodeProps) {
     super(props);
     this.state = {
-      expanded: props.type == "Label" || props.bolded == true
+      activeDrags: 0,
+      expanded: props.type == "Label" || props.bolded == true,
+      deltaPosition: {
+        x: 0, y: 0
+      },
     }
   }
 
@@ -62,6 +69,26 @@ class FileNode extends Component<NodeProps, NodeState> {
     event.preventDefault();
     this.props.rightClick(this.props);
   }
+
+  onStart() {
+    // this.setState({  });
+    return;
+  }
+
+  onStop() {
+    this.setState({ deltaPosition: { x: 0, y: 0 } });
+  }
+
+  handleDrag(e: DraggableEvent, data: DraggableData) {
+    const { y } = this.state.deltaPosition;
+    this.setState({
+      deltaPosition: {
+        x: 0,
+        y: y + data.deltaY,
+      }
+    });
+  }
+
   render() {
     let childrenNodes = null;
     let propChildren = this.props.childNodes;
@@ -110,14 +137,22 @@ class FileNode extends Component<NodeProps, NodeState> {
     );
 
     return (
-      <li ref="#home">
-        <OverlayTrigger overlay={logoTooltipHtml} delay={{ show: 1000, hide: 0 }} placement="top" trigger={["hover", "focus"]}>
-          <label className="pointer ellipsis"
-            onContextMenu={(e) => this.onRightClick(e)}
-          >
-            {arrowIcon} <span onClick={() => this.onNodeClick()}>{typeIcon} {labelText}</span>
-          </label>
-        </OverlayTrigger>
+      <li >
+        <Draggable axis="y" position={this.state.deltaPosition}
+          onDrag={(e: DraggableEvent, data: DraggableData) => this.handleDrag(e, data)}
+          onStart={() => this.onStart()}
+          onStop={() => this.onStop()}>
+          <div>
+            <OverlayTrigger overlay={logoTooltipHtml} delay={{ show: 1000, hide: 0 }} placement="top" trigger={["hover", "focus"]}>
+              <label className="pointer ellipsis"
+                onContextMenu={(e) => this.onRightClick(e)}
+              >
+                {arrowIcon} <span onClick={() => this.onNodeClick()}>{typeIcon} {labelText}</span>
+              </label>
+
+            </OverlayTrigger>
+          </div>
+        </Draggable>
         {childrenNodes}
       </li>
     )

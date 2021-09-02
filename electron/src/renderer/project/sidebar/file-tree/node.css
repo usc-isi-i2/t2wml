@@ -8,3 +8,11 @@
     overflow: hidden;
     text-overflow: ellipsis
 }
+
+.react-draggable:hover, .cursor:hover {
+    background-color: #85757469;
+}
+
+.no-pointer-events {
+    pointer-events: none;
+}
