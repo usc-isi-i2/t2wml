@@ -20,11 +20,12 @@ from t2wml.spreadsheets.utilities import PandasLoader
 from t2wml.api import annotation_suggester, get_Pnode, get_Qnode, t2wml_settings, Wikifier
 from copy_annotations.copy_annotations import copy_annotation
 from t2wml_web import ( get_kg, autocreate_items, set_web_settings,
-                        get_layers, get_annotations, get_table, save_annotations,
-                       get_project_instance, get_qnodes_layer,
+                        get_annotations, get_table, save_annotations,get_project_instance,
                        suggest_annotations,  update_t2wml_settings, get_entities)
 import web_exceptions
-from causx.causx_utils import AnnotationNodeGenerator, causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, create_fidil_json, get_causx_partial_csv, causx_create_canonical_spreadsheet, get_causx_tags, preload, upload_fidil_json
+from causx.causx_utils import AnnotationNodeGenerator, causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, create_fidil_json, get_causx_partial_csv, causx_create_canonical_spreadsheet, include_base_causx_tags, preload, upload_fidil_json
+from causx.causx_utils import causx_get_layers as get_layers
+from causx.causx_utils import causx_get_qnodes_layer as get_qnodes_layer
 from causx.wikification import wikify_countries
 from utils import create_user_wikification
 from web_exceptions import WebException, make_frontend_err_dict
@@ -635,7 +636,7 @@ def causx_get_an_entity(id):
     entities_dict=causx_get_variable_dict(project)
     entity=entities_dict.get(id, None)
     if entity:
-        entity["tags"]=get_causx_tags(entity.get("tags", {}))
+        entity["tags"]=include_base_causx_tags(entity.get("tags", {}))
         entity['id'] = id
         return dict(entity=entity), 200
     else:
