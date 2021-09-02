@@ -58,7 +58,7 @@
       "asar": false,
       "extraResources": [
         {
-          "from": "../backend/dist/t2wml-server.exe",
+          "from": "../backend/dist/t2wml-server",
           "to": "."
         }
       ],
