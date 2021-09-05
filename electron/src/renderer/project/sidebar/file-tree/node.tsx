@@ -6,6 +6,7 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import './node.css';
 import path from "path";
 import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
+import RequestService from "@/renderer/common/service";
 
 
 export type NodeType = "DataFile" | "SingleSheetDataFile" | "Sheet" | "Label" | "Yaml" | "Annotation" | "Wikifier" | "Entity"
@@ -39,8 +40,13 @@ interface NodeState {
 
 class FileNode extends Component<NodeProps, NodeState> {
 
+  private requestService: RequestService;
+
   constructor(props: NodeProps) {
     super(props);
+
+    this.requestService = new RequestService();
+
     this.state = {
       activeDrags: 0,
       expanded: props.type == "Label" || props.bolded == true,
@@ -75,7 +81,14 @@ class FileNode extends Component<NodeProps, NodeState> {
     return;
   }
 
-  onStop() {
+  onStop(event: DraggableEvent, data: DraggableData) {
+    const target = event.target as HTMLInputElement;
+    if (data.node.classList.contains("drop-target")
+      && this.props.label !== target.id) {
+      // TODO
+      console.log(target.id)
+      this.requestService.copyAnnotation(this.props.label, target.id);
+    }
     this.setState({ deltaPosition: { x: 0, y: 0 } });
   }
 
@@ -137,17 +150,19 @@ class FileNode extends Component<NodeProps, NodeState> {
     );
 
     return (
-      <li >
+      <li id={this.props.label}>
         <Draggable axis="y" position={this.state.deltaPosition}
           onDrag={(e: DraggableEvent, data: DraggableData) => this.handleDrag(e, data)}
           onStart={() => this.onStart()}
-          onStop={() => this.onStop()}>
-          <div>
+          onStop={(e: DraggableEvent, data: DraggableData) => this.onStop(e, data)}
+        >
+          <div className="drop-target" id={this.props.label}>
             <OverlayTrigger overlay={logoTooltipHtml} delay={{ show: 1000, hide: 0 }} placement="top" trigger={["hover", "focus"]}>
               <label className="pointer ellipsis"
                 onContextMenu={(e) => this.onRightClick(e)}
+                id={this.props.label}
               >
-                {arrowIcon} <span onClick={() => this.onNodeClick()}>{typeIcon} {labelText}</span>
+                {arrowIcon} <span id={this.props.label} onClick={() => this.onNodeClick()}>{typeIcon} {labelText}</span>
               </label>
 
             </OverlayTrigger>

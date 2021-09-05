@@ -13,6 +13,10 @@
     background-color: #85757469;
 }
 
+.hovered {
+    background-color: gray;
+  }
+
 .no-pointer-events {
     pointer-events: none;
 }

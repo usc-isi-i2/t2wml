@@ -399,6 +399,10 @@ class RequestService {
     }
   }
 
+  public copyAnnotation(src: string, dest: string) {
+    alert("copy "+ src + " => " + dest)
+  }
+
 
   public async call<IProp, IState extends IStateWithError, ReturnValue>(
     component: React.Component<IProp, IState>,
