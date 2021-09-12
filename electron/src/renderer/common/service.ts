@@ -393,7 +393,7 @@ class RequestService {
       const response = await backendGet(`/query_node/${id[0].toLocaleUpperCase() + id.slice(1)}?${this.getDataFileParams()}`) as QNode;
       return response;
     } catch (error) {
-      if (error.errorCode === 404) {
+      if ((error as ErrorMessage).errorCode === 404) {
         return;
       }
     }
@@ -413,7 +413,7 @@ class RequestService {
     try {
       return await func();
     } catch (error) {
-      component.setState({ errorMessage: error });
+      component.setState({ errorMessage: error as ErrorMessage });
       throw error;
     }
   }
