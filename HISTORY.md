@@ -1,9 +1,10 @@
 T2WML Standalone Server App History
 ===================================
 
-Changes in version 2.11.1:
+Changes in version 2.11.2:
 ------------------------
 * t2wml-api 0.6.3
+* windows service
 
 Changes in version 2.11.0:
 ------------------------
