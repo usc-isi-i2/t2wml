@@ -336,7 +336,7 @@ def delete_wikification_for_causx():
         raise web_exceptions.InvalidRequestException('No selection provided')
 
     if isinstance(selection, dict):
-        selection = ((selection["x1"], selection["y1"]), (selection["x2"], selection["y2"]))
+        selection = ((selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1))
 
 
     value = request.get_json().get('value', None)
