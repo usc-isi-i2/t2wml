@@ -220,8 +220,10 @@ def create_auto_nodes_for_causx():
     project = get_project()
     calc_params = get_calc_params(project)
     selection = request.get_json()['selection']
-    selection = (selection["x1"]-1, selection["y1"] -
+    if isinstance(selection, dict):
+        selection = (selection["x1"]-1, selection["y1"] -
                  1), (selection["x2"]-1, selection["y2"]-1)
+
     is_property = request.get_json()['is_property']
     data_type = request.get_json().get("data_type", None)
     autocreate_items(calc_params, selection, is_property, data_type)
@@ -250,6 +252,10 @@ def suggest_annotation_block_for_causx():
     project = get_project()
     calc_params = get_calc_params(project)
     block = request.get_json()["selection"]
+    if not isinstance(block, dict): #the rare reverse selection!
+        (x1, y1), (x2, y2) = block
+        block = {"x1": x1+1, "x2": x2+1, "y1": y1+1, "y2": y2+1}
+
     annotation = request.get_json()["annotations"]
 
     response = {  # fallback response
@@ -443,6 +449,10 @@ def causx_get_file(allowed_extensions):
 def causx_wikify_for_causx():
     project = get_project()
     selection = request.get_json()["selection"]
+    if isinstance(selection, dict):
+        selection = (selection["x1"]-1, selection["y1"] -
+                 1), (selection["x2"]-1, selection["y2"]-1)
+
     overwrite_existing = request.get_json().get("overwrite", False)
     #context = request.get_json()["context"]
     calc_params = get_calc_params(project)
@@ -451,8 +461,7 @@ def causx_wikify_for_causx():
     project.add_df_to_wikifier_file(calc_params.sheet, cell_qnode_map, overwrite_existing)
 
     #auto-create nodes for anything that failed to wikify
-    tuple_selection = ((selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1))
-    create_nodes_from_selection(tuple_selection, project, calc_params.sheet, calc_params.wikifier)
+    create_nodes_from_selection(selection, project, calc_params.sheet, calc_params.wikifier)
 
     calc_params = get_calc_params(project)
     response = dict(project=get_project_dict(project))
