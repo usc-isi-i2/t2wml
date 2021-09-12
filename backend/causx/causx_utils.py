@@ -13,48 +13,159 @@ from t2wml.wikification.utility_functions import dict_to_kgtk
 from causx.wikification import DatamartCountryWikifier
 from causx.cameos import cameos
 from causx.coords import coords
-from t2wml_web import get_kg
+from t2wml_web import get_kg, get_layers, get_qnodes_layer
 
 factor_classes = set([
+    "AffinityGroups",
     "AgriculturalIndustry",
     "AirPollutionLevels",
     "AirTransportation",
     "AlternativeEnergyIndustry",
+    "ArmedForces",
+    "AveragePopulationAge",
+    "BasicNeeds",
+    "BusinessAndIndustryInfluence",
+    "CentralOrLocalGovernment",
+    "CivilMilitaryOperations",
+    "CommunicationRestrictions",
+    "Consumption",
     "Corruption",
     "CriminalActivities",
+    "DefenseInformation",
+    "Distribution",
+    "Economic",
     "EconomicProduction-GDP",
+    "EconomicSanctions",
+    "EconomicServicesProduction",
     "EducationAvailability",
+    "EmergencyFacilityAvailability",
     "EmploymentLevel",
+    "EnvironmentConditions",
+    "EthnicTensions",
+    "EthnicTensionsInGovt",
+    "ExtraJudicialActivity",
     "FoodAndNutritionLevel",
     "ForeignArmsTrade",
     "ForeignInvestment",
     "FreedomOfExpression",
+    "FreedomOfReligiousExpression",
     "GovernmentAbilityToAddressBasicNeeds",
+    "GovernmentBuildings",
     "GovernmentEffectiveness",
+    "GovernmentPolicyActivity",
     "GovernmentStability",
     "GovernmentTransparency",
     "GroundTransportation",
+    "Habitability",
     "HealthcareAvailability",
+    "HumanTrafficking",
+    "IllicitTrade",
+    "IncomeInequality",
+    "IndustrialEmploymentRate",
+    "Industry",
+    "Informal",
+    "Information",
+    "Infrastructure",
+    "Institutions",
+    "InsurgentsOrSeparatistsActivities",
+    "InternallyDisplacedPersons",
+    "InternalSecurity",
     "InternationalTrade",
+    "InternetServiceAvailability",
     "JudicialActivity",
+    "Leadership",
+    "LegislativeActivity",
+    "LogisticsReadiness",
     "ManufacturingIndustry",
+    "MassCommunication",
+    "Military",
+    "MilitaryActivity",
+    "MilitaryAirActivity",
+    "MilitaryAirCapability",
+    "MilitaryAirReadiness",
+    "MilitaryC2Capability",
+    "MilitaryCBRNECapability",
+    "MilitaryCBRNEReadiness",
+    "MilitaryConflict",
+    "MilitaryCyberActivity",
+    "MilitaryCyberCapability",
+    "MilitaryCyberReadiness",
+    "MilitaryDeployment",
+    "MilitaryGroundActivity",
+    "MilitaryGroundCapability",
+    "MilitaryGroundReadiness",
+    "Military-IndustrialBase",
+    "MilitaryInfluenceOnGovernment",
+    "MilitaryInformationEnvironmentActivity",
+    "MilitaryIntelligenceActivity",
+    "MilitaryIntelligenceCapability",
+    "MilitaryIntelligenceReadiness",
+    "MilitaryLawEnforcement",
+    "MilitaryLogisticsCapability",
+    "MilitaryNavalActivity",
+    "MilitaryNavalCapability",
+    "MilitaryNavalReadiness",
+    "MilitaryReadiness",
+    "MilitaryRecruitment",
+    "MilitaryResearchAndDevelopment",
+    "MilitarySpaceActivity",
+    "MilitarySpaceCapability",
+    "MilitarySpaceReadiness",
+    "MilitarySpecialOperationsActivity",
+    "MilitarySpecialOperationsCapability",
+    "MilitarySpecialOperationsReadiness",
     "MilitarySpending",
+    "MilitaryTraining",
+    "MilitaryWMDActivity",
     "MiningIndustry",
+    "NationalArmsProduction",
+    "NationalInformation",
+    "NonMilitaryInternalSecurityActivity",
+    "NonMilitaryInternalSecurityCapability",
+    "NonMilitaryInternalSecurityReadiness",
+    "PeacekeepingActivity",
     "PetroleumIndustry",
+    "Political",
+    "PoliticalFrictionOrTension",
+    "PoliticalOrganizations",
     "PopulaceEducationLevel",
+    "PopulaceSupportForGovernment",
+    "PopulaceSupportForMilitary",
+    "PopulaceSupportForPolice",
+    "PopulationGrowth",
     "PovertyRate",
     "PowerAvailability",
+    "Production",
     "ProvisionOfAidOrSupport",
+    "PublicFacilities",
     "Refugees",
+    "Relations",
+    "ReligiousSites",
+    "ReligiousTensionsInGovt",
+    "ReligiousTensionsInPopulation",
+    "Sanctions",
     "SanitaryConditions",
+    "SecurityForceAssistance",
     "SecuritySafetyLevel",
     "ServicesIndustry",
+    "Social",
+    "SocialCohesion",
+    "StrategicCommunications",
+    "Sustainment",
+    "SustenanceManagement",
+    "TerrorismFinancing",
+    "TerroristActivities",
+    "Transportation",
     "TransportationInfrastructure",
+    "UnregulatedEconomy",
+    "Utilities",
     "UtilitiesInfrastructure",
+    "WasteServices",
     "WaterAvailability",
     "WaterTransportation",
     "WealthInequality",
-  ])
+    "WMDCapabilityPursuit"
+])
 
 def clean_id(input):
     if not input:
@@ -391,7 +502,7 @@ def causx_get_variable_dict(project):
     return entity_dict
 
 
-def get_causx_tags(old_tags=None, new_tags=None):
+def include_base_causx_tags(old_tags=None, new_tags=None):
     tags_dict={"FactorClass":"","Relevance":"","Normalizer":"","Units":"","DocID":""}
     if old_tags:
         tags_dict.update(old_tags)
@@ -406,7 +517,7 @@ def causx_set_variable(project, id, updated_fields):
 
     if variable:
         new_tags = updated_fields.get("tags", {})
-        tags = get_causx_tags(new_tags=new_tags)
+        tags = include_base_causx_tags(new_tags=new_tags)
         filepath=variable_dict['filepath']['value']
         variable.update(updated_fields)
         variable["tags"]=tags
@@ -512,3 +623,24 @@ def upload_fidil_json(calc_params):
         fidil_endpoint = "http://icm-provider:8080/fidil/structured/datasets/upload"
     response = requests.post(fidil_endpoint, json=fidil_json)
     return response.status_code
+
+
+
+def causx_get_layers(response, calc_params):
+    get_layers(response, calc_params)
+    response["layers"] = causx_edit_qnode_layer(calc_params, response["layers"])
+
+def causx_get_qnodes_layer(calc_params):
+    layers = get_qnodes_layer(calc_params)
+    layers = causx_edit_qnode_layer(calc_params, layers)
+    return layers
+
+def causx_edit_qnode_layer(calc_params, layers):
+    qnode_entries=layers["qnode"]["entries"]
+    variable_dict=causx_get_variable_dict(calc_params.project)
+    for entry in qnode_entries:
+        id = entry["id"]
+        variable=variable_dict.get(id, None)
+        if variable:
+            entry["tags"]=include_base_causx_tags(variable.get("tags", {}))
+    return layers

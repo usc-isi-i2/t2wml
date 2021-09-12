@@ -313,7 +313,7 @@
     },
     "suggest_annotation": [
         {
-            "id": "816da8c9-54b4-479a-a5ad-8e5870fe8b74",
+            "id": "773d53d3-c5fc-478a-bd8a-c74918374841",
             "link": "",
             "links": {},
             "property": {
@@ -332,8 +332,8 @@
             "type": "time"
         },
         {
-            "id": "a519b3b2-ba4c-4964-9619-8c4e53820f0d",
-            "link": "fa0fd5bf-0867-42f6-ad34-3aa5bc0a4d62",
+            "id": "0c35e101-d5d4-49dc-86e8-5a71c4afd843",
+            "link": "0459586c-3392-4480-a61e-7fd081670a4a",
             "links": {},
             "role": "mainSubject",
             "selection": {
@@ -345,10 +345,10 @@
             "type": "wikibaseitem"
         },
         {
-            "id": "fa0fd5bf-0867-42f6-ad34-3aa5bc0a4d62",
+            "id": "0459586c-3392-4480-a61e-7fd081670a4a",
             "link": "",
             "links": {
-                "mainSubject": "a519b3b2-ba4c-4964-9619-8c4e53820f0d"
+                "mainSubject": "0c35e101-d5d4-49dc-86e8-5a71c4afd843"
             },
             "role": "dependentVar",
             "selection": {
@@ -414,7 +414,7 @@
     "upload_project": {
         "annotations": [
             {
-                "id": "816da8c9-54b4-479a-a5ad-8e5870fe8b74",
+                "id": "773d53d3-c5fc-478a-bd8a-c74918374841",
                 "link": "",
                 "links": {},
                 "property": {
@@ -433,8 +433,8 @@
                 "type": "time"
             },
             {
-                "id": "a519b3b2-ba4c-4964-9619-8c4e53820f0d",
-                "link": "fa0fd5bf-0867-42f6-ad34-3aa5bc0a4d62",
+                "id": "0c35e101-d5d4-49dc-86e8-5a71c4afd843",
+                "link": "0459586c-3392-4480-a61e-7fd081670a4a",
                 "links": {},
                 "role": "mainSubject",
                 "selection": {
@@ -446,11 +446,11 @@
                 "type": "wikibaseitem"
             },
             {
-                "id": "fa0fd5bf-0867-42f6-ad34-3aa5bc0a4d62",
+                "id": "0459586c-3392-4480-a61e-7fd081670a4a",
                 "link": "",
                 "links": {
-                    "mainSubject": "a519b3b2-ba4c-4964-9619-8c4e53820f0d",
-                    "property": "fb324f06-b528-4a47-b799-be2d8ad76f68"
+                    "mainSubject": "0c35e101-d5d4-49dc-86e8-5a71c4afd843",
+                    "property": "b8a41efe-d707-4a85-b75e-b3c35bab65fd"
                 },
                 "role": "dependentVar",
                 "selection": {
@@ -463,8 +463,8 @@
             },
             {
                 "children": {},
-                "id": "fb324f06-b528-4a47-b799-be2d8ad76f68",
-                "link": "fa0fd5bf-0867-42f6-ad34-3aa5bc0a4d62",
+                "id": "b8a41efe-d707-4a85-b75e-b3c35bab65fd",
+                "link": "0459586c-3392-4480-a61e-7fd081670a4a",
                 "links": {},
                 "role": "property",
                 "selection": {
@@ -492,6 +492,13 @@
                             ]
                         ],
                         "label": "Education index",
+                        "tags": {
+                            "DocID": "my doc id",
+                            "FactorClass": "",
+                            "Normalizer": "",
+                            "Relevance": "",
+                            "Units": ""
+                        },
                         "url": "",
                         "value": "Education index"
                     },
@@ -2476,6 +2483,13 @@
                             ]
                         ],
                         "label": "Palestine (State of)",
+                        "tags": {
+                            "DocID": "",
+                            "FactorClass": "",
+                            "Normalizer": "",
+                            "Relevance": "",
+                            "Units": ""
+                        },
                         "url": "",
                         "value": "Palestine (State of)"
                     },
@@ -3091,6 +3105,13 @@
                             ]
                         ],
                         "label": "The former Yugoslav Republic of Macedonia",
+                        "tags": {
+                            "DocID": "",
+                            "FactorClass": "",
+                            "Normalizer": "",
+                            "Relevance": "",
+                            "Units": ""
+                        },
                         "url": "",
                         "value": "The former Yugoslav Republic of Macedonia"
                     },
