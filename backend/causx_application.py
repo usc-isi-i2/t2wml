@@ -342,7 +342,7 @@ def delete_wikification_for_causx():
     filepath, exists=project.get_wikifier_file(calc_params.sheet)
     if exists:
         wikifier = Wikifier.load_from_file(filepath)
-        wikifier.delete_wikification(selection, value, context="")
+        wikifier.delete_wikification(selection, value, context="", sheet=calc_params.sheet)
         wikifier.save_to_file(filepath)
 
     response = dict(project=get_project_dict(project))
