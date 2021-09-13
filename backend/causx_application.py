@@ -137,6 +137,20 @@ def get_annotation_name(calc_params):
     os.makedirs(Path(calc_params.project.directory)/"annotations", exist_ok=True)
     return annotation_path
 
+def get_range_params():
+    start_end_kwargs = {}
+    for key in ["data_start", "map_start"]:#, "part_start"]:
+        start_end_kwargs[key] = int(request.args.get(key, 0))
+    for key in ["data_end", "map_end"]:
+        end = int(request.args.get(key, 0))
+        if end == 0:
+            end = None
+        start_end_kwargs[key] = end
+    #start_end_kwargs["part_end"] = int(request.args.get("part_end", 30))
+    start_end_kwargs["part_count"] = int(request.args.get("part_count", 100))
+    return start_end_kwargs
+
+
 def get_calc_params(project, data_required=True):
     try:
         try:
@@ -156,16 +170,7 @@ def get_calc_params(project, data_required=True):
         else:
             return None
 
-    start_end_kwargs = {}
-    for key in ["data_start", "map_start"]:#, "part_start"]:
-        start_end_kwargs[key] = int(request.args.get(key, 0))
-    for key in ["data_end", "map_end"]:
-        end = int(request.args.get(key, 0))
-        if end == 0:
-            end = None
-        start_end_kwargs[key] = end
-    #start_end_kwargs["part_end"] = int(request.args.get("part_end", 30))
-    start_end_kwargs["part_count"] = int(request.args.get("part_count", 100))
+    start_end_kwargs=get_range_params()
     calc_params = CalcParams(project, data_file, sheet_name, **start_end_kwargs)
 
     calc_params._annotation_path = get_annotation_name(calc_params)
@@ -491,7 +496,10 @@ def causx_upload_data():
     sheet_name = project.data_files[file_path]["val_arr"][0]
     project.save()
     response["sheetName"] = sheet_name
-    calc_params = CalcParams(project, file_path, sheet_name)
+
+    start_end_kwargs=get_range_params()
+    calc_params = CalcParams(project, file_path, sheet_name, **start_end_kwargs)
+
     response["table"] = get_table(calc_params)
     project.title=Path(file_path).stem
     project.save()
@@ -516,7 +524,8 @@ def causx_upload_project():
 
     project = get_project()
     sheet_name=filemap["sheet"]
-    calc_params=CalcParams(project, filemap["data"], sheet_name, annotation_path=filemap["annotation"])
+    start_end_kwargs=get_range_params()
+    calc_params=CalcParams(project, filemap["data"], sheet_name, annotation_path=filemap["annotation"], **start_end_kwargs)
     response=dict()
 
     response["table"] = get_table(calc_params)
