@@ -582,6 +582,7 @@ def causx_upload_annotation():
             country_selections.append(block["selection"])
 
     for selection in country_selections:
+        selection = get_tuple_selection(selection)
         cell_qnode_map, problem_cells = wikify_countries(calc_params, selection)
         project.add_df_to_wikifier_file(calc_params.sheet, cell_qnode_map)
         #auto-create nodes for anything that failed to wikify
