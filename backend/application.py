@@ -522,7 +522,7 @@ class AnnotationParams:
 @json_response
 def upload_annotation_for_copying():
     project = get_project()
-    
+
     source_params = AnnotationParams(**request.get_json()["source"])
     destination_params = AnnotationParams(**request.get_json()["destination"])
 
@@ -531,9 +531,8 @@ def upload_annotation_for_copying():
         f.write(json.dumps(processed_annotation, cls=NumpyEncoder))
 
     project.add_annotation_file(destination_params.annotation_path, destination_params.data_path, destination_params.sheet_name)
-    response, code = get_mapping()
-    response["project"]=get_project_dict(project)
-    return response, code
+    response = dict(project = get_project_dict(project))
+    return response, 200
 
 
 
