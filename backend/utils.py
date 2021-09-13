@@ -91,3 +91,13 @@ def create_user_wikification(calc_params, project, selection, value, context, it
             wiki_dict[context][(column, row, value)] = item
     project.add_dict_to_wikifier_file(calc_params.sheet, wiki_dict, overwrite_existing=True)
     return wiki_dict
+
+
+def get_tuple_selection(selection):
+    if isinstance(selection, dict):
+        selection = ((selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1))
+    try:
+        (test1, test2), (test3, test4) = selection
+    except:
+        raise web_exceptions.InvalidRequestException("Selection must be a dictionary with x1, y1, x2, y2 keys, or a pair of tuple pairs")
+    return selection
