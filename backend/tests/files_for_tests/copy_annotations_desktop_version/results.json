@@ -1,0 +1,1715 @@
+{
+    "auto_create_nodes": {
+        "layers": {
+            "qnode": {
+                "entries": [
+                    {
+                        "context": "",
+                        "data_type": null,
+                        "description": "sovereign state in southeastern Europe",
+                        "id": "Q219",
+                        "indices": [
+                            [
+                                1,
+                                0
+                            ]
+                        ],
+                        "label": "Bulgaria",
+                        "url": "https://www.wikidata.org/wiki/Q219",
+                        "value": "Bulgaria"
+                    },
+                    {
+                        "context": "",
+                        "data_type": null,
+                        "description": "sovereign state in South America",
+                        "id": "Q750",
+                        "indices": [
+                            [
+                                2,
+                                0
+                            ]
+                        ],
+                        "label": "Bolivia",
+                        "url": "https://www.wikidata.org/wiki/Q750",
+                        "value": "Bolivia"
+                    },
+                    {
+                        "context": "",
+                        "data_type": null,
+                        "description": "",
+                        "id": "QCustomNode-bengal",
+                        "indices": [
+                            [
+                                3,
+                                0
+                            ]
+                        ],
+                        "label": "Bengal",
+                        "url": "",
+                        "value": "Bengal"
+                    }
+                ],
+                "layerType": "qNode"
+            }
+        },
+        "project": {
+            "annotations": {
+                "BCcountries.xlsx": {
+                    "B-countries": {
+                        "selected": "annotations/BCcountries-B-countries.annotation",
+                        "val_arr": [
+                            "annotations/BCcountries-B-countries.annotation"
+                        ]
+                    }
+                },
+                "countries with ID.csv": {
+                    "countries with ID.csv": {
+                        "selected": "annotations/countries with ID-countries with ID.csv.annotation",
+                        "val_arr": [
+                            "annotations/countries with ID-countries with ID.csv.annotation"
+                        ]
+                    }
+                }
+            },
+            "cache_id": null,
+            "data_files": {
+                "BCcountries.xlsx": {
+                    "selected": "B-countries",
+                    "val_arr": [
+                        "B-countries",
+                        "C-countries"
+                    ]
+                },
+                "countries with ID.csv": {
+                    "selected": "countries with ID.csv",
+                    "val_arr": [
+                        "countries with ID.csv"
+                    ]
+                },
+                "horizontal data.xlsx": {
+                    "selected": "Sheet1",
+                    "val_arr": [
+                        "Sheet1"
+                    ]
+                }
+            },
+            "datamart_api": null,
+            "description": "",
+            "directory": "c:\\Users\\devora\\C_sources\\pedro\\t2wml\\backend\\tests\\files_for_tests\\copy_annotations_desktop_version",
+            "entity_files": [
+                "annotations/autogen-files/autogen_entities_BCcountries.xlsx.tsv",
+                "user_input_properties.tsv"
+            ],
+            "handle_calendar": "leave",
+            "sparql_endpoint": "https://query.wikidata.org/bigdata/namespace/wdq/sparql",
+            "title": "copy-anno",
+            "url": "",
+            "warn_for_empty_cells": false,
+            "yaml_files": [],
+            "yaml_sheet_associations": {}
+        }
+    },
+    "create_annotation": {
+        "filename": "annotations/BCcountries-B-countries.annotation",
+        "project": {
+            "annotations": {
+                "BCcountries.xlsx": {
+                    "B-countries": {
+                        "selected": "annotations/BCcountries-B-countries.annotation",
+                        "val_arr": [
+                            "annotations/BCcountries-B-countries.annotation"
+                        ]
+                    }
+                },
+                "countries with ID.csv": {
+                    "countries with ID.csv": {
+                        "selected": "annotations/countries with ID-countries with ID.csv.annotation",
+                        "val_arr": [
+                            "annotations/countries with ID-countries with ID.csv.annotation"
+                        ]
+                    }
+                }
+            },
+            "cache_id": null,
+            "data_files": {
+                "BCcountries.xlsx": {
+                    "selected": "B-countries",
+                    "val_arr": [
+                        "B-countries",
+                        "C-countries"
+                    ]
+                },
+                "countries with ID.csv": {
+                    "selected": "countries with ID.csv",
+                    "val_arr": [
+                        "countries with ID.csv"
+                    ]
+                },
+                "horizontal data.xlsx": {
+                    "selected": "Sheet1",
+                    "val_arr": [
+                        "Sheet1"
+                    ]
+                }
+            },
+            "datamart_api": null,
+            "description": "",
+            "directory": "c:\\Users\\devora\\C_sources\\pedro\\t2wml\\backend\\tests\\files_for_tests\\copy_annotations_desktop_version",
+            "entity_files": [
+                "annotations/autogen-files/autogen_entities_BCcountries.xlsx.tsv",
+                "user_input_properties.tsv"
+            ],
+            "handle_calendar": "leave",
+            "sparql_endpoint": "https://query.wikidata.org/bigdata/namespace/wdq/sparql",
+            "title": "copy-anno",
+            "url": "",
+            "warn_for_empty_cells": false,
+            "yaml_files": [],
+            "yaml_sheet_associations": {}
+        }
+    },
+    "create_node": {
+        "entity": {
+            "data_type": "quantity",
+            "description": "",
+            "id": "PCustomNode-customquantity",
+            "label": "custom-quantity"
+        },
+        "layers": {},
+        "project": {
+            "annotations": {
+                "BCcountries.xlsx": {
+                    "B-countries": {
+                        "selected": "annotations/BCcountries-B-countries.annotation",
+                        "val_arr": [
+                            "annotations/BCcountries-B-countries.annotation"
+                        ]
+                    }
+                },
+                "countries with ID.csv": {
+                    "countries with ID.csv": {
+                        "selected": "annotations/countries with ID-countries with ID.csv.annotation",
+                        "val_arr": [
+                            "annotations/countries with ID-countries with ID.csv.annotation"
+                        ]
+                    }
+                }
+            },
+            "cache_id": null,
+            "data_files": {
+                "BCcountries.xlsx": {
+                    "selected": "B-countries",
+                    "val_arr": [
+                        "B-countries",
+                        "C-countries"
+                    ]
+                },
+                "countries with ID.csv": {
+                    "selected": "countries with ID.csv",
+                    "val_arr": [
+                        "countries with ID.csv"
+                    ]
+                },
+                "horizontal data.xlsx": {
+                    "selected": "Sheet1",
+                    "val_arr": [
+                        "Sheet1"
+                    ]
+                }
+            },
+            "datamart_api": null,
+            "description": "",
+            "directory": "c:\\Users\\devora\\C_sources\\pedro\\t2wml\\backend\\tests\\files_for_tests\\copy_annotations_desktop_version",
+            "entity_files": [
+                "annotations/autogen-files/autogen_entities_BCcountries.xlsx.tsv",
+                "user_input_properties.tsv"
+            ],
+            "handle_calendar": "leave",
+            "sparql_endpoint": "https://query.wikidata.org/bigdata/namespace/wdq/sparql",
+            "title": "copy-anno",
+            "url": "",
+            "warn_for_empty_cells": false,
+            "yaml_files": [],
+            "yaml_sheet_associations": {}
+        }
+    },
+    "edit_anno": {
+        "annotations": [
+            {
+                "id": "cb00d0e9-f4e6-4ded-a3c8-19aa8941762f",
+                "link": "",
+                "links": {},
+                "property": {
+                    "data_type": "time",
+                    "description": "time and date something took place, existed or a statement was true",
+                    "id": "P585",
+                    "label": "point in time"
+                },
+                "role": "qualifier",
+                "selection": {
+                    "x1": 3,
+                    "x2": 8,
+                    "y1": 1,
+                    "y2": 1
+                },
+                "type": "time"
+            },
+            {
+                "id": "7b0772cd-c6e4-4db1-9a52-bc2f975adbf6",
+                "link": "60b0a16c-802d-4943-8b79-7bdb4c248bc5",
+                "links": {},
+                "role": "mainSubject",
+                "selection": {
+                    "x1": 1,
+                    "x2": 1,
+                    "y1": 2,
+                    "y2": 6
+                },
+                "type": "wikibaseitem"
+            },
+            {
+                "id": "60b0a16c-802d-4943-8b79-7bdb4c248bc5",
+                "link": "",
+                "links": {
+                    "mainSubject": "7b0772cd-c6e4-4db1-9a52-bc2f975adbf6"
+                },
+                "property": {
+                    "data_type": "quantity",
+                    "description": "",
+                    "id": "PCustomNode-customquantity",
+                    "label": "custom-quantity"
+                },
+                "role": "dependentVar",
+                "selection": {
+                    "x1": 3,
+                    "x2": 8,
+                    "y1": 2,
+                    "y2": 6
+                },
+                "type": "quantity"
+            }
+        ],
+        "layers": {
+            "cleaned": {
+                "entries": [],
+                "layerType": "cleaned"
+            },
+            "error": {
+                "entries": [
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                1,
+                                2
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                1,
+                                3
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                1,
+                                4
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                1,
+                                5
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                1,
+                                6
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                1,
+                                7
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                2,
+                                2
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                2,
+                                3
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                2,
+                                4
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                2,
+                                5
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                2,
+                                6
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                2,
+                                7
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                3,
+                                2
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                3,
+                                3
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                3,
+                                4
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                3,
+                                5
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                3,
+                                6
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                3,
+                                7
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                4,
+                                2
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                4,
+                                3
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                4,
+                                4
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                4,
+                                5
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                4,
+                                6
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                4,
+                                7
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                5,
+                                2
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                5,
+                                3
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                5,
+                                4
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                5,
+                                5
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                5,
+                                6
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "subject",
+                                "level": "Major",
+                                "message": "Failed to resolve for subject (=item[A, $row])",
+                                "qualifier_index": -1,
+                                "role": "subject"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                5,
+                                7
+                            ]
+                        ]
+                    }
+                ],
+                "layerType": "error"
+            },
+            "qnode": {
+                "entries": [],
+                "layerType": "qNode"
+            },
+            "statement": {
+                "entries": [],
+                "layerType": "statement",
+                "qnodes": {}
+            },
+            "type": {
+                "entries": [
+                    {
+                        "indices": [],
+                        "type": "qualifier"
+                    },
+                    {
+                        "indices": [],
+                        "type": "mainSubject"
+                    },
+                    {
+                        "indices": [],
+                        "type": "dependentVar"
+                    },
+                    {
+                        "indices": [],
+                        "type": "majorError"
+                    },
+                    {
+                        "indices": [],
+                        "type": "minorError"
+                    },
+                    {
+                        "indices": [],
+                        "type": "property"
+                    },
+                    {
+                        "indices": [],
+                        "type": "unit"
+                    },
+                    {
+                        "indices": [],
+                        "type": "additionalFields"
+                    }
+                ],
+                "layerType": "type"
+            }
+        },
+        "partialCsv": {
+            "cells": [
+                [
+                    "subject",
+                    "property",
+                    "value"
+                ]
+            ],
+            "dims": [
+                1,
+                3
+            ],
+            "firstRowIndex": 0
+        },
+        "project": {
+            "annotations": {
+                "BCcountries.xlsx": {
+                    "B-countries": {
+                        "selected": "annotations/BCcountries-B-countries.annotation",
+                        "val_arr": [
+                            "annotations/BCcountries-B-countries.annotation"
+                        ]
+                    }
+                },
+                "countries with ID.csv": {
+                    "countries with ID.csv": {
+                        "selected": "annotations/countries with ID-countries with ID.csv.annotation",
+                        "val_arr": [
+                            "annotations/countries with ID-countries with ID.csv.annotation"
+                        ]
+                    }
+                }
+            },
+            "cache_id": null,
+            "data_files": {
+                "BCcountries.xlsx": {
+                    "selected": "B-countries",
+                    "val_arr": [
+                        "B-countries",
+                        "C-countries"
+                    ]
+                },
+                "countries with ID.csv": {
+                    "selected": "countries with ID.csv",
+                    "val_arr": [
+                        "countries with ID.csv"
+                    ]
+                },
+                "horizontal data.xlsx": {
+                    "selected": "Sheet1",
+                    "val_arr": [
+                        "Sheet1"
+                    ]
+                }
+            },
+            "datamart_api": null,
+            "description": "",
+            "directory": "c:\\Users\\devora\\C_sources\\pedro\\t2wml\\backend\\tests\\files_for_tests\\copy_annotations_desktop_version",
+            "entity_files": [
+                "annotations/autogen-files/autogen_entities_BCcountries.xlsx.tsv",
+                "user_input_properties.tsv"
+            ],
+            "handle_calendar": "leave",
+            "sparql_endpoint": "https://query.wikidata.org/bigdata/namespace/wdq/sparql",
+            "title": "copy-anno",
+            "url": "",
+            "warn_for_empty_cells": false,
+            "yaml_files": [],
+            "yaml_sheet_associations": {}
+        },
+        "yamlContent": "#AUTO-GENERATED YAML\nstatementMapping:\n    region:\n        range: C2:H6\n    template:\n        subject: =item[A, $row]\n        property: PCustomNode-customquantity\n        value: =make_numeric(value[$col, $row])\n\n        qualifier:\n            - property: P585\n              value: =value[$col, 1]\n"
+    },
+    "load_project": {
+        "project": {
+            "annotations": {
+                "BCcountries.xlsx": {
+                    "B-countries": {
+                        "selected": "annotations/BCcountries-B-countries.annotation",
+                        "val_arr": [
+                            "annotations/BCcountries-B-countries.annotation"
+                        ]
+                    }
+                },
+                "countries with ID.csv": {
+                    "countries with ID.csv": {
+                        "selected": "annotations/countries with ID-countries with ID.csv.annotation",
+                        "val_arr": [
+                            "annotations/countries with ID-countries with ID.csv.annotation"
+                        ]
+                    }
+                }
+            },
+            "cache_id": null,
+            "data_files": {
+                "BCcountries.xlsx": {
+                    "selected": "B-countries",
+                    "val_arr": [
+                        "B-countries",
+                        "C-countries"
+                    ]
+                },
+                "countries with ID.csv": {
+                    "selected": "countries with ID.csv",
+                    "val_arr": [
+                        "countries with ID.csv"
+                    ]
+                },
+                "horizontal data.xlsx": {
+                    "selected": "Sheet1",
+                    "val_arr": [
+                        "Sheet1"
+                    ]
+                }
+            },
+            "datamart_api": null,
+            "description": "",
+            "directory": "c:\\Users\\devora\\C_sources\\pedro\\t2wml\\backend\\tests\\files_for_tests\\copy_annotations_desktop_version",
+            "entity_files": [
+                "annotations/autogen-files/autogen_entities_BCcountries.xlsx.tsv",
+                "user_input_properties.tsv"
+            ],
+            "handle_calendar": "leave",
+            "sparql_endpoint": "https://query.wikidata.org/bigdata/namespace/wdq/sparql",
+            "title": "copy-anno",
+            "url": "",
+            "warn_for_empty_cells": false,
+            "yaml_files": [],
+            "yaml_sheet_associations": {}
+        }
+    },
+    "partial_csv": {
+        "partialCsv": {
+            "cells": [
+                [
+                    "subject",
+                    "property",
+                    "value",
+                    "point in time",
+                    "dataset"
+                ],
+                [
+                    "Bulgaria",
+                    "",
+                    "1",
+                    "1999-01-01T00:00:00",
+                    "copyanno"
+                ],
+                [
+                    "Bulgaria",
+                    "",
+                    "2",
+                    "2000-01-01T00:00:00",
+                    "copyanno"
+                ],
+                [
+                    "Bulgaria",
+                    "",
+                    "3",
+                    "2001-01-01T00:00:00",
+                    "copyanno"
+                ],
+                [
+                    "Bulgaria",
+                    "",
+                    "4",
+                    "2002-01-01T00:00:00",
+                    "copyanno"
+                ],
+                [
+                    "Bolivia",
+                    "",
+                    "1",
+                    "1999-01-01T00:00:00",
+                    "copyanno"
+                ],
+                [
+                    "Bolivia",
+                    "",
+                    "2",
+                    "2000-01-01T00:00:00",
+                    "copyanno"
+                ],
+                [
+                    "Bolivia",
+                    "",
+                    "3",
+                    "2001-01-01T00:00:00",
+                    "copyanno"
+                ],
+                [
+                    "Bolivia",
+                    "",
+                    "4",
+                    "2002-01-01T00:00:00",
+                    "copyanno"
+                ],
+                [
+                    "Bengal",
+                    "",
+                    "1",
+                    "1999-01-01T00:00:00",
+                    "copyanno"
+                ],
+                [
+                    "Bengal",
+                    "",
+                    "2",
+                    "2000-01-01T00:00:00",
+                    "copyanno"
+                ],
+                [
+                    "Bengal",
+                    "",
+                    "3",
+                    "2001-01-01T00:00:00",
+                    "copyanno"
+                ],
+                [
+                    "Bengal",
+                    "",
+                    "4",
+                    "2002-01-01T00:00:00",
+                    "copyanno"
+                ]
+            ],
+            "dims": [
+                12,
+                5
+            ],
+            "firstRowIndex": 0
+        }
+    },
+    "search_pnode": {
+        "qnodes": [
+            {
+                "description": "property to be used for testing the quantity datatype",
+                "id": "P1106",
+                "label": "Sandbox-Quantity"
+            },
+            {
+                "description": "quantity of three-dimensional space",
+                "id": "P2234",
+                "label": "volume as quantity"
+            },
+            {
+                "description": "number of seats/members in an assembly (legislative house or similar)",
+                "id": "P1342",
+                "label": "number of seats"
+            },
+            {
+                "description": "identifier for a (physical, chemical, ...) quantity in the Wolfram Language",
+                "id": "P7431",
+                "label": "Wolfram Language quantity ID"
+            },
+            {
+                "description": "qualifier to define a property constraint in combination with P2302",
+                "id": "P2313",
+                "label": "minimum value"
+            },
+            {
+                "description": "value of a physical property expressed as number multiplied by a unit",
+                "id": "P111",
+                "label": "measured physical quantity"
+            },
+            {
+                "description": "symbol for a mathematical or physical quantity in LaTeX",
+                "id": "P7973",
+                "label": "quantity symbol (LaTeX)"
+            },
+            {
+                "description": "identifier for a quantity in the QUDT ontology",
+                "id": "P8393",
+                "label": "QUDT quantity kind ID"
+            },
+            {
+                "description": "number of instances of this subject",
+                "id": "P1114",
+                "label": "quantity"
+            },
+            {
+                "description": "number of smaller earthquakes which follow a significant earthquake",
+                "id": "P2320",
+                "label": "aftershocks"
+            },
+            {
+                "description": "qualifier to define a property constraint in combination with P2302. \\no value\\ can be used to specify no upper bound",
+                "id": "P2312",
+                "label": "maximum value"
+            },
+            {
+                "description": "property of an observable physical quantity being a product of the SI base dimensions (length, mass, time, etc.)",
+                "id": "P4020",
+                "label": "ISQ dimension"
+            },
+            {
+                "description": "the number of parts that a work consists of",
+                "id": "P2635",
+                "label": "number of parts of this work"
+            },
+            {
+                "description": "symbol for a mathematical or physical quantity",
+                "id": "P416",
+                "label": "quantity symbol (string)"
+            },
+            {
+                "description": "number of remains buried or interred",
+                "id": "P2324",
+                "label": "quantity buried"
+            }
+        ]
+    },
+    "suggest_annotation": {
+        "annotations": [
+            {
+                "id": "323742e6-75db-436b-b93b-1d97bf683012",
+                "link": "",
+                "links": {},
+                "property": {
+                    "data_type": "time",
+                    "description": "time and date something took place, existed or a statement was true",
+                    "id": "P585",
+                    "label": "point in time"
+                },
+                "role": "qualifier",
+                "selection": {
+                    "x1": 2,
+                    "x2": 5,
+                    "y1": 1,
+                    "y2": 1
+                },
+                "type": "time"
+            },
+            {
+                "id": "ef6fc308-5c10-487c-8888-8db5a3ba709a",
+                "link": "66ec8d22-53e5-422f-b47c-12eec70fdf65",
+                "links": {},
+                "role": "mainSubject",
+                "selection": {
+                    "x1": 1,
+                    "x2": 1,
+                    "y1": 2,
+                    "y2": 4
+                },
+                "type": "wikibaseitem"
+            },
+            {
+                "id": "66ec8d22-53e5-422f-b47c-12eec70fdf65",
+                "link": "",
+                "links": {
+                    "mainSubject": "ef6fc308-5c10-487c-8888-8db5a3ba709a"
+                },
+                "role": "dependentVar",
+                "selection": {
+                    "x1": 2,
+                    "x2": 5,
+                    "y1": 2,
+                    "y2": 4
+                },
+                "type": "quantity"
+            }
+        ],
+        "layers": {
+            "cleaned": {
+                "entries": [],
+                "layerType": "cleaned"
+            },
+            "error": {
+                "entries": [
+                    {
+                        "error": [
+                            {
+                                "field": "property",
+                                "level": "Major",
+                                "message": "Missing property",
+                                "qualifier_index": -1,
+                                "role": "property"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "property",
+                                "level": "Major",
+                                "message": "Missing property",
+                                "qualifier_index": -1,
+                                "role": "property"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                1,
+                                2
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "property",
+                                "level": "Major",
+                                "message": "Missing property",
+                                "qualifier_index": -1,
+                                "role": "property"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                1,
+                                3
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "property",
+                                "level": "Major",
+                                "message": "Missing property",
+                                "qualifier_index": -1,
+                                "role": "property"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                1,
+                                4
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "property",
+                                "level": "Major",
+                                "message": "Missing property",
+                                "qualifier_index": -1,
+                                "role": "property"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                2,
+                                1
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "property",
+                                "level": "Major",
+                                "message": "Missing property",
+                                "qualifier_index": -1,
+                                "role": "property"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                2,
+                                2
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "property",
+                                "level": "Major",
+                                "message": "Missing property",
+                                "qualifier_index": -1,
+                                "role": "property"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                2,
+                                3
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "property",
+                                "level": "Major",
+                                "message": "Missing property",
+                                "qualifier_index": -1,
+                                "role": "property"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                2,
+                                4
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "property",
+                                "level": "Major",
+                                "message": "Missing property",
+                                "qualifier_index": -1,
+                                "role": "property"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                3,
+                                1
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "property",
+                                "level": "Major",
+                                "message": "Missing property",
+                                "qualifier_index": -1,
+                                "role": "property"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                3,
+                                2
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "property",
+                                "level": "Major",
+                                "message": "Missing property",
+                                "qualifier_index": -1,
+                                "role": "property"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                3,
+                                3
+                            ]
+                        ]
+                    },
+                    {
+                        "error": [
+                            {
+                                "field": "property",
+                                "level": "Major",
+                                "message": "Missing property",
+                                "qualifier_index": -1,
+                                "role": "property"
+                            }
+                        ],
+                        "indices": [
+                            [
+                                3,
+                                4
+                            ]
+                        ]
+                    }
+                ],
+                "layerType": "error"
+            },
+            "qnode": {
+                "entries": [
+                    {
+                        "context": "",
+                        "data_type": null,
+                        "description": "sovereign state in southeastern Europe",
+                        "id": "Q219",
+                        "indices": [
+                            [
+                                1,
+                                0
+                            ]
+                        ],
+                        "label": "Bulgaria",
+                        "url": "https://www.wikidata.org/wiki/Q219",
+                        "value": "Bulgaria"
+                    },
+                    {
+                        "context": "",
+                        "data_type": null,
+                        "description": "sovereign state in South America",
+                        "id": "Q750",
+                        "indices": [
+                            [
+                                2,
+                                0
+                            ]
+                        ],
+                        "label": "Bolivia",
+                        "url": "https://www.wikidata.org/wiki/Q750",
+                        "value": "Bolivia"
+                    },
+                    {
+                        "context": "",
+                        "data_type": null,
+                        "description": "",
+                        "id": "QCustomNode-bengal",
+                        "indices": [
+                            [
+                                3,
+                                0
+                            ]
+                        ],
+                        "label": "Bengal",
+                        "url": "",
+                        "value": "Bengal"
+                    }
+                ],
+                "layerType": "qNode"
+            },
+            "statement": {
+                "entries": [],
+                "layerType": "statement",
+                "qnodes": {}
+            },
+            "type": {
+                "entries": [
+                    {
+                        "indices": [],
+                        "type": "qualifier"
+                    },
+                    {
+                        "indices": [],
+                        "type": "mainSubject"
+                    },
+                    {
+                        "indices": [],
+                        "type": "dependentVar"
+                    },
+                    {
+                        "indices": [],
+                        "type": "majorError"
+                    },
+                    {
+                        "indices": [],
+                        "type": "minorError"
+                    },
+                    {
+                        "indices": [],
+                        "type": "property"
+                    },
+                    {
+                        "indices": [],
+                        "type": "unit"
+                    },
+                    {
+                        "indices": [],
+                        "type": "additionalFields"
+                    }
+                ],
+                "layerType": "type"
+            }
+        },
+        "partialCsv": {
+            "cells": [
+                [
+                    "subject",
+                    "property",
+                    "value"
+                ]
+            ],
+            "dims": [
+                1,
+                3
+            ],
+            "firstRowIndex": 0
+        },
+        "project": {
+            "annotations": {
+                "BCcountries.xlsx": {
+                    "B-countries": {
+                        "selected": "annotations/BCcountries-B-countries.annotation",
+                        "val_arr": [
+                            "annotations/BCcountries-B-countries.annotation"
+                        ]
+                    }
+                },
+                "countries with ID.csv": {
+                    "countries with ID.csv": {
+                        "selected": "annotations/countries with ID-countries with ID.csv.annotation",
+                        "val_arr": [
+                            "annotations/countries with ID-countries with ID.csv.annotation"
+                        ]
+                    }
+                }
+            },
+            "cache_id": null,
+            "data_files": {
+                "BCcountries.xlsx": {
+                    "selected": "B-countries",
+                    "val_arr": [
+                        "B-countries",
+                        "C-countries"
+                    ]
+                },
+                "countries with ID.csv": {
+                    "selected": "countries with ID.csv",
+                    "val_arr": [
+                        "countries with ID.csv"
+                    ]
+                },
+                "horizontal data.xlsx": {
+                    "selected": "Sheet1",
+                    "val_arr": [
+                        "Sheet1"
+                    ]
+                }
+            },
+            "datamart_api": null,
+            "description": "",
+            "directory": "c:\\Users\\devora\\C_sources\\pedro\\t2wml\\backend\\tests\\files_for_tests\\copy_annotations_desktop_version",
+            "entity_files": [
+                "annotations/autogen-files/autogen_entities_BCcountries.xlsx.tsv",
+                "user_input_properties.tsv"
+            ],
+            "handle_calendar": "leave",
+            "sparql_endpoint": "https://query.wikidata.org/bigdata/namespace/wdq/sparql",
+            "title": "copy-anno",
+            "url": "",
+            "warn_for_empty_cells": false,
+            "yaml_files": [],
+            "yaml_sheet_associations": {}
+        },
+        "yamlContent": "#AUTO-GENERATED YAML\nstatementMapping:\n    region:\n        range: B2:E4\n    template:\n        subject: =item[A, $row]\n        property: #TODO-- no property alignment found\n        value: =make_numeric(value[$col, $row])\n\n        qualifier:\n            - property: P585\n              value: =value[$col, 1]\n"
+    },
+    "suggest_block": {
+        "children": {},
+        "role": "qualifier",
+        "type": "quantity"
+    },
+    "wikify_country_region": {
+        "layers": {
+            "qnode": {
+                "entries": [
+                    {
+                        "context": "",
+                        "data_type": null,
+                        "description": "sovereign state in southeastern Europe",
+                        "id": "Q219",
+                        "indices": [
+                            [
+                                1,
+                                0
+                            ]
+                        ],
+                        "label": "Bulgaria",
+                        "url": "https://www.wikidata.org/wiki/Q219",
+                        "value": "Bulgaria"
+                    },
+                    {
+                        "context": "",
+                        "data_type": null,
+                        "description": "sovereign state in South America",
+                        "id": "Q750",
+                        "indices": [
+                            [
+                                2,
+                                0
+                            ]
+                        ],
+                        "label": "Bolivia",
+                        "url": "https://www.wikidata.org/wiki/Q750",
+                        "value": "Bolivia"
+                    },
+                    {
+                        "context": "",
+                        "data_type": null,
+                        "description": "",
+                        "id": "QCustomNode-bengal",
+                        "indices": [
+                            [
+                                3,
+                                0
+                            ]
+                        ],
+                        "label": "Bengal",
+                        "url": "",
+                        "value": "Bengal"
+                    }
+                ],
+                "layerType": "qNode"
+            }
+        },
+        "project": {
+            "annotations": {
+                "BCcountries.xlsx": {
+                    "B-countries": {
+                        "selected": "annotations/BCcountries-B-countries.annotation",
+                        "val_arr": [
+                            "annotations/BCcountries-B-countries.annotation"
+                        ]
+                    }
+                },
+                "countries with ID.csv": {
+                    "countries with ID.csv": {
+                        "selected": "annotations/countries with ID-countries with ID.csv.annotation",
+                        "val_arr": [
+                            "annotations/countries with ID-countries with ID.csv.annotation"
+                        ]
+                    }
+                }
+            },
+            "cache_id": null,
+            "data_files": {
+                "BCcountries.xlsx": {
+                    "selected": "B-countries",
+                    "val_arr": [
+                        "B-countries",
+                        "C-countries"
+                    ]
+                },
+                "countries with ID.csv": {
+                    "selected": "countries with ID.csv",
+                    "val_arr": [
+                        "countries with ID.csv"
+                    ]
+                },
+                "horizontal data.xlsx": {
+                    "selected": "Sheet1",
+                    "val_arr": [
+                        "Sheet1"
+                    ]
+                }
+            },
+            "datamart_api": null,
+            "description": "",
+            "directory": "c:\\Users\\devora\\C_sources\\pedro\\t2wml\\backend\\tests\\files_for_tests\\copy_annotations_desktop_version",
+            "entity_files": [
+                "annotations/autogen-files/autogen_entities_BCcountries.xlsx.tsv",
+                "user_input_properties.tsv"
+            ],
+            "handle_calendar": "leave",
+            "sparql_endpoint": "https://query.wikidata.org/bigdata/namespace/wdq/sparql",
+            "title": "copy-anno",
+            "url": "",
+            "warn_for_empty_cells": false,
+            "yaml_files": [],
+            "yaml_sheet_associations": {}
+        },
+        "wikifierError": "Failed to wikify: Bengal"
+    }
+}
