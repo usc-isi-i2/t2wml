@@ -259,8 +259,8 @@ class TestCausxWorkflow:
             data["project"].pop("directory")
         except:
             pass
-        stored_results["upload_project"] = data
-        assert self.expected_results["upload_project"]["layers"] == data["layers"]
+        stored_results["upload_project"] = data["layers"]
+        assert self.expected_results["upload_project"] == data["layers"]
 
     def xtest_22_upload_annotation(self, client):
         url = "/api/causx/upload/annotation"

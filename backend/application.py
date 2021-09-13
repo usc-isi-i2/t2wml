@@ -347,12 +347,15 @@ def upload_entities():
 @json_response
 def causx_wikify():
     project = get_project()
-    region = request.get_json()["selection"]
+    selection = request.get_json()["selection"]
+    if isinstance(selection, dict):
+        selection = ((selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1))
+
     overwrite_existing = request.get_json().get("overwrite", False)
     #context = request.get_json()["context"]
     calc_params = get_calc_params(project)
 
-    cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
+    cell_qnode_map, problem_cells = wikify_countries(calc_params, selection)
     project.add_df_to_wikifier_file(
         calc_params.sheet, cell_qnode_map, overwrite_existing)
 
@@ -398,7 +401,9 @@ def call_wikifier_service():
     calc_params = get_calc_params(project)
     overwrite_existing = request.get_json().get("overwrite", False)
     selection = request.get_json()['selection']
-    selection = (selection["x1"]-1, selection["y1"] -
+
+    if isinstance(selection, dict):
+        selection = (selection["x1"]-1, selection["y1"] -
                  1), (selection["x2"]-1, selection["y2"]-1)
 
     wiki_dict, entities_dict, problem_cells = wikify_selection(calc_params, selection)
@@ -427,7 +432,8 @@ def create_auto_nodes():
     project = get_project()
     calc_params = get_calc_params(project)
     selection = request.get_json()['selection']
-    selection = (selection["x1"]-1, selection["y1"] -
+    if isinstance(selection, dict):
+        selection = (selection["x1"]-1, selection["y1"] -
                  1), (selection["x2"]-1, selection["y2"]-1)
     is_property = request.get_json()['is_property']
     data_type = request.get_json().get("data_type", None)
@@ -514,6 +520,10 @@ def set_qnodes():
     value = request.get_json()['value']
     context = request.get_json().get("context", "")
     selection = request.get_json()['selection']
+    if isinstance(selection, dict):
+        selection = (selection["x1"]-1, selection["y1"] -
+                 1), (selection["x2"]-1, selection["y2"]-1)
+
 
     if not selection:
         raise web_exceptions.InvalidRequestException('No selection provided')
@@ -539,8 +549,16 @@ def delete_wikification():
     data_file_name = calc_params.sheet.data_file_name
 
     selection = request.get_json()['selection']
+    if isinstance(selection, dict):
+        selection = (selection["x1"]-1, selection["y1"] -
+                 1), (selection["x2"]-1, selection["y2"]-1)
+
     if not selection:
         raise web_exceptions.InvalidRequestException('No selection provided')
+
+    if isinstance(selection, dict):
+        selection = ((selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1))
+
 
     value = request.get_json().get('value', None)
     #context = request.get_json().get("context", "")
@@ -707,7 +725,13 @@ def guess_block_type_role():
     project = get_project()
     calc_params = get_calc_params(project)
     block = request.get_json()["selection"]
+    if not isinstance(block, dict): #the rare reverse selection!
+        (x1, y1), (x2, y2) = block
+        block = {"x1": x1+1, "x2": x2+1, "y1": y1+1, "y2": y2+1}
+
     annotation = request.get_json()["annotations"]
+
+
 
     response = {  # fallback response
         # drop metadata

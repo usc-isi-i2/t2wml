@@ -253,7 +253,7 @@ class AnnotationNodeGenerator:
             #check all main subject
             country_selections.append(subject_region.selection)
             dcw=DatamartCountryWikifier()
-            df, problem_cells = dcw.wikify_region(subject_region.selection, sheet, wikifier)
+            df, problem_cells = dcw.wikify_region(subject_region.cell_args, sheet, wikifier)
 
 
         #check anything whose type is wikibaseitem
@@ -261,7 +261,7 @@ class AnnotationNodeGenerator:
             type=block.type
             if type in ["wikibaseitem", "WikibaseItem", "country", "Country"]:
                 country_selections.append(subject_region.selection)
-                df2, problem_cells2 = dcw.wikify_region(block.selection, sheet, wikifier)
+                df2, problem_cells2 = dcw.wikify_region(block.cell_args, sheet, wikifier)
                 df = pd.concat([df, df2], ignore_index=True)
                 problem_cells += problem_cells2
 
