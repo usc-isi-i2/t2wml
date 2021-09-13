@@ -1,3 +1,4 @@
+import json
 from flask.helpers import send_file
 import pandas as pd
 import os
@@ -6,10 +7,12 @@ import requests
 from io import BytesIO
 from pathlib import Path
 from flask import request
+from t2wml.spreadsheets.sheet import Sheet
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
-from causx.wikification import wikify_countries  # temporary?
+from causx.wikification import wikify_countries
+from copy_annotations.copy_annotations import copy_annotation  # temporary?
 import web_exceptions
-from app_config import app
+from app_config import NumpyEncoder, app
 from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode, t2wml_settings, Wikifier
 from t2wml_web import (create_zip, get_kg, autocreate_items, get_kgtk_download_and_variables,
                        set_web_settings, get_layers, get_annotations, get_table, save_annotations,
@@ -506,6 +509,32 @@ def upload_annotation():
     calc_response, code = get_mapping(annotations_path, "Annotation")
     response.update(calc_response)
     return response, code
+
+
+
+@app.route('/api/annotation/copy', methods=['POST'])
+@json_response
+def upload_annotation_for_copying():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    copy_params = request.get_json()["copyParams"]
+    copy_dir = copy_params["dir"]
+    source_sheet = Sheet(os.path.join(copy_dir, copy_params["dataFile"]), copy_params["sheetName"])
+    source_annotations_file = os.path.join(copy_dir,copy_params["annotation"])
+    with open(source_annotations_file, "r") as f:
+        source_annotations = json.load(f)
+
+    processed_annotation = copy_annotation(source_annotations, source_sheet.data, calc_params.sheet.data)
+    with open(calc_params.annotation_path, 'w') as f:
+        f.write(json.dumps(processed_annotation, cls=NumpyEncoder))
+
+    project.add_annotation_file(calc_params.annotation_path, calc_params.data_path, calc_params.sheet_name)
+    response, code = get_mapping()
+    response["project"]=get_project_dict(project)
+    return response, code
+
+
+
 
 
 @app.route('/api/set_qnode', methods=['POST'])
