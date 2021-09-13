@@ -10,7 +10,7 @@ from flask import request
 from t2wml.spreadsheets.sheet import Sheet
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
 from causx.wikification import wikify_countries
-from copy_annotations.copy_annotations import copy_annotation  # temporary?
+from copy_annotations.copy_annotations import copy_annotation
 import web_exceptions
 from app_config import NumpyEncoder, app
 from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode, t2wml_settings, Wikifier
@@ -506,24 +506,30 @@ def upload_annotation():
     return response, code
 
 
+class AnnotationParams:
+    def __init__(self, dataFile, sheetName, dir, annotation):
+        self.dir = dir
+        self.data_file=dataFile
+        self.sheet_name=sheetName
+        self.annotation_path = os.path.join(dir, annotation)
+        self.data_path = os.path.join(dir, dataFile)
+        self.sheet = Sheet(self.data_path, self.sheet_name)
+        with open(self.annotation_path, 'r') as f:
+            self.annotation=json.load(f)
+
 
 @app.route('/api/annotation/copy', methods=['POST'])
 @json_response
 def upload_annotation_for_copying():
     project = get_project()
-    calc_params = get_calc_params(project)
-    copy_params = request.get_json()
-    copy_dir = copy_params["dir"]
-    source_sheet = Sheet(os.path.join(copy_dir, copy_params["dataFile"]), copy_params["sheetName"])
-    source_annotations_file = os.path.join(copy_dir,copy_params["annotation"])
-    with open(source_annotations_file, "r") as f:
-        source_annotations = json.load(f)
+    source_params = request.get_json()["source"]
+    destination_params = request.get_json()["destination"]
 
-    processed_annotation = copy_annotation(source_annotations, source_sheet.data, calc_params.sheet.data)
-    with open(calc_params.annotation_path, 'w') as f:
+    processed_annotation = copy_annotation(source_params.annotation, source_params.sheet.data, destination_params.sheet.data)
+    with open(destination_params.annotation_path, 'w') as f:
         f.write(json.dumps(processed_annotation, cls=NumpyEncoder))
 
-    project.add_annotation_file(calc_params.annotation_path, calc_params.data_path, calc_params.sheet_name)
+    project.add_annotation_file(destination_params.annotation_path, destination_params.data_path, destination_params.sheet_name)
     response, code = get_mapping()
     response["project"]=get_project_dict(project)
     return response, code
