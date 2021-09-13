@@ -523,8 +523,8 @@ class AnnotationParams:
 def upload_annotation_for_copying():
     project = get_project()
 
-    source_params = AnnotationParams(**request.get_json()["source"])
-    destination_params = AnnotationParams(**request.get_json()["destination"])
+    source_params = AnnotationParams(**(request.get_json()["source"]))
+    destination_params = AnnotationParams(**(request.get_json()["destination"]))
 
     processed_annotation = copy_annotation(source_params.annotation, source_params.sheet.data, destination_params.sheet.data)
     with open(destination_params.annotation_path, 'w') as f:

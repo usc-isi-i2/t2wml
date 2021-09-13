@@ -24,6 +24,7 @@ const nodeToIconMapping = {
 export interface NodeProps {
   id: string;
   label: string;
+  dataFile: string;
   parentNode?: NodeProps;
   childNodes: NodeProps[];
   type: NodeType;
@@ -35,7 +36,7 @@ export interface NodeProps {
 interface NodeState {
   expanded: boolean;
   activeDrags: number;
-  deltaPosition: { x: number; y: number };
+  position: { x: number; y: number };
 }
 
 class FileNode extends Component<NodeProps, NodeState> {
@@ -50,7 +51,7 @@ class FileNode extends Component<NodeProps, NodeState> {
     this.state = {
       activeDrags: 0,
       expanded: props.type == "Label" || props.bolded == true,
-      deltaPosition: {
+      position: {
         x: 0, y: 0
       },
     }
@@ -76,30 +77,66 @@ class FileNode extends Component<NodeProps, NodeState> {
     this.props.rightClick(this.props);
   }
 
-  onStart() {
-    // this.setState({  });
-    return;
-  }
-
-  onStop(event: DraggableEvent, data: DraggableData) {
-    const target = event.target as HTMLInputElement;
-    if (data.node.classList.contains("drop-target")
-      && this.props.label !== target.id) {
-      // TODO
-      console.log(target.id)
-      this.requestService.copyAnnotation(this.props.label, target.id);
-    }
-    this.setState({ deltaPosition: { x: 0, y: 0 } });
-  }
-
-  handleDrag(e: DraggableEvent, data: DraggableData) {
-    const { y } = this.state.deltaPosition;
-    this.setState({
-      deltaPosition: {
-        x: 0,
-        y: y + data.deltaY,
+  getDivAnnotation(el: HTMLElement) {
+    let i = 0;
+    while (i < 5 && el.parentElement) {
+      if (el.nodeName.toLowerCase() == "div") {
+        return el;
       }
-    });
+      i += 1;
+      el = el.parentElement;
+    }
+  }
+
+  getParnetInTree(div: HTMLElement, parentNum: 1 | 2) {
+    const locInTree = parentNum === 1 ? 3 : 5
+    let liDatafile = div;
+    for (let i = 0; i < locInTree; i++) {
+      if (liDatafile.parentElement) {
+        liDatafile = liDatafile.parentElement;
+      }
+    }
+    return liDatafile;
+  }
+
+  onStop(event: DraggableEvent, draggableData: DraggableData) {
+    //  draggableData.node.id === this.props.label
+    const target = event.target as HTMLInputElement;
+    const divTarget = this.getDivAnnotation(target)
+    if (divTarget && divTarget.id && divTarget.classList.contains("drop-target")
+      && draggableData.node.id !== divTarget.id) {
+      
+      let destSheetName = this.getParnetInTree(divTarget, 1).id
+      let destDataFile = "";
+      if (destSheetName.endsWith('.csv')) {
+        destDataFile = destSheetName;
+        destSheetName = "";
+      } else {
+        destDataFile = this.getParnetInTree(divTarget, 2).id
+      }
+
+      const data = {
+        source: {
+          dir: '',  //the dir of the project we're copying from
+          dataFile: this.props.dataFile, //The dataFile we're copying from (relative path to dir)
+          sheetName: this.props.parentNode?.label, //the sheetName we're copying from
+          annotation: this.props.label, //the annotation file we're copying (relative path to dir)
+        },
+        destination: {
+          dir: '',  //the dir of the project we're copying from
+          dataFile: destDataFile || "", //The dataFile we're copying from (relative path to dir)
+          sheetName: destSheetName, //the sheetName we're copying from
+          annotation: divTarget.id, //the annotation file we're copying (relative path to dir)
+        }
+
+      }
+      this.requestService.copyAnnotation(data);
+    }
+    this.setState({ position: { x: 0, y: 0 } });
+  }
+
+  isAnnotaion(): boolean {
+    return this.props.label.endsWith(".annotation");
   }
 
   render() {
@@ -120,6 +157,7 @@ class FileNode extends Component<NodeProps, NodeState> {
             childNodes={n.childNodes}
             parentNode={n.parentNode}
             type={n.type}
+            dataFile={n.dataFile}
             rightClick={n.rightClick}
             onClick={n.onClick} />)}
       </ul>)
@@ -144,19 +182,20 @@ class FileNode extends Component<NodeProps, NodeState> {
     const labelText = this.props.bolded ? <b>{noPathLabelText}</b> : noPathLabelText
 
     const logoTooltipHtml = (
-      <Tooltip /*style={{ width: "fit-content" }}*/ id="navbar-tooltip">
+      <Tooltip id="navbar-tooltip">
         {this.props.label}
       </Tooltip>
     );
 
+    const classNameNodeDiv = this.isAnnotaion() ? "drop-target annotation" : "";
+
     return (
       <li id={this.props.label}>
-        <Draggable axis="y" position={this.state.deltaPosition}
-          onDrag={(e: DraggableEvent, data: DraggableData) => this.handleDrag(e, data)}
-          onStart={() => this.onStart()}
+        <Draggable axis={this.isAnnotaion() ? "y" : "none"} position={this.state.position}
           onStop={(e: DraggableEvent, data: DraggableData) => this.onStop(e, data)}
+          disabled={!this.isAnnotaion()}
         >
-          <div className="drop-target" id={this.props.label}>
+          <div className={classNameNodeDiv} id={this.props.label} >
             <OverlayTrigger overlay={logoTooltipHtml} delay={{ show: 1000, hide: 0 }} placement="top" trigger={["hover", "focus"]}>
               <label className="pointer ellipsis"
                 onContextMenu={(e) => this.onRightClick(e)}

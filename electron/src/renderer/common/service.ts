@@ -399,8 +399,15 @@ class RequestService {
     }
   }
 
-  public copyAnnotation(src: string, dest: string) {
-    alert("copy "+ src + " => " + dest)
+  public async copyAnnotation(data: any) {
+    const [startIndex, endIndex] = this.getIndex();
+    const dir = this.getProjectFolder().replace("project_folder=", '');
+    data.source.dir = dir;
+    data.destination.dir = dir;
+    const response = await backendPost(
+      `/annotation/copy?${this.getProjectFolder()}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`,
+      data) as ResponseWithQNodeLayerDTO;
+    console.log(response);
   }
 
 

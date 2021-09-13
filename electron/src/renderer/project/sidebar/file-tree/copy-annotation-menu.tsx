@@ -13,7 +13,6 @@ export type FileType = "DataFile" | "SingleSheetDataFile" | "Sheet" | "Label" | 
 interface FileDetails {
     id: string;
     label: string;
-    // description: string;
     type: FileType;
     children: FileDetails[];
     parent?: FileDetails;
@@ -62,22 +61,22 @@ class CopyAnnotationMenu extends Component<CopyAnnotationMenuProps, CopyAnnotati
         this.setState({ fileList });
     }
 
-    buildSubFileList(projDict: any, df: string, sheetName: string, parentNode: FileDetails) {
+    buildSubFileList(projDict: any, df: string, sheetName: string, type: FileType, parentNode: FileDetails) {
         if (!projDict[df] || !projDict[df][sheetName]) {
             return;
         }
         for (const filename of projDict[df][sheetName]["val_arr"]) {
-            if (!currentFilesService.currentState.mappingFile == filename) {
+            // if (!currentFilesService.currentState.mappingFile == filename) {
                 parentNode.children.push(
                     {
                         id: filename + parentNode.id,
                         label: filename,
                         children: [] as FileDetails[],
-                        type: "Annotation",
+                        type: type,
                         parent: parentNode
                     }
                 );
-            }
+            // }
         }
     }
 
@@ -92,26 +91,27 @@ class CopyAnnotationMenu extends Component<CopyAnnotationMenuProps, CopyAnnotati
             if (sheet_arr.length < 2) {
                 dataType = "SingleSheetDataFile"
             }
-            if (! (currentFilesService.currentState.dataFile === df)) {
-                const dataNode = {
-                    id: df,
-                    label: df,
-                    type: dataType as FileType,
+            // if (!(currentFilesService.currentState.dataFile === df)) {
+            const dataNode = {
+                id: df,
+                label: df,
+                type: dataType as FileType,
+                children: [] as FileDetails[],
+            };
+            for (const sheetName of sheet_arr) {
+                const sheetNode = {
+                    id: sheetName + df,
+                    label: sheetName,
                     children: [] as FileDetails[],
+                    type: "Sheet" as FileType,
+                    parent: dataNode,
                 };
-                for (const sheetName of sheet_arr) {
-                    const sheetNode = {
-                        id: sheetName + df,
-                        label: sheetName,
-                        children: [] as FileDetails[],
-                        type: "Sheet" as FileType,
-                        parent: dataNode,
-                    };
-                    this.buildSubFileList(project.annotations, df, sheetName, sheetNode)
-                    dataNode.children.push(sheetNode);
-                }
-                files.push(dataNode)
+                this.buildSubFileList(project.annotations, df, sheetName, "Annotation", sheetNode)
+                this.buildSubFileList(project.yaml_sheet_associations, df, sheetName, "Yaml", sheetNode)
+                dataNode.children.push(sheetNode);
             }
+            files.push(dataNode)
+            // }
         }
         return files;
     }
@@ -134,31 +134,36 @@ class CopyAnnotationMenu extends Component<CopyAnnotationMenuProps, CopyAnnotati
                 {/* body */}
                 <Modal.Body>
                     <Tab.Container id="list-group-tabs">
-                        <Row>
-                            <Col sm={6}>
-                                <ListGroup>
-                                    {
-                                        this.state.fileList.map((file) => (
+                        {
+                            this.state.fileList.map((file) => (
+                                <Row key={file.id}>
+                                    <Col sm={6}>
+                                        <ListGroup>
                                             <ListGroup.Item variant="light" action href={`#${file.id}`} key={file.id}>
                                                 {file.label}
                                             </ListGroup.Item>
-                                        ))
-                                    }
+                                        </ListGroup>
+                                    </Col>
+                                    <Col sm={6}>
+                                        <Tab.Content>
+                                            <Tab.Pane eventKey={`#${file.id}`} key={`tab-pane-#${file.id}`}>
+                                                <ListGroup>
+                                                    {
+                                                        file.children.map((subfile) =>
+                                                        (<ListGroup.Item variant="light" action key={subfile.id}>
+                                                            {subfile.label}
+                                                        </ListGroup.Item>
+                                                        ))
+                                                    }
 
-                                </ListGroup>
-                            </Col>
-                            <Col sm={6}>
-                                <Tab.Content>
-                                    {
-                                        this.state.fileList.map((file) => (
-                                            <Tab.Pane eventKey={`#${file.id}`} key={file.id}>
-                                                {file.label}
+                                                </ListGroup>
+
                                             </Tab.Pane>
-                                        ))
-                                    }
-                                </Tab.Content>
-                            </Col>
-                        </Row>
+                                        </Tab.Content>
+                                    </Col>
+                                </Row>
+                            ))
+                        }
                     </Tab.Container>
                 </Modal.Body>
 
@@ -172,7 +177,7 @@ class CopyAnnotationMenu extends Component<CopyAnnotationMenuProps, CopyAnnotati
                     </Button>
                 </Modal.Footer>
 
-            </Modal>
+            </Modal >
         );
     }
 

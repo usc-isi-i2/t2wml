@@ -11,7 +11,7 @@ import { remote, shell } from 'electron';
 import RenameFile from "@/renderer/project/sidebar/file-tree/rename-file";
 import { Spinner } from "react-bootstrap";
 import { defaultYamlContent } from "../../default-values";
-import CopyAnnotationMenu from "./copy-annotation";
+import CopyAnnotationMenu from "./copy-annotation-menu";
 
 
 type TreeProps = {}; // An empty interfaces causes an error
@@ -255,7 +255,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     }
   }
 
-  async importExistingAnnotation(clickedNode: NodeProps) {
+  async copyExistingAnnotation(clickedNode: NodeProps) {
     try {
       const data = {
         // "title": '',
@@ -326,7 +326,8 @@ class FileTree extends Component<TreeProps, TreeState> {
       case 'Sheet': {
         menu.append(new MenuItem({ label: 'Add empty annotation file', click: () => this.addAnnotation(node) }));
         menu.append(new MenuItem({ label: 'Add empty yaml file', click: () => this.addYaml(node) }));
-        menu.append(new MenuItem({ label: 'Import existing annotation file', click: () => this.importExistingAnnotation(node) }));
+        menu.append(new MenuItem({ label: 'Load existing annotation file', click: () => this.addExistingAnnotation(node) }));
+        menu.append(new MenuItem({ label: 'Copy existing annotation file', click: () => this.copyExistingAnnotation(node) }));
         menu.append(new MenuItem({ label: 'Load existing yaml file', click: () => this.addExistingYaml(node) }));
         break;
       }
@@ -339,7 +340,8 @@ class FileTree extends Component<TreeProps, TreeState> {
         menu.append(new MenuItem({ type: 'separator' }));
         menu.append(new MenuItem({ label: 'Add empty annotation file', click: () => this.addAnnotation(sheetNode) }));
         menu.append(new MenuItem({ label: 'Add empty yaml file', click: () => this.addYaml(sheetNode) }));
-        menu.append(new MenuItem({ label: 'Import existing annotation file', click: () => this.importExistingAnnotation(sheetNode) }));
+        menu.append(new MenuItem({ label: 'Load existing annotation file', click: () => this.addExistingAnnotation(node) }));
+        menu.append(new MenuItem({ label: 'Copy existing annotation file', click: () => this.copyExistingAnnotation(sheetNode) }));
         menu.append(new MenuItem({ label: 'Load existing yaml file', click: () => this.addExistingYaml(sheetNode) }));
         break;
       }
@@ -361,6 +363,7 @@ class FileTree extends Component<TreeProps, TreeState> {
         {
           id: filename + parentNode.id,
           label: filename,
+          dataFile: df,
           childNodes: [] as NodeProps[],
           type: type,
           parentNode: parentNode,
@@ -386,6 +389,7 @@ class FileTree extends Component<TreeProps, TreeState> {
       const dataNode = {
         id: df,
         label: df,
+        dataFile: df,
         childNodes: [],
         type: dataType,
         parentNode: undefined,
@@ -398,6 +402,7 @@ class FileTree extends Component<TreeProps, TreeState> {
         const sheetNode = {
           id: sheetName + df,
           label: sheetName,
+          dataFile: df,
           childNodes: [],
           type: "Sheet",
           parentNode: dataNode,
@@ -477,6 +482,7 @@ class FileTree extends Component<TreeProps, TreeState> {
               label={fileNode.label}
               childNodes={fileNode.childNodes}
               type={fileNode.type}
+              dataFile={fileNode.dataFile}
               parentNode={fileNode.parentNode}
               rightClick={fileNode.rightClick}
               bolded={fileNode.bolded}
