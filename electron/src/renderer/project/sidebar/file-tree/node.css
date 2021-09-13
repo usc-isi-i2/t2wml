@@ -8,3 +8,11 @@
     overflow: hidden;
     text-overflow: ellipsis
 }
+
+.annotation:hover {
+    background-color: #85757469;
+}
+
+.no-pointer-events {
+    pointer-events: none;
+}

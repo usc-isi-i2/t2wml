@@ -180,8 +180,6 @@ export interface TableCell {
     activeBottom: boolean;
     activeCorner: boolean;
     highlight: boolean;
-    maxWidth: boolean;
-    qnode: boolean;
 }
 
 export type TableData = { [indexRow: number]: TableCell[] };

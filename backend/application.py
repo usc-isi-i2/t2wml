@@ -1,3 +1,4 @@
+import json
 from flask.helpers import send_file
 import pandas as pd
 import os
@@ -6,10 +7,12 @@ import requests
 from io import BytesIO
 from pathlib import Path
 from flask import request
+from t2wml.spreadsheets.sheet import Sheet
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
-from causx.wikification import wikify_countries  # temporary?
+from causx.wikification import wikify_countries
+from copy_annotations.copy_annotations import copy_annotation
 import web_exceptions
-from app_config import app
+from app_config import NumpyEncoder, app
 from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode, t2wml_settings, Wikifier
 from t2wml_web import (create_zip, get_kg, autocreate_items, get_kgtk_download_and_variables,
                        set_web_settings, get_layers, get_annotations, get_table, save_annotations,
@@ -467,6 +470,42 @@ def upload_annotation():
     return response, code
 
 
+class AnnotationParams:
+    def __init__(self, dataFile, sheetName, dir, annotation):
+        self.dir = dir
+        self.data_file=dataFile
+        if not sheetName:
+            sheetName = Path(dataFile).name
+        self.sheet_name=sheetName
+        self.annotation_path = os.path.join(dir, annotation)
+        self.data_path = os.path.join(dir, dataFile)
+        self.sheet = Sheet(self.data_path, self.sheet_name)
+        with open(self.annotation_path, 'r') as f:
+            self.annotation=json.load(f)
+
+
+@app.route('/api/annotation/copy', methods=['POST'])
+@json_response
+def upload_annotation_for_copying():
+    project = get_project()
+
+    source_params = AnnotationParams(**(request.get_json()["source"]))
+    destination_params = AnnotationParams(**(request.get_json()["destination"]))
+    try:
+        processed_annotation = copy_annotation(source_params.annotation, source_params.sheet.data, destination_params.sheet.data)
+    except:
+        processed_annotation = []
+    with open(destination_params.annotation_path, 'w') as f:
+        f.write(json.dumps(processed_annotation, cls=NumpyEncoder))
+
+    project.add_annotation_file(destination_params.annotation_path, destination_params.data_path, destination_params.sheet_name)
+    response = dict(project = get_project_dict(project))
+    return response, 200
+
+
+
+
+
 @app.route('/api/set_qnode', methods=['POST'])
 @json_response
 def set_qnodes():
@@ -514,7 +553,7 @@ def delete_wikification():
     value = request.get_json().get('value', None)
     #context = request.get_json().get("context", "")
 
-    filepath, exists=project.get_wikifier_file(calc_params.sheet)
+    filepath, exists=project.get_wikifier_file(calc_params.sheet.data_file_path)
     if exists:
         wikifier = Wikifier.load_from_file(filepath)
         wikifier.delete_wikification(selection, value, context="", sheet=calc_params.sheet)

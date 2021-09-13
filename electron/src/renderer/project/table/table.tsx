@@ -21,7 +21,6 @@ export const DEFAULT_CELL_STATE = {
   activeBottom: false,
   activeCorner: false,
   highlight: false,
-  maxWidth: false,
   qnode: false
 }
 
@@ -31,7 +30,6 @@ interface TableProperties {
   onMouseUp?: (event: React.MouseEvent) => void;
   onMouseDown?: (event: React.MouseEvent) => void;
   onMouseMove?: (event: React.MouseEvent) => void;
-  onClickHeader?: (event: React.MouseEvent) => void;
   MIN_ROWS: number;
   MIN_COLUMNS: number;
 
@@ -152,7 +150,6 @@ class Table extends React.Component<TableProperties, {
       onMouseUp,
       onMouseDown,
       onMouseMove,
-      // onClickHeader,
       ableActivated,
       rowCount
     } = this.props;
@@ -202,12 +199,6 @@ class Table extends React.Component<TableProperties, {
                       dataKey={i.toString()}
                       headerRenderer={data => {
                         return (
-                          // <div
-                          //   data-row-index={0}
-                          //   data-col-index={i + 1}
-                          //   onDoubleClick={(event) => (onClickHeader ? onClickHeader(event) : null)}>
-                          //   {data.label}
-                          // </div>
                           <React.Fragment key={data.dataKey}>
                             <div className="ReactVirtualized__Table__headerTruncatedText">
                               {data.label}
