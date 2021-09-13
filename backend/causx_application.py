@@ -207,6 +207,18 @@ def get_token():
     return {"token": encode_auth_token()}, 200
 
 
+@app.route('/api/causx/table', methods=['GET'])
+@json_response
+def get_data():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    response = dict()
+    response["table"] = get_table(calc_params)
+    calc_response, code = get_mapping()
+    response.update(calc_response)
+    return response, code
+
+
 @app.route('/api/causx/project/entities', methods=['GET']) #V
 @json_response
 def get_project_entities_for_causx():
