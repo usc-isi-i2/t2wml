@@ -517,7 +517,7 @@ def upload_annotation():
 def upload_annotation_for_copying():
     project = get_project()
     calc_params = get_calc_params(project)
-    copy_params = request.get_json()["copyParams"]
+    copy_params = request.get_json()
     copy_dir = copy_params["dir"]
     source_sheet = Sheet(os.path.join(copy_dir, copy_params["dataFile"]), copy_params["sheetName"])
     source_annotations_file = os.path.join(copy_dir,copy_params["annotation"])
