@@ -23,7 +23,7 @@ from t2wml_web import ( get_kg, autocreate_items, set_web_settings,
                         get_annotations, get_table, save_annotations,get_project_instance,
                        suggest_annotations,  update_t2wml_settings, get_entities)
 import web_exceptions
-from causx.causx_utils import AnnotationNodeGenerator, causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, create_fidil_json, get_causx_partial_csv, causx_create_canonical_spreadsheet, include_base_causx_tags, preload, upload_fidil_json
+from causx.causx_utils import causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, create_fidil_json, get_causx_partial_csv, causx_create_canonical_spreadsheet, include_base_causx_tags, upload_fidil_json
 from causx.causx_utils import causx_get_layers as get_layers
 from causx.causx_utils import causx_get_qnodes_layer as get_qnodes_layer
 from causx.wikification import wikify_countries
@@ -178,18 +178,12 @@ def get_calc_params(project, data_required=True):
     return calc_params
 
 
-def get_mapping(preload=False):
+def get_mapping():
     project = get_project()
     calc_params = get_calc_params(project)
     response = dict(project=get_project_dict(project))
     response["annotations"], response["yamlContent"] = get_annotations(
             calc_params)
-
-    if preload:
-        try:
-            preload(calc_params)
-        except Exception as e:
-            pass
     get_layers(response, calc_params)
     return response, 200
 
@@ -472,7 +466,6 @@ def causx_wikify_for_causx():
 
     cell_qnode_map, problem_cells = wikify_countries(calc_params, selection)
     project.add_df_to_wikifier_file(calc_params.sheet, cell_qnode_map, overwrite_existing)
-
     #auto-create nodes for anything that failed to wikify
     create_nodes_from_selection(selection, project, calc_params.sheet, calc_params.wikifier)
 
@@ -582,7 +575,19 @@ def causx_upload_annotation():
         f.write(json.dumps(processed_annotation, cls=NumpyEncoder))
 
     project.add_annotation_file(calc_params.annotation_path, calc_params.data_path, calc_params.sheet_name)
-    preload(calc_params)
+
+    country_selections=[]
+    for block in processed_annotation:
+        if block["role"]=="mainSubject":
+            country_selections.append(block["selection"])
+
+    for selection in country_selections:
+        cell_qnode_map, problem_cells = wikify_countries(calc_params, selection)
+        project.add_df_to_wikifier_file(calc_params.sheet, cell_qnode_map)
+        #auto-create nodes for anything that failed to wikify
+        create_nodes_from_selection(selection, project, calc_params.sheet, calc_params.wikifier)
+
+    calc_params = get_calc_params(project)
     response, code = get_mapping()
     response["project"]=get_project_dict(project)
     return response, code
@@ -636,7 +641,6 @@ def causx_save_zip_results():
     calc_params = get_calc_params(project)
 
     annotation_path=calc_params.annotation_path
-    preload(calc_params)
 
     kg = get_kg(calc_params)
 
@@ -698,8 +702,6 @@ def download_results_for_causx(filetype):
     project = get_project()
     calc_params = get_calc_params(project)
     annotation_path = calc_params.annotation_path
-    ang = AnnotationNodeGenerator.load_from_path(annotation_path, project)
-    ang.preload(calc_params.sheet, calc_params.wikifier)
     kg = get_kg(calc_params)
     data = kg.get_output(filetype, calc_params.project)
     stream = BytesIO(data.encode('utf-8'))
