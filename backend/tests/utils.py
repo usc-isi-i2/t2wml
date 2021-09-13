@@ -101,23 +101,7 @@ def load_yaml_file(client, project_folder, filename, data_file, sheet_name):
         )
     return response
 
-def load_wikifier_file(client, project_folder, filename, data_file=None, sheet_name=None):
-    url=url_builder('/api/wikifier', project_folder, data_file, sheet_name)
-    response=client.post(url,
-            json=dict(
-            filepath=filename
-            )
-        )
-    return response
 
-def load_item_file(client, project_folder, filename, data_file=None, sheet_name=None):
-    url=url_builder('/api/project/entities', project_folder, data_file, sheet_name)
-    response=client.post(url,
-            json=dict(
-            filepath=filename
-            )
-        )
-    return response
 
 def get_yaml_calculation(client, project_folder, data_file, sheet_name, yaml_file=None):
     url=url_builder('/api/mapping', project_folder, data_file, sheet_name, yaml_file)

@@ -195,42 +195,6 @@ def partial_csv():
     return response, 200
 
 
-@app.route('/api/project/download/<filetype>/<filename>/all', methods=['GET'])
-@app.route('/api/project/download/<filetype>/<filename>', methods=['GET'])
-def download_results(filetype, filename):
-    """
-    return as attachment
-    """
-    mimetype_dict = {
-        "tsv": "text/tab-separated-values",
-        "csv": "text/csv",
-        "json": "application/json"
-    }
-    attachment_filename = filename
-    project = get_project()
-    if filetype == "csv":
-        from t2wml.settings import t2wml_settings
-        t2wml_settings.no_wikification = True
-
-    if str(request.url_rule)[-3:] == "all":
-        binary_stream = BytesIO()
-        create_zip(project, filetype, binary_stream)
-        binary_stream.seek(0)
-        return send_file(binary_stream, attachment_filename=attachment_filename, as_attachment=True, mimetype='application/zip'), 200
-
-    else:
-        calc_params = get_calc_params(project)
-        if not calc_params.yaml_path and not calc_params.annotation_path:
-            raise web_exceptions.CellResolutionWithoutYAMLFileException(
-                "Cannot download report without uploading mapping file first")
-
-        kg = get_kg(calc_params)
-        data = kg.get_output(filetype, calc_params.project)
-        stream = BytesIO(data.encode('utf-8'))
-        stream.seek(0)
-        return send_file(stream, attachment_filename=attachment_filename, as_attachment=True, mimetype=mimetype_dict[filetype]), 200
-
-
 @app.route('/api/project/export/<filetype>/all', methods=['POST'])
 @app.route('/api/project/export/<filetype>', methods=['POST'])
 @json_response

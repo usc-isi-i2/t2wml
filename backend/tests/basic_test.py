@@ -51,7 +51,12 @@ class TestBasicWorkflow(BaseClass):
 
     def test_05_add_wikifier_file(self, client):
         filename=os.path.join(self.files_dir, "consolidated-wikifier.csv")
-        response=load_wikifier_file(client, project_folder, filename, self.data_file, self.sheet_name)
+        url=url_builder('/api/wikifier', project_folder, None, None)
+        response=client.post(url,
+            json=dict(
+            filepath=filename
+            )
+        )
         data = response.data.decode("utf-8")
         data = get_data(data)
         data.pop('project')
@@ -61,7 +66,12 @@ class TestBasicWorkflow(BaseClass):
 
     def test_06_add_items_file(self, client):
         filename=os.path.join(self.files_dir, "kgtk_item_defs.tsv")
-        response=load_item_file(client, project_folder, filename, self.data_file, self.sheet_name)
+        url=url_builder('/api/project/entities', project_folder, None, None)
+        response=client.post(url,
+            json=dict(
+            filepath=filename
+            )
+        )
         data = response.data.decode("utf-8")
         data = get_data(data)
         data.pop('project')
@@ -103,24 +113,6 @@ class TestBasicWorkflow(BaseClass):
         self.results_dict['change_sheet']=data
         self.compare_jsons(data, 'change_sheet')
 
-    def xtest_12_wikify_region(self, client):
-        # test closed until the new endpoint etc are working
-        #POST '/api/wikifier_service/{project_folder}'
-        url=url_builder('/api/wikifier_service', project_folder, self.data_file, "Sheet4")
-        response=client.post(url,
-                json=dict(
-                action="wikify_region",
-                region="I3:I8",
-                context="wikifier test",
-                flag="0"
-                )
-            )
-
-        data = response.data.decode("utf-8")
-        data = get_data(data)
-        data.pop('project')
-        self.results_dict['wikify_region']=data
-        self.compare_jsons(data, 'wikify_region')
 
     def test_14_settings(self, client):
         from t2wml.settings import t2wml_settings
@@ -205,3 +197,7 @@ class TestCleaning(BaseClass):
         cleaned_entries = data['layers']['cleaned']['entries']
         assert len(cleaned_entries)== 3
         assert cleaned_entries[1] == {'cleaned': '200', 'indices': [[6,3]], 'original': '4'}
+
+
+class TestCopyAnnotation(BaseClass):
+    pass
