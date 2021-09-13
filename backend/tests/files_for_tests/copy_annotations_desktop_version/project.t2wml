@@ -10,6 +10,10 @@ data_files:
     selected: countries with ID.csv
     val_arr:
     - countries with ID.csv
+  horizontal data.xlsx:
+    selected: Sheet1
+    val_arr:
+    - Sheet1
 description: ''
 entity_files: []
 handle_calendar: leave
