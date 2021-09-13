@@ -27,7 +27,7 @@ from causx.causx_utils import AnnotationNodeGenerator, causx_get_variable_dict, 
 from causx.causx_utils import causx_get_layers as get_layers
 from causx.causx_utils import causx_get_qnodes_layer as get_qnodes_layer
 from causx.wikification import wikify_countries
-from utils import create_user_wikification
+from utils import create_user_wikification, get_tuple_selection
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
 from global_settings import global_settings
@@ -220,9 +220,7 @@ def create_auto_nodes_for_causx():
     project = get_project()
     calc_params = get_calc_params(project)
     selection = request.get_json()['selection']
-    if isinstance(selection, dict):
-        selection = (selection["x1"]-1, selection["y1"] -
-                 1), (selection["x2"]-1, selection["y2"]-1)
+    selection = get_tuple_selection(selection)
 
     is_property = request.get_json()['is_property']
     data_type = request.get_json().get("data_type", None)
@@ -341,8 +339,7 @@ def delete_wikification_for_causx():
     if not selection:
         raise web_exceptions.InvalidRequestException('No selection provided')
 
-    if isinstance(selection, dict):
-        selection = ((selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1))
+    selection = get_tuple_selection(selection)
 
 
     value = request.get_json().get('value', None)
@@ -413,6 +410,7 @@ def create_qnode_for_causx():
 
     selection = request_json.get("selection", None)
     if selection:
+        selection = get_tuple_selection(selection)
         calc_params = get_calc_params(project)
         context = request.get_json().get("context", "")
         (col1, row1), (col2, row2) = selection
@@ -449,9 +447,7 @@ def causx_get_file(allowed_extensions):
 def causx_wikify_for_causx():
     project = get_project()
     selection = request.get_json()["selection"]
-    if isinstance(selection, dict):
-        selection = (selection["x1"]-1, selection["y1"] -
-                 1), (selection["x2"]-1, selection["y2"]-1)
+    selection = get_tuple_selection(selection)
 
     overwrite_existing = request.get_json().get("overwrite", False)
     #context = request.get_json()["context"]

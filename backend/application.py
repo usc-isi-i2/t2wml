@@ -15,7 +15,7 @@ from t2wml_web import (create_zip, get_kg, autocreate_items, get_kgtk_download_a
                        set_web_settings, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, get_partial_csv, get_qnodes_layer,
                        suggest_annotations, update_entities, update_t2wml_settings, get_entities)
-from utils import (file_upload_validator, get_empty_layers,
+from utils import (file_upload_validator, get_empty_layers, get_tuple_selection,
                    get_yaml_content, save_yaml, create_user_wikification)
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
@@ -348,8 +348,7 @@ def upload_entities():
 def causx_wikify():
     project = get_project()
     selection = request.get_json()["selection"]
-    if isinstance(selection, dict):
-        selection = ((selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1))
+    selection = get_tuple_selection(selection)
 
     overwrite_existing = request.get_json().get("overwrite", False)
     #context = request.get_json()["context"]
@@ -402,9 +401,7 @@ def call_wikifier_service():
     overwrite_existing = request.get_json().get("overwrite", False)
     selection = request.get_json()['selection']
 
-    if isinstance(selection, dict):
-        selection = (selection["x1"]-1, selection["y1"] -
-                 1), (selection["x2"]-1, selection["y2"]-1)
+    selection = get_tuple_selection(selection)
 
     wiki_dict, entities_dict, problem_cells = wikify_selection(calc_params, selection)
     t2wml_settings.wikidata_provider.cache.update(entities_dict)
@@ -432,9 +429,7 @@ def create_auto_nodes():
     project = get_project()
     calc_params = get_calc_params(project)
     selection = request.get_json()['selection']
-    if isinstance(selection, dict):
-        selection = (selection["x1"]-1, selection["y1"] -
-                 1), (selection["x2"]-1, selection["y2"]-1)
+    selection = get_tuple_selection(selection)
     is_property = request.get_json()['is_property']
     data_type = request.get_json().get("data_type", None)
     autocreate_items(calc_params, selection, is_property, data_type)
@@ -520,9 +515,7 @@ def set_qnodes():
     value = request.get_json()['value']
     context = request.get_json().get("context", "")
     selection = request.get_json()['selection']
-    if isinstance(selection, dict):
-        selection = (selection["x1"]-1, selection["y1"] -
-                 1), (selection["x2"]-1, selection["y2"]-1)
+    selection = get_tuple_selection(selection)
 
 
     if not selection:
@@ -549,15 +542,9 @@ def delete_wikification():
     data_file_name = calc_params.sheet.data_file_name
 
     selection = request.get_json()['selection']
-    if isinstance(selection, dict):
-        selection = (selection["x1"]-1, selection["y1"] -
-                 1), (selection["x2"]-1, selection["y2"]-1)
-
     if not selection:
         raise web_exceptions.InvalidRequestException('No selection provided')
-
-    if isinstance(selection, dict):
-        selection = ((selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1))
+    selection = get_tuple_selection(selection)
 
 
     value = request.get_json().get('value', None)
@@ -628,6 +615,7 @@ def create_qnode():
 
     selection = request_json.get("selection", None)
     if selection:
+        selection = get_tuple_selection(selection)
         calc_params = get_calc_params(project)
         context = request.get_json().get("context", "")
         value = request_json.pop("value")
