@@ -510,6 +510,8 @@ class AnnotationParams:
     def __init__(self, dataFile, sheetName, dir, annotation):
         self.dir = dir
         self.data_file=dataFile
+        if not sheetName:
+            sheetName = Path(dataFile).name
         self.sheet_name=sheetName
         self.annotation_path = os.path.join(dir, annotation)
         self.data_path = os.path.join(dir, dataFile)
@@ -525,8 +527,10 @@ def upload_annotation_for_copying():
 
     source_params = AnnotationParams(**(request.get_json()["source"]))
     destination_params = AnnotationParams(**(request.get_json()["destination"]))
-
-    processed_annotation = copy_annotation(source_params.annotation, source_params.sheet.data, destination_params.sheet.data)
+    try:
+        processed_annotation = copy_annotation(source_params.annotation, source_params.sheet.data, destination_params.sheet.data)
+    except:
+        processed_annotation = []
     with open(destination_params.annotation_path, 'w') as f:
         f.write(json.dumps(processed_annotation, cls=NumpyEncoder))
 
