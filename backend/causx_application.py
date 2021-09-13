@@ -203,7 +203,7 @@ def get_token():
 
 @app.route('/api/causx/table', methods=['GET'])
 @json_response
-def get_data():
+def causx_get_data():
     project = get_project()
     calc_params = get_calc_params(project)
     response = dict()
