@@ -471,7 +471,7 @@ def upload_annotation():
 
 
 class AnnotationParams:
-    def __init__(self, dataFile, sheetName, dir, annotation):
+    def __init__(self, dataFile, sheetName, dir, annotation, source=False):
         self.dir = dir
         self.data_file=dataFile
         if not sheetName:
@@ -480,8 +480,9 @@ class AnnotationParams:
         self.annotation_path = os.path.join(dir, annotation)
         self.data_path = os.path.join(dir, dataFile)
         self.sheet = Sheet(self.data_path, self.sheet_name)
-        with open(self.annotation_path, 'r') as f:
-            self.annotation=json.load(f)
+        if source:
+            with open(self.annotation_path, 'r') as f:
+                self.annotation=json.load(f)
 
 
 @app.route('/api/annotation/copy', methods=['POST'])
@@ -489,7 +490,7 @@ class AnnotationParams:
 def upload_annotation_for_copying():
     project = get_project()
 
-    source_params = AnnotationParams(**(request.get_json()["source"]))
+    source_params = AnnotationParams(source=True, **(request.get_json()["source"]))
     destination_params = AnnotationParams(**(request.get_json()["destination"]))
     try:
         processed_annotation = copy_annotation(source_params.annotation, source_params.sheet.data, destination_params.sheet.data)
@@ -499,7 +500,7 @@ def upload_annotation_for_copying():
         f.write(json.dumps(processed_annotation, cls=NumpyEncoder))
 
     project.add_annotation_file(destination_params.annotation_path, destination_params.data_path, destination_params.sheet_name)
-    response = dict(project = get_project_dict(project))
+    response = dict(project = get_project_dict(project), annotation=processed_annotation)
     return response, 200
 
 

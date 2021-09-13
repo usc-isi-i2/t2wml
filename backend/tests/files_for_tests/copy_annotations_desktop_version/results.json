@@ -51,122 +51,112 @@
                 ],
                 "layerType": "qNode"
             }
-        },
-        "project": {
-            "annotations": {
-                "BCcountries.xlsx": {
-                    "B-countries": {
-                        "selected": "annotations/BCcountries-B-countries.annotation",
-                        "val_arr": [
-                            "annotations/BCcountries-B-countries.annotation"
-                        ]
-                    }
-                },
-                "countries with ID.csv": {
-                    "countries with ID.csv": {
-                        "selected": "annotations/countries with ID-countries with ID.csv.annotation",
-                        "val_arr": [
-                            "annotations/countries with ID-countries with ID.csv.annotation"
-                        ]
-                    }
-                }
-            },
-            "cache_id": null,
-            "data_files": {
-                "BCcountries.xlsx": {
-                    "selected": "B-countries",
-                    "val_arr": [
-                        "B-countries",
-                        "C-countries"
-                    ]
-                },
-                "countries with ID.csv": {
-                    "selected": "countries with ID.csv",
-                    "val_arr": [
-                        "countries with ID.csv"
-                    ]
-                },
-                "horizontal data.xlsx": {
-                    "selected": "Sheet1",
-                    "val_arr": [
-                        "Sheet1"
-                    ]
-                }
-            },
-            "datamart_api": null,
-            "description": "",
-            "directory": "c:\\Users\\devora\\C_sources\\pedro\\t2wml\\backend\\tests\\files_for_tests\\copy_annotations_desktop_version",
-            "entity_files": [
-                "annotations/autogen-files/autogen_entities_BCcountries.xlsx.tsv",
-                "user_input_properties.tsv"
-            ],
-            "handle_calendar": "leave",
-            "sparql_endpoint": "https://query.wikidata.org/bigdata/namespace/wdq/sparql",
-            "title": "copy-anno",
-            "url": "",
-            "warn_for_empty_cells": false,
-            "yaml_files": [],
-            "yaml_sheet_associations": {}
         }
     },
+    "copy_1": {
+        "annotation": [
+            {
+                "id": "520e64ce-812f-4e8d-a935-6697e6fcf80a",
+                "link": "",
+                "links": {},
+                "property": {
+                    "data_type": "time",
+                    "description": "time and date something took place, existed or a statement was true",
+                    "id": "P585",
+                    "label": "point in time"
+                },
+                "role": "qualifier",
+                "selection": {
+                    "x1": 2,
+                    "x2": 5,
+                    "y1": 1,
+                    "y2": 1
+                },
+                "type": "time"
+            },
+            {
+                "id": "2f8ca71f-ae85-47d7-9905-8f1be564713b",
+                "link": "177aab3d-0ebf-4181-b4d0-d3faf2f331bf",
+                "links": {},
+                "role": "mainSubject",
+                "selection": {
+                    "x1": 1,
+                    "x2": 1,
+                    "y1": 2,
+                    "y2": 6
+                },
+                "type": "wikibaseitem"
+            },
+            {
+                "id": "177aab3d-0ebf-4181-b4d0-d3faf2f331bf",
+                "link": "",
+                "links": {
+                    "mainSubject": "2f8ca71f-ae85-47d7-9905-8f1be564713b"
+                },
+                "role": "dependentVar",
+                "selection": {
+                    "x1": 2,
+                    "x2": 5,
+                    "y1": 2,
+                    "y2": 6
+                },
+                "type": "quantity"
+            }
+        ]
+    },
+    "copy_2": {
+        "annotation": [
+            {
+                "id": "520e64ce-812f-4e8d-a935-6697e6fcf80a",
+                "link": "",
+                "links": {},
+                "property": {
+                    "data_type": "time",
+                    "description": "time and date something took place, existed or a statement was true",
+                    "id": "P585",
+                    "label": "point in time"
+                },
+                "role": "qualifier",
+                "selection": {
+                    "x1": 2,
+                    "x2": 8,
+                    "y1": 1,
+                    "y2": 1
+                },
+                "type": "time"
+            },
+            {
+                "id": "2f8ca71f-ae85-47d7-9905-8f1be564713b",
+                "link": "177aab3d-0ebf-4181-b4d0-d3faf2f331bf",
+                "links": {},
+                "role": "mainSubject",
+                "selection": {
+                    "x1": 1,
+                    "x2": 1,
+                    "y1": 2,
+                    "y2": 6
+                },
+                "type": "wikibaseitem"
+            },
+            {
+                "id": "177aab3d-0ebf-4181-b4d0-d3faf2f331bf",
+                "link": "",
+                "links": {
+                    "mainSubject": "2f8ca71f-ae85-47d7-9905-8f1be564713b"
+                },
+                "role": "dependentVar",
+                "selection": {
+                    "x1": 2,
+                    "x2": 8,
+                    "y1": 2,
+                    "y2": 6
+                },
+                "type": "quantity"
+            }
+        ]
+    },
     "create_annotation": {
-        "filename": "annotations/BCcountries-B-countries.annotation",
-        "project": {
-            "annotations": {
-                "BCcountries.xlsx": {
-                    "B-countries": {
-                        "selected": "annotations/BCcountries-B-countries.annotation",
-                        "val_arr": [
-                            "annotations/BCcountries-B-countries.annotation"
-                        ]
-                    }
-                },
-                "countries with ID.csv": {
-                    "countries with ID.csv": {
-                        "selected": "annotations/countries with ID-countries with ID.csv.annotation",
-                        "val_arr": [
-                            "annotations/countries with ID-countries with ID.csv.annotation"
-                        ]
-                    }
-                }
-            },
-            "cache_id": null,
-            "data_files": {
-                "BCcountries.xlsx": {
-                    "selected": "B-countries",
-                    "val_arr": [
-                        "B-countries",
-                        "C-countries"
-                    ]
-                },
-                "countries with ID.csv": {
-                    "selected": "countries with ID.csv",
-                    "val_arr": [
-                        "countries with ID.csv"
-                    ]
-                },
-                "horizontal data.xlsx": {
-                    "selected": "Sheet1",
-                    "val_arr": [
-                        "Sheet1"
-                    ]
-                }
-            },
-            "datamart_api": null,
-            "description": "",
-            "directory": "c:\\Users\\devora\\C_sources\\pedro\\t2wml\\backend\\tests\\files_for_tests\\copy_annotations_desktop_version",
-            "entity_files": [
-                "annotations/autogen-files/autogen_entities_BCcountries.xlsx.tsv",
-                "user_input_properties.tsv"
-            ],
-            "handle_calendar": "leave",
-            "sparql_endpoint": "https://query.wikidata.org/bigdata/namespace/wdq/sparql",
-            "title": "copy-anno",
-            "url": "",
-            "warn_for_empty_cells": false,
-            "yaml_files": [],
-            "yaml_sheet_associations": {}
-        }
+        "filename": "annotations/BCcountries-B-countries.annotation"
     },
     "create_node": {
         "entity": {
@@ -175,7 +165,9 @@
             "id": "PCustomNode-customquantity",
             "label": "custom-quantity"
         },
-        "layers": {},
+        "layers": {}
+    },
+    "delete_file": {
         "project": {
             "annotations": {
                 "BCcountries.xlsx": {
@@ -208,12 +200,6 @@
                     "selected": "countries with ID.csv",
                     "val_arr": [
                         "countries with ID.csv"
-                    ]
-                },
-                "horizontal data.xlsx": {
-                    "selected": "Sheet1",
-                    "val_arr": [
-                        "Sheet1"
                     ]
                 }
             },
@@ -870,84 +856,11 @@
             ],
             "firstRowIndex": 0
         },
-        "project": {
-            "annotations": {
-                "BCcountries.xlsx": {
-                    "B-countries": {
-                        "selected": "annotations/BCcountries-B-countries.annotation",
-                        "val_arr": [
-                            "annotations/BCcountries-B-countries.annotation"
-                        ]
-                    }
-                },
-                "countries with ID.csv": {
-                    "countries with ID.csv": {
-                        "selected": "annotations/countries with ID-countries with ID.csv.annotation",
-                        "val_arr": [
-                            "annotations/countries with ID-countries with ID.csv.annotation"
-                        ]
-                    }
-                }
-            },
-            "cache_id": null,
-            "data_files": {
-                "BCcountries.xlsx": {
-                    "selected": "B-countries",
-                    "val_arr": [
-                        "B-countries",
-                        "C-countries"
-                    ]
-                },
-                "countries with ID.csv": {
-                    "selected": "countries with ID.csv",
-                    "val_arr": [
-                        "countries with ID.csv"
-                    ]
-                },
-                "horizontal data.xlsx": {
-                    "selected": "Sheet1",
-                    "val_arr": [
-                        "Sheet1"
-                    ]
-                }
-            },
-            "datamart_api": null,
-            "description": "",
-            "directory": "c:\\Users\\devora\\C_sources\\pedro\\t2wml\\backend\\tests\\files_for_tests\\copy_annotations_desktop_version",
-            "entity_files": [
-                "annotations/autogen-files/autogen_entities_BCcountries.xlsx.tsv",
-                "user_input_properties.tsv"
-            ],
-            "handle_calendar": "leave",
-            "sparql_endpoint": "https://query.wikidata.org/bigdata/namespace/wdq/sparql",
-            "title": "copy-anno",
-            "url": "",
-            "warn_for_empty_cells": false,
-            "yaml_files": [],
-            "yaml_sheet_associations": {}
-        },
         "yamlContent": "#AUTO-GENERATED YAML\nstatementMapping:\n    region:\n        range: C2:H6\n    template:\n        subject: =item[A, $row]\n        property: PCustomNode-customquantity\n        value: =make_numeric(value[$col, $row])\n\n        qualifier:\n            - property: P585\n              value: =value[$col, 1]\n"
     },
     "load_project": {
         "project": {
-            "annotations": {
-                "BCcountries.xlsx": {
-                    "B-countries": {
-                        "selected": "annotations/BCcountries-B-countries.annotation",
-                        "val_arr": [
-                            "annotations/BCcountries-B-countries.annotation"
-                        ]
-                    }
-                },
-                "countries with ID.csv": {
-                    "countries with ID.csv": {
-                        "selected": "annotations/countries with ID-countries with ID.csv.annotation",
-                        "val_arr": [
-                            "annotations/countries with ID-countries with ID.csv.annotation"
-                        ]
-                    }
-                }
-            },
+            "annotations": {},
             "cache_id": null,
             "data_files": {
                 "BCcountries.xlsx": {
@@ -973,10 +886,7 @@
             "datamart_api": null,
             "description": "",
             "directory": "c:\\Users\\devora\\C_sources\\pedro\\t2wml\\backend\\tests\\files_for_tests\\copy_annotations_desktop_version",
-            "entity_files": [
-                "annotations/autogen-files/autogen_entities_BCcountries.xlsx.tsv",
-                "user_input_properties.tsv"
-            ],
+            "entity_files": [],
             "handle_calendar": "leave",
             "sparql_endpoint": "https://query.wikidata.org/bigdata/namespace/wdq/sparql",
             "title": "copy-anno",
@@ -1170,7 +1080,7 @@
     "suggest_annotation": {
         "annotations": [
             {
-                "id": "323742e6-75db-436b-b93b-1d97bf683012",
+                "id": "520e64ce-812f-4e8d-a935-6697e6fcf80a",
                 "link": "",
                 "links": {},
                 "property": {
@@ -1189,8 +1099,8 @@
                 "type": "time"
             },
             {
-                "id": "ef6fc308-5c10-487c-8888-8db5a3ba709a",
-                "link": "66ec8d22-53e5-422f-b47c-12eec70fdf65",
+                "id": "2f8ca71f-ae85-47d7-9905-8f1be564713b",
+                "link": "177aab3d-0ebf-4181-b4d0-d3faf2f331bf",
                 "links": {},
                 "role": "mainSubject",
                 "selection": {
@@ -1202,10 +1112,10 @@
                 "type": "wikibaseitem"
             },
             {
-                "id": "66ec8d22-53e5-422f-b47c-12eec70fdf65",
+                "id": "177aab3d-0ebf-4181-b4d0-d3faf2f331bf",
                 "link": "",
                 "links": {
-                    "mainSubject": "ef6fc308-5c10-487c-8888-8db5a3ba709a"
+                    "mainSubject": "2f8ca71f-ae85-47d7-9905-8f1be564713b"
                 },
                 "role": "dependentVar",
                 "selection": {
@@ -1538,62 +1448,6 @@
             ],
             "firstRowIndex": 0
         },
-        "project": {
-            "annotations": {
-                "BCcountries.xlsx": {
-                    "B-countries": {
-                        "selected": "annotations/BCcountries-B-countries.annotation",
-                        "val_arr": [
-                            "annotations/BCcountries-B-countries.annotation"
-                        ]
-                    }
-                },
-                "countries with ID.csv": {
-                    "countries with ID.csv": {
-                        "selected": "annotations/countries with ID-countries with ID.csv.annotation",
-                        "val_arr": [
-                            "annotations/countries with ID-countries with ID.csv.annotation"
-                        ]
-                    }
-                }
-            },
-            "cache_id": null,
-            "data_files": {
-                "BCcountries.xlsx": {
-                    "selected": "B-countries",
-                    "val_arr": [
-                        "B-countries",
-                        "C-countries"
-                    ]
-                },
-                "countries with ID.csv": {
-                    "selected": "countries with ID.csv",
-                    "val_arr": [
-                        "countries with ID.csv"
-                    ]
-                },
-                "horizontal data.xlsx": {
-                    "selected": "Sheet1",
-                    "val_arr": [
-                        "Sheet1"
-                    ]
-                }
-            },
-            "datamart_api": null,
-            "description": "",
-            "directory": "c:\\Users\\devora\\C_sources\\pedro\\t2wml\\backend\\tests\\files_for_tests\\copy_annotations_desktop_version",
-            "entity_files": [
-                "annotations/autogen-files/autogen_entities_BCcountries.xlsx.tsv",
-                "user_input_properties.tsv"
-            ],
-            "handle_calendar": "leave",
-            "sparql_endpoint": "https://query.wikidata.org/bigdata/namespace/wdq/sparql",
-            "title": "copy-anno",
-            "url": "",
-            "warn_for_empty_cells": false,
-            "yaml_files": [],
-            "yaml_sheet_associations": {}
-        },
         "yamlContent": "#AUTO-GENERATED YAML\nstatementMapping:\n    region:\n        range: B2:E4\n    template:\n        subject: =item[A, $row]\n        property: #TODO-- no property alignment found\n        value: =make_numeric(value[$col, $row])\n\n        qualifier:\n            - property: P585\n              value: =value[$col, 1]\n"
     },
     "suggest_block": {
@@ -1653,62 +1507,6 @@
                 ],
                 "layerType": "qNode"
             }
-        },
-        "project": {
-            "annotations": {
-                "BCcountries.xlsx": {
-                    "B-countries": {
-                        "selected": "annotations/BCcountries-B-countries.annotation",
-                        "val_arr": [
-                            "annotations/BCcountries-B-countries.annotation"
-                        ]
-                    }
-                },
-                "countries with ID.csv": {
-                    "countries with ID.csv": {
-                        "selected": "annotations/countries with ID-countries with ID.csv.annotation",
-                        "val_arr": [
-                            "annotations/countries with ID-countries with ID.csv.annotation"
-                        ]
-                    }
-                }
-            },
-            "cache_id": null,
-            "data_files": {
-                "BCcountries.xlsx": {
-                    "selected": "B-countries",
-                    "val_arr": [
-                        "B-countries",
-                        "C-countries"
-                    ]
-                },
-                "countries with ID.csv": {
-                    "selected": "countries with ID.csv",
-                    "val_arr": [
-                        "countries with ID.csv"
-                    ]
-                },
-                "horizontal data.xlsx": {
-                    "selected": "Sheet1",
-                    "val_arr": [
-                        "Sheet1"
-                    ]
-                }
-            },
-            "datamart_api": null,
-            "description": "",
-            "directory": "c:\\Users\\devora\\C_sources\\pedro\\t2wml\\backend\\tests\\files_for_tests\\copy_annotations_desktop_version",
-            "entity_files": [
-                "annotations/autogen-files/autogen_entities_BCcountries.xlsx.tsv",
-                "user_input_properties.tsv"
-            ],
-            "handle_calendar": "leave",
-            "sparql_endpoint": "https://query.wikidata.org/bigdata/namespace/wdq/sparql",
-            "title": "copy-anno",
-            "url": "",
-            "warn_for_empty_cells": false,
-            "yaml_files": [],
-            "yaml_sheet_associations": {}
         },
         "wikifierError": "Failed to wikify: Bengal"
     }
