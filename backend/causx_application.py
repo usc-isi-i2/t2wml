@@ -350,7 +350,7 @@ def delete_wikification_for_causx():
     value = request.get_json().get('value', None)
     #context = request.get_json().get("context", "")
 
-    filepath, exists=project.get_wikifier_file(calc_params.sheet.data)
+    filepath, exists=project.get_wikifier_file(calc_params.sheet.data_file_path)
     if exists:
         wikifier = Wikifier.load_from_file(filepath)
         wikifier.delete_wikification(selection, value, context="", sheet=calc_params.sheet)
