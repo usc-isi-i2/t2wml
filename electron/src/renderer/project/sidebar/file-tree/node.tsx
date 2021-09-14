@@ -152,10 +152,10 @@ class FileNode extends Component<NodeProps, NodeState> {
           annotation: this.props.label, //the annotation file we're copying (relative path to dir)
         },
         destination: {
-          dir: '',  //the dir of the project we're copying from
-          dataFile: destDataFile || "", //The dataFile we're copying from (relative path to dir)
-          sheetName: destSheetName, //the sheetName we're copying from
-          annotation: divTarget.id, //the annotation file we're copying (relative path to dir)
+          dir: '',
+          dataFile: destDataFile || "",
+          sheetName: destSheetName,
+          annotation: divTarget.id,
         }
       }
       this.copyAnnotation(data)
