@@ -313,7 +313,7 @@
     },
     "suggest_annotation": [
         {
-            "id": "06e4ff94-5e68-43a7-b888-586e6623a438",
+            "id": "05e4f8dc-8bf4-4384-8923-ceab333d9a03",
             "link": "",
             "links": {},
             "property": {
@@ -332,8 +332,8 @@
             "type": "time"
         },
         {
-            "id": "b697195b-7df4-4705-b5db-c764baaf3a78",
-            "link": "c203816b-29c5-4856-8210-56c6de5bfa0b",
+            "id": "5e9668e5-1867-426b-8b7e-41561a5827be",
+            "link": "7e26f622-6820-4a86-9a72-4e74b6a3f276",
             "links": {},
             "role": "mainSubject",
             "selection": {
@@ -345,10 +345,10 @@
             "type": "wikibaseitem"
         },
         {
-            "id": "c203816b-29c5-4856-8210-56c6de5bfa0b",
+            "id": "7e26f622-6820-4a86-9a72-4e74b6a3f276",
             "link": "",
             "links": {
-                "mainSubject": "b697195b-7df4-4705-b5db-c764baaf3a78"
+                "mainSubject": "5e9668e5-1867-426b-8b7e-41561a5827be"
             },
             "role": "dependentVar",
             "selection": {
@@ -439,16 +439,23 @@
                 {
                     "context": "",
                     "data_type": null,
-                    "description": "sovereign state situated at the confluence of Western, Central, and South Asia",
-                    "id": "Q889",
+                    "description": "",
+                    "id": "QCustomNode-custom_afghanistan",
                     "indices": [
                         [
                             4,
                             1
                         ]
                     ],
-                    "label": "Afghanistan",
-                    "url": "https://www.wikidata.org/wiki/Q889",
+                    "label": "Custom afghanistan",
+                    "tags": {
+                        "DocID": "",
+                        "FactorClass": "",
+                        "Normalizer": "",
+                        "Relevance": "",
+                        "Units": ""
+                    },
+                    "url": "",
                     "value": "Afghanistan"
                 },
                 {
