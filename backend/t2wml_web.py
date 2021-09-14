@@ -12,7 +12,7 @@ from t2wml.mapping.kgtk import get_all_variables
 from t2wml.mapping.statement_mapper import PartialAnnotationMapper
 from calc_params import CalcParams
 from app_config import CACHE_FOLDER
-from web_dict_provider import WebDictionaryProvider
+from web_dict_provider import WebDictionaryProvider, add_entities_from_project
 from utils import get_empty_layers
 from wikidata_utils import get_labels_and_descriptions, get_qnode_url, QNode
 
@@ -43,6 +43,7 @@ def update_t2wml_settings(project):
     if not t2wml_settings.wikidata_provider.project or \
             t2wml_settings.wikidata_provider.project.directory != project.directory:
         t2wml_settings.wikidata_provider = WebDictionaryProvider(project)
+        add_entities_from_project(project)
     elif t2wml_settings.wikidata_provider.sparql_endpoint != project.sparql_endpoint:
         t2wml_settings.wikidata_provider.sparql_endpoint = project.sparql_endpoint
 

@@ -18,13 +18,14 @@ class WebDictionaryProvider(FallbackSparql):
         self.sparql_endpoint=DEFAULT_SPARQL_ENDPOINT
         if project:
             self.sparql_endpoint=project.sparql_endpoint
-            add_entities_from_project(project)
             with open(project.entity_file, 'r') as f:
-                self.cache.update(json.load(f))
+                file_cache = json.load(f)
+                self.cache.update(file_cache)
 
     def try_get_property_type(self, wikidata_property, *args, **kwargs):
         try:
             property_dict=self.cache[wikidata_property]
+            property_dict["data_type"]
         except KeyError:
             property_dict=preloaded_properties[wikidata_property]
             if not property_dict:
@@ -36,6 +37,12 @@ class WebDictionaryProvider(FallbackSparql):
         return data_type
 
     def get_entity(self, wikidata_property, *args, **kwargs):
+        if wikidata_property in preloaded_properties:
+            property_dict = preloaded_properties[wikidata_property]
+            user_dict = self.cache.get(wikidata_property, {}) #a workaround for as long as we support tags on wikidata properties...
+            property_dict.update(user_dict)
+            return property_dict
+
         try:
             property_dict=self.cache[wikidata_property]
             return property_dict
