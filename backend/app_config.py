@@ -39,7 +39,7 @@ if os.name == 'nt':
 
 class AppConfig:
     USE_CACHE = True
-    MAX_CONTENT_LENGTH = 100 * 1024 * 1024  # 100 MB max file size
+    MAX_CONTENT_LENGTH = 500 * 1024 * 1024  # 500 MB max file size
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
                               'sqlite:///' + os.path.join(DATADIR, 'entitiesWithID.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
