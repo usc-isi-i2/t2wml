@@ -40,8 +40,8 @@ def update_t2wml_settings(project):
     t2wml_settings.update_from_dict(**project.__dict__)
 
     # update wikidata provider ONLY if necessary
-    if not t2wml_settings.wikidata_provider.project or \
-            t2wml_settings.wikidata_provider.project.directory != project.directory:
+    if True: # not t2wml_settings.wikidata_provider.project or \
+            #t2wml_settings.wikidata_provider.project.directory != project.directory:
         t2wml_settings.wikidata_provider = WebDictionaryProvider(project)
         add_entities_from_project(project)
     elif t2wml_settings.wikidata_provider.sparql_endpoint != project.sparql_endpoint:
