@@ -404,10 +404,9 @@ class RequestService {
     const dir = this.getProjectFolder().replace("project_folder=", '');
     data.source.dir = dir;
     data.destination.dir = dir;
-    const response = await backendPost(
+    await backendPost(
       `/annotation/copy?${this.getProjectFolder()}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`,
       data) as ResponseWithQNodeLayerDTO;
-    console.log(response);
   }
 
 

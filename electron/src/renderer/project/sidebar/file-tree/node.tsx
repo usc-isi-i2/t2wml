@@ -7,6 +7,8 @@ import './node.css';
 import path from "path";
 import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import RequestService from "@/renderer/common/service";
+import wikiStore from "@/renderer/data/store";
+import { currentFilesService } from "@/renderer/common/current-file-service";
 
 
 export type NodeType = "DataFile" | "SingleSheetDataFile" | "Sheet" | "Label" | "Yaml" | "Annotation" | "Wikifier" | "Entity"
@@ -99,13 +101,40 @@ class FileNode extends Component<NodeProps, NodeState> {
     return liDatafile;
   }
 
+  async copyAnnotation(data: {
+    source: any,
+    destination: { dir: string, dataFile: string, sheetName: string, annotation: string }
+  }
+  ) {
+    const annotation = data.destination.annotation
+    const sheetName = data.destination.sheetName
+    const dataFile = data.destination.dataFile
+    wikiStore.table.showSpinner = true;
+    wikiStore.yaml.showSpinner = true;
+    try {
+      await this.requestService.copyAnnotation(data);
+      currentFilesService.changeAnnotation(annotation, sheetName, dataFile);
+      await this.requestService.getTable();
+    } finally {
+      wikiStore.table.showSpinner = false;
+      wikiStore.yaml.showSpinner = false;
+    }
+    wikiStore.partialCsv.showSpinner = true;
+    try {
+      await this.requestService.getPartialCsv();
+    }
+    finally {
+      wikiStore.partialCsv.showSpinner = false;
+    }
+  }
+
   onStop(event: DraggableEvent, draggableData: DraggableData) {
     //  draggableData.node.id === this.props.label
     const target = event.target as HTMLInputElement;
     const divTarget = this.getDivAnnotation(target)
     if (divTarget && divTarget.id && divTarget.classList.contains("drop-target")
       && draggableData.node.id !== divTarget.id) {
-      
+
       let destSheetName = this.getParnetInTree(divTarget, 1).id
       let destDataFile = "";
       if (destSheetName.endsWith('.csv')) {
@@ -128,9 +157,8 @@ class FileNode extends Component<NodeProps, NodeState> {
           sheetName: destSheetName, //the sheetName we're copying from
           annotation: divTarget.id, //the annotation file we're copying (relative path to dir)
         }
-
       }
-      this.requestService.copyAnnotation(data);
+      this.copyAnnotation(data)
     }
     this.setState({ position: { x: 0, y: 0 } });
   }
