@@ -135,14 +135,15 @@ class FileNode extends Component<NodeProps, NodeState> {
     if (divTarget && divTarget.id && divTarget.classList.contains("drop-target")
       && draggableData.node.id !== divTarget.id) {
 
-      let destSheetName = this.getParnetInTree(divTarget, 1).id
+      const destSheetName = this.getParnetInTree(divTarget, 1).id;
       let destDataFile = "";
       if (destSheetName.endsWith('.csv')) {
         destDataFile = destSheetName;
-        destSheetName = "";
+        // destSheetName = "";
       } else {
         destDataFile = this.getParnetInTree(divTarget, 2).id
       }
+      const titleNewFile = "annotations/" + destSheetName + "_" + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 4) + ".annotation";
 
       const data = {
         source: {
@@ -155,7 +156,7 @@ class FileNode extends Component<NodeProps, NodeState> {
           dir: '',
           dataFile: destDataFile || "",
           sheetName: destSheetName,
-          annotation: divTarget.id,
+          annotation: titleNewFile,
         }
       }
       this.copyAnnotation(data)

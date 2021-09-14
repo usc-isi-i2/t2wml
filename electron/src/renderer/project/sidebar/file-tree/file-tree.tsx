@@ -209,7 +209,7 @@ class FileTree extends Component<TreeProps, TreeState> {
   async addAnnotation(clickedNode: NodeProps) {
     const sheetName = clickedNode!.label;
     const dataFile = clickedNode!.parentNode!.label;
-    const title = "annotations/" + sheetName + "_" + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 4) + ".yaml"
+    const title = "annotations/" + sheetName + "_" + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 4) + ".annotation"
     try {
       // send request
       const data = {
