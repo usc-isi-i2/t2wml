@@ -88,6 +88,19 @@ def update_calc_params_mapping_files(project, calc_params, mapping_file, mapping
     if mapping_type == "Yaml":
         calc_params._yaml_path = mapping_file
 
+def get_range_params():
+    start_end_kwargs = {}
+    for key in ["data_start", "map_start"]:#, "part_start"]:
+        start_end_kwargs[key] = int(request.args.get(key, 0))
+    for key in ["data_end", "map_end"]:
+        end = int(request.args.get(key, 0))
+        if end == 0:
+            end = None
+        start_end_kwargs[key] = end
+    #start_end_kwargs["part_end"] = int(request.args.get("part_end", 30))
+    start_end_kwargs["part_count"] = int(request.args.get("part_count", 100))
+    return start_end_kwargs
+
 
 def get_calc_params(project, data_required=True, mapping_type=None, mapping_file=None):
     try:
@@ -108,17 +121,7 @@ def get_calc_params(project, data_required=True, mapping_type=None, mapping_file
         else:
             return None
 
-    start_end_kwargs = {}
-    for key in ["data_start", "map_start"]:#, "part_start"]:
-        start_end_kwargs[key] = int(request.args.get(key, 0))
-    for key in ["data_end", "map_end"]:
-        end = int(request.args.get(key, 0))
-        if end == 0:
-            end = None
-        start_end_kwargs[key] = end
-
-    #start_end_kwargs["part_end"] = int(request.args.get("part_end", 30))
-    start_end_kwargs["part_count"] = int(request.args.get("part_count", 100))
+    start_end_kwargs=get_range_params()
 
     calc_params = CalcParams(
         project, data_file, sheet_name, **start_end_kwargs)
@@ -282,7 +285,10 @@ def upload_data_file():
     save_annotations(project, [], os.path.join(
         annotations_path), data_file, sheet_name)
 
-    calc_params = CalcParams(project, data_file, sheet_name, None)
+    start_end_kwargs=get_range_params()
+    calc_params = CalcParams(
+        project, data_file, sheet_name, **start_end_kwargs)
+
 
     response["table"] = get_table(calc_params)
     # this will just return empty layers and any wikification if it exists

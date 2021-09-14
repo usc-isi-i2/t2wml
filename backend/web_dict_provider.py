@@ -14,7 +14,6 @@ def add_entities_from_project(project):
 class WebDictionaryProvider(FallbackSparql):
     def __init__(self, project=None):
         super().__init__()
-        self.cache=preloaded_properties
         self.project = project
         self.sparql_endpoint=DEFAULT_SPARQL_ENDPOINT
         if project:
@@ -24,14 +23,17 @@ class WebDictionaryProvider(FallbackSparql):
                 self.cache.update(json.load(f))
 
     def try_get_property_type(self, wikidata_property, *args, **kwargs):
-            property_dict=self.cache.get(wikidata_property, None)
+        try:
+            property_dict=self.cache[wikidata_property]
+        except KeyError:
+            property_dict=preloaded_properties[wikidata_property]
             if not property_dict:
                 raise ValueError("Property not founds")
 
-            data_type= property_dict.get("data_type", None)
-            if not data_type:
-                raise ValueError("No datatype defined for that id")
-            return data_type
+        data_type= property_dict.get("data_type", None)
+        if not data_type:
+            raise ValueError("No datatype defined for that id")
+        return data_type
 
     def get_entity(self, wikidata_property, *args, **kwargs):
         try:

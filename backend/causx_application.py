@@ -23,7 +23,7 @@ from t2wml_web import ( get_kg, autocreate_items, set_web_settings,
                         get_annotations, get_table, save_annotations,get_project_instance,
                        suggest_annotations,  update_t2wml_settings, get_entities)
 import web_exceptions
-from causx.causx_utils import AnnotationNodeGenerator, causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, create_fidil_json, get_causx_partial_csv, causx_create_canonical_spreadsheet, include_base_causx_tags, preload, upload_fidil_json
+from causx.causx_utils import causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, create_fidil_json, get_causx_partial_csv, causx_create_canonical_spreadsheet, include_base_causx_tags, upload_fidil_json
 from causx.causx_utils import causx_get_layers as get_layers
 from causx.causx_utils import causx_get_qnodes_layer as get_qnodes_layer
 from causx.wikification import wikify_countries
@@ -137,6 +137,20 @@ def get_annotation_name(calc_params):
     os.makedirs(Path(calc_params.project.directory)/"annotations", exist_ok=True)
     return annotation_path
 
+def get_range_params():
+    start_end_kwargs = {}
+    for key in ["data_start", "map_start"]:#, "part_start"]:
+        start_end_kwargs[key] = int(request.args.get(key, 0))
+    for key in ["data_end", "map_end"]:
+        end = int(request.args.get(key, 0))
+        if end == 0:
+            end = None
+        start_end_kwargs[key] = end
+    #start_end_kwargs["part_end"] = int(request.args.get("part_end", 30))
+    start_end_kwargs["part_count"] = int(request.args.get("part_count", 100))
+    return start_end_kwargs
+
+
 def get_calc_params(project, data_required=True):
     try:
         try:
@@ -156,16 +170,7 @@ def get_calc_params(project, data_required=True):
         else:
             return None
 
-    start_end_kwargs = {}
-    for key in ["data_start", "map_start"]:#, "part_start"]:
-        start_end_kwargs[key] = int(request.args.get(key, 0))
-    for key in ["data_end", "map_end"]:
-        end = int(request.args.get(key, 0))
-        if end == 0:
-            end = None
-        start_end_kwargs[key] = end
-    #start_end_kwargs["part_end"] = int(request.args.get("part_end", 30))
-    start_end_kwargs["part_count"] = int(request.args.get("part_count", 100))
+    start_end_kwargs=get_range_params()
     calc_params = CalcParams(project, data_file, sheet_name, **start_end_kwargs)
 
     calc_params._annotation_path = get_annotation_name(calc_params)
@@ -173,18 +178,12 @@ def get_calc_params(project, data_required=True):
     return calc_params
 
 
-def get_mapping(preload=False):
+def get_mapping():
     project = get_project()
     calc_params = get_calc_params(project)
     response = dict(project=get_project_dict(project))
     response["annotations"], response["yamlContent"] = get_annotations(
             calc_params)
-
-    if preload:
-        try:
-            preload(calc_params)
-        except Exception as e:
-            pass
     get_layers(response, calc_params)
     return response, 200
 
@@ -200,6 +199,18 @@ def is_alive2():
 @app.route('/api/causx/token', methods=['GET'])
 def get_token():
     return {"token": encode_auth_token()}, 200
+
+
+@app.route('/api/causx/table', methods=['GET'])
+@json_response
+def causx_get_data():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    response = dict()
+    response["table"] = get_table(calc_params)
+    calc_response, code = get_mapping()
+    response.update(calc_response)
+    return response, code
 
 
 @app.route('/api/causx/project/entities', methods=['GET']) #V
@@ -345,7 +356,7 @@ def delete_wikification_for_causx():
     value = request.get_json().get('value', None)
     #context = request.get_json().get("context", "")
 
-    filepath, exists=project.get_wikifier_file(calc_params.sheet.data)
+    filepath, exists=project.get_wikifier_file(calc_params.sheet.data_file_path)
     if exists:
         wikifier = Wikifier.load_from_file(filepath)
         wikifier.delete_wikification(selection, value, context="", sheet=calc_params.sheet)
@@ -455,7 +466,6 @@ def causx_wikify_for_causx():
 
     cell_qnode_map, problem_cells = wikify_countries(calc_params, selection)
     project.add_df_to_wikifier_file(calc_params.sheet, cell_qnode_map, overwrite_existing)
-
     #auto-create nodes for anything that failed to wikify
     create_nodes_from_selection(selection, project, calc_params.sheet, calc_params.wikifier)
 
@@ -491,7 +501,10 @@ def causx_upload_data():
     sheet_name = project.data_files[file_path]["val_arr"][0]
     project.save()
     response["sheetName"] = sheet_name
-    calc_params = CalcParams(project, file_path, sheet_name)
+
+    start_end_kwargs=get_range_params()
+    calc_params = CalcParams(project, file_path, sheet_name, **start_end_kwargs)
+
     response["table"] = get_table(calc_params)
     project.title=Path(file_path).stem
     project.save()
@@ -516,7 +529,8 @@ def causx_upload_project():
 
     project = get_project()
     sheet_name=filemap["sheet"]
-    calc_params=CalcParams(project, filemap["data"], sheet_name, annotation_path=filemap["annotation"])
+    start_end_kwargs=get_range_params()
+    calc_params=CalcParams(project, filemap["data"], sheet_name, annotation_path=filemap["annotation"], **start_end_kwargs)
     response=dict()
 
     response["table"] = get_table(calc_params)
@@ -561,7 +575,20 @@ def causx_upload_annotation():
         f.write(json.dumps(processed_annotation, cls=NumpyEncoder))
 
     project.add_annotation_file(calc_params.annotation_path, calc_params.data_path, calc_params.sheet_name)
-    preload(calc_params)
+
+    country_selections=[]
+    for block in processed_annotation:
+        if block["role"]=="mainSubject":
+            country_selections.append(block["selection"])
+
+    for selection in country_selections:
+        selection = get_tuple_selection(selection)
+        cell_qnode_map, problem_cells = wikify_countries(calc_params, selection)
+        project.add_df_to_wikifier_file(calc_params.sheet, cell_qnode_map)
+        #auto-create nodes for anything that failed to wikify
+        create_nodes_from_selection(selection, project, calc_params.sheet, calc_params.wikifier)
+
+    calc_params = get_calc_params(project)
     response, code = get_mapping()
     response["project"]=get_project_dict(project)
     return response, code
@@ -615,7 +642,6 @@ def causx_save_zip_results():
     calc_params = get_calc_params(project)
 
     annotation_path=calc_params.annotation_path
-    preload(calc_params)
 
     kg = get_kg(calc_params)
 
@@ -677,8 +703,6 @@ def download_results_for_causx(filetype):
     project = get_project()
     calc_params = get_calc_params(project)
     annotation_path = calc_params.annotation_path
-    ang = AnnotationNodeGenerator.load_from_path(annotation_path, project)
-    ang.preload(calc_params.sheet, calc_params.wikifier)
     kg = get_kg(calc_params)
     data = kg.get_output(filetype, calc_params.project)
     stream = BytesIO(data.encode('utf-8'))
