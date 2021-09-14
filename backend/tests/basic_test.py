@@ -3,9 +3,16 @@ import json
 import os
 import csv
 import tempfile
+import shutil
 from tests.utils import (client, BaseClass, create_project,
                          load_data_file, load_yaml_file, url_builder)
 
+tmp_anno_dir = os.path.join(os.path.dirname(
+        __file__), "files_for_tests", "tmp_copy_annotations_desktop_version")
+if os.path.exists(tmp_anno_dir):
+    shutil.rmtree(tmp_anno_dir)
+shutil.copytree( os.path.join(os.path.dirname(
+        __file__), "files_for_tests", "copy_annotations_desktop_version"), tmp_anno_dir)
 
 # we need to use a global for some reason... self.project_folder does not work.
 project_folder = None
@@ -176,14 +183,16 @@ class TestBasicYamlWorkflow(BaseClass):
 
 class TestBasicAnnotationWorkflow(BaseClass):
     files_dir = os.path.join(os.path.dirname(
-        __file__), "files_for_tests", "copy_annotations_desktop_version")
-    expected_results_path = os.path.join(files_dir, "results.json")
+        __file__), "files_for_tests", "tmp_copy_annotations_desktop_version")
+    expected_results_path = os.path.join(os.path.dirname(
+        __file__), "files_for_tests", "copy_annotations_desktop_version", "results.json")
 
     def test_load_project(self, client):
         url = f'/api/project?project_folder={self.files_dir}'
         response = client.get(url)
         data = response.data.decode("utf-8")
         data = get_data(data)
+        data["project"].pop("directory")
         self.results_dict["load_project"] = data
         self.compare_jsons(data, 'load_project')
 
@@ -318,6 +327,7 @@ class TestBasicAnnotationWorkflow(BaseClass):
         response=client.post(url, json=payload)
         data = response.data.decode("utf-8")
         data = get_data(data)
+        data["project"].pop("directory")
         self.results_dict["delete_file"] = data
         self.compare_jsons(data, 'delete_file')
 

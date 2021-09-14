@@ -56,7 +56,7 @@
     "copy_1": {
         "annotation": [
             {
-                "id": "520e64ce-812f-4e8d-a935-6697e6fcf80a",
+                "id": "8fcc4ed6-7607-4bc9-9350-d1259a7b7894",
                 "link": "",
                 "links": {},
                 "property": {
@@ -75,8 +75,8 @@
                 "type": "time"
             },
             {
-                "id": "2f8ca71f-ae85-47d7-9905-8f1be564713b",
-                "link": "177aab3d-0ebf-4181-b4d0-d3faf2f331bf",
+                "id": "bfa16314-e5b4-4c5a-a1b3-7dd45e0d5b98",
+                "link": "24b809de-a7ce-49b6-91c8-870329ff687e",
                 "links": {},
                 "role": "mainSubject",
                 "selection": {
@@ -88,10 +88,10 @@
                 "type": "wikibaseitem"
             },
             {
-                "id": "177aab3d-0ebf-4181-b4d0-d3faf2f331bf",
+                "id": "24b809de-a7ce-49b6-91c8-870329ff687e",
                 "link": "",
                 "links": {
-                    "mainSubject": "2f8ca71f-ae85-47d7-9905-8f1be564713b"
+                    "mainSubject": "bfa16314-e5b4-4c5a-a1b3-7dd45e0d5b98"
                 },
                 "role": "dependentVar",
                 "selection": {
@@ -107,7 +107,7 @@
     "copy_2": {
         "annotation": [
             {
-                "id": "520e64ce-812f-4e8d-a935-6697e6fcf80a",
+                "id": "8fcc4ed6-7607-4bc9-9350-d1259a7b7894",
                 "link": "",
                 "links": {},
                 "property": {
@@ -126,8 +126,8 @@
                 "type": "time"
             },
             {
-                "id": "2f8ca71f-ae85-47d7-9905-8f1be564713b",
-                "link": "177aab3d-0ebf-4181-b4d0-d3faf2f331bf",
+                "id": "bfa16314-e5b4-4c5a-a1b3-7dd45e0d5b98",
+                "link": "24b809de-a7ce-49b6-91c8-870329ff687e",
                 "links": {},
                 "role": "mainSubject",
                 "selection": {
@@ -139,10 +139,10 @@
                 "type": "wikibaseitem"
             },
             {
-                "id": "177aab3d-0ebf-4181-b4d0-d3faf2f331bf",
+                "id": "24b809de-a7ce-49b6-91c8-870329ff687e",
                 "link": "",
                 "links": {
-                    "mainSubject": "2f8ca71f-ae85-47d7-9905-8f1be564713b"
+                    "mainSubject": "bfa16314-e5b4-4c5a-a1b3-7dd45e0d5b98"
                 },
                 "role": "dependentVar",
                 "selection": {
@@ -205,7 +205,6 @@
             },
             "datamart_api": null,
             "description": "",
-            "directory": "c:\\Users\\devora\\C_sources\\pedro\\t2wml\\backend\\tests\\files_for_tests\\copy_annotations_desktop_version",
             "entity_files": [
                 "annotations/autogen-files/autogen_entities_BCcountries.xlsx.tsv",
                 "user_input_properties.tsv"
@@ -885,7 +884,6 @@
             },
             "datamart_api": null,
             "description": "",
-            "directory": "c:\\Users\\devora\\C_sources\\pedro\\t2wml\\backend\\tests\\files_for_tests\\copy_annotations_desktop_version",
             "entity_files": [],
             "handle_calendar": "leave",
             "sparql_endpoint": "https://query.wikidata.org/bigdata/namespace/wdq/sparql",
@@ -1080,7 +1078,7 @@
     "suggest_annotation": {
         "annotations": [
             {
-                "id": "520e64ce-812f-4e8d-a935-6697e6fcf80a",
+                "id": "8fcc4ed6-7607-4bc9-9350-d1259a7b7894",
                 "link": "",
                 "links": {},
                 "property": {
@@ -1099,8 +1097,8 @@
                 "type": "time"
             },
             {
-                "id": "2f8ca71f-ae85-47d7-9905-8f1be564713b",
-                "link": "177aab3d-0ebf-4181-b4d0-d3faf2f331bf",
+                "id": "bfa16314-e5b4-4c5a-a1b3-7dd45e0d5b98",
+                "link": "24b809de-a7ce-49b6-91c8-870329ff687e",
                 "links": {},
                 "role": "mainSubject",
                 "selection": {
@@ -1112,10 +1110,10 @@
                 "type": "wikibaseitem"
             },
             {
-                "id": "177aab3d-0ebf-4181-b4d0-d3faf2f331bf",
+                "id": "24b809de-a7ce-49b6-91c8-870329ff687e",
                 "link": "",
                 "links": {
-                    "mainSubject": "2f8ca71f-ae85-47d7-9905-8f1be564713b"
+                    "mainSubject": "bfa16314-e5b4-4c5a-a1b3-7dd45e0d5b98"
                 },
                 "role": "dependentVar",
                 "selection": {
