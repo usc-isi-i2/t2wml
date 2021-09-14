@@ -53,7 +53,7 @@ class TestBasicYamlWorkflow(BaseClass):
 
     def test_05_add_wikifier_file(self, client):
         filename = os.path.join(self.files_dir, "consolidated-wikifier.csv")
-        url = url_builder('/api/wikifier', project_folder, None, None)
+        url = url_builder('/api/wikifier', project_folder, self.data_file, self.sheet_name, self.yaml_file)
         response = client.post(url,
                                json=dict(
                                    filepath=filename
@@ -67,7 +67,7 @@ class TestBasicYamlWorkflow(BaseClass):
 
     def test_06_add_items_file(self, client):
         filename = os.path.join(self.files_dir, "kgtk_item_defs.tsv")
-        url = url_builder('/api/project/entities', project_folder, None, None)
+        url = url_builder('/api/project/entities', project_folder, self.data_file, self.sheet_name, self.yaml_file)
         response = client.post(url,
                                json=dict(
                                    filepath=filename
@@ -303,7 +303,7 @@ class TestBasicAnnotationWorkflow(BaseClass):
         self.results_dict["suggest_block"] = data
         self.compare_jsons(data, 'suggest_block')
 
-    def test_rename_file(self, client):
+    def xtest_rename_file(self, client):
         url=f"/api/files/rename?project_folder={self.files_dir}"
         payload = {"old_name": "horizontal data.xlsx", "new_name": "test.xlsx"}
         response=client.post(url, json=payload)
@@ -321,7 +321,7 @@ class TestBasicAnnotationWorkflow(BaseClass):
         self.results_dict["delete_file"] = data
         self.compare_jsons(data, 'delete_file')
 
-    def test_999_save(self):
+    def xtest_999_save(self):
         # used when overwriting all old results with new ones
         with open(self.expected_results_path, 'w') as f:
             json.dump(self.results_dict, f, sort_keys=True, indent=4)
