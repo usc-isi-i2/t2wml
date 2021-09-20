@@ -26,10 +26,12 @@ class WebDictionaryProvider(FallbackSparql):
         try:
             property_dict=self.cache[wikidata_property]
             property_dict["data_type"]
+            if property_dict["data_type"]=="Property Not Found":
+                raise KeyError
         except KeyError:
             property_dict=preloaded_properties[wikidata_property]
             if not property_dict:
-                raise ValueError("Property not founds")
+                raise ValueError("Property not found")
 
         data_type= property_dict.get("data_type", None)
         if not data_type:
