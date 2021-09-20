@@ -16,7 +16,7 @@ interface EditFieldMenuState extends IStateWithError {
 }
 
 interface EditFieldMenuProps {
-    onClose: (key:string, entityFields?: EntityFields) => void,
+    onClose: (key: string, entityFields?: EntityFields) => void,
     selection: CellSelection,
     title: string,
     // showResults: boolean,
@@ -39,7 +39,7 @@ class EditFieldMenu extends Component<EditFieldMenuProps, EditFieldMenuState> {
     }
 
 
-    async handleOnSearch(key: string, value?: string, instanceOf?: QNode, searchProperties?:boolean) {
+    async handleOnSearch(key: string, value?: string, instanceOf?: QNode, searchProperties?: boolean) {
 
         if (!value) { return; }
         const isClass = key === 'instanceOfSearch';
@@ -50,15 +50,7 @@ class EditFieldMenu extends Component<EditFieldMenuProps, EditFieldMenuState> {
                 description: 'quantity, defined and adopted by convention',
                 id: 'Q47574',
             }
-        } 
-        // else if(key === "subject" && ! instanceOf){
-        //     instanceOf = {
-        //         label: 'country',
-        //         description: 'the distinct region in geography; a broad term that can include political divisions or regions associated with distinct political characteristics',
-        //         id: 'Q6256',
-        //         url: 'https://www.wikidata.org/wiki/Q6256'
-        //       }
-        // }
+        }
 
         try {
             await this.requestService.call(this, () => (
@@ -70,19 +62,18 @@ class EditFieldMenu extends Component<EditFieldMenuProps, EditFieldMenuState> {
         } finally {
             console.log('qnodes request finished');
         }
-
     }
 
 
     async handleOnSubmit(qnode?: QNode) {
         const { title } = this.props;
-        if (title){
+        if (title) {
             this.props.onSelectNode(title.toLowerCase(), qnode);
         }
         this.props.onClose(this.props.title.toLowerCase());
     }
 
-    async handleOnCreateNode(entityFields: EntityFields){
+    async handleOnCreateNode(entityFields: EntityFields) {
         this.props.onClose(this.props.title.toLowerCase(), entityFields);
     }
 
@@ -110,10 +101,10 @@ class EditFieldMenu extends Component<EditFieldMenuProps, EditFieldMenuState> {
                                         onChange={(key: string, value?: string, instanceOf?: QNode, searchProperties?: boolean) =>
                                             this.handleOnSearch(key, value, instanceOf, searchProperties)}
                                         onSubmit={(qnode: QNode) => this.handleOnSubmit(qnode)}
-                                        onCreateQnode = {(entityFields: EntityFields) => this.handleOnCreateNode(entityFields)}
+                                        onCreateQnode={(entityFields: EntityFields) => this.handleOnCreateNode(entityFields)}
                                         field={title.toLowerCase()}
                                     />
-                            : null
+                                    : null
                             }
                         </Toast.Body>
                     </Toast>

@@ -28,9 +28,7 @@ class TableCellItem extends Component<{ rowIndex: number, columnIndex: number, c
 
     const classNames = this.getClassNames(data.classNames.join(' '), {
       'active': data.active,
-      'highlight': data.highlight,
-      'maxWidth': data.maxWidth,
-      'qnode': !!data.qnode
+      'highlight': data.highlight
     });
     
     const cellDisplay = (

@@ -163,14 +163,6 @@
   bottom: 0;
 }
 
-.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn>div.maxWidth {
-  background: #efefef;
-}
-
-.ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .qnode {
-  color: #006699 !important;
-}
-
 .ReactVirtualized__Table .ReactVirtualized__Table__row .ReactVirtualized__Table__rowColumn .role-mainSubject {
   background: #D9EAF2;
   color: #111;

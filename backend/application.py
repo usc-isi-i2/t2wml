@@ -1,3 +1,4 @@
+import json
 from flask.helpers import send_file
 import pandas as pd
 import os
@@ -6,10 +7,12 @@ import requests
 from io import BytesIO
 from pathlib import Path
 from flask import request
+from t2wml.spreadsheets.sheet import Sheet
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
-from causx.wikification import wikify_countries  # temporary?
+from causx.wikification import wikify_countries
+from copy_annotations.copy_annotations import copy_annotation
 import web_exceptions
-from app_config import app
+from app_config import NumpyEncoder, app
 from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode, t2wml_settings, Wikifier
 from t2wml_web import (create_zip, get_kg, autocreate_items, get_kgtk_download_and_variables,
                        set_web_settings, get_layers, get_annotations, get_table, save_annotations,
@@ -196,42 +199,6 @@ def partial_csv():
                                       firstRowIndex=0,
                                       cells=[["subject", "property", "value"]])
     return response, 200
-
-
-@app.route('/api/project/download/<filetype>/<filename>/all', methods=['GET'])
-@app.route('/api/project/download/<filetype>/<filename>', methods=['GET'])
-def download_results(filetype, filename):
-    """
-    return as attachment
-    """
-    mimetype_dict = {
-        "tsv": "text/tab-separated-values",
-        "csv": "text/csv",
-        "json": "application/json"
-    }
-    attachment_filename = filename
-    project = get_project()
-    if filetype == "csv":
-        from t2wml.settings import t2wml_settings
-        t2wml_settings.no_wikification = True
-
-    if str(request.url_rule)[-3:] == "all":
-        binary_stream = BytesIO()
-        create_zip(project, filetype, binary_stream)
-        binary_stream.seek(0)
-        return send_file(binary_stream, attachment_filename=attachment_filename, as_attachment=True, mimetype='application/zip'), 200
-
-    else:
-        calc_params = get_calc_params(project)
-        if not calc_params.yaml_path and not calc_params.annotation_path:
-            raise web_exceptions.CellResolutionWithoutYAMLFileException(
-                "Cannot download report without uploading mapping file first")
-
-        kg = get_kg(calc_params)
-        data = kg.get_output(filetype, calc_params.project)
-        stream = BytesIO(data.encode('utf-8'))
-        stream.seek(0)
-        return send_file(stream, attachment_filename=attachment_filename, as_attachment=True, mimetype=mimetype_dict[filetype]), 200
 
 
 @app.route('/api/project/export/<filetype>/all', methods=['POST'])
@@ -507,6 +474,43 @@ def upload_annotation():
     calc_response, code = get_mapping(annotations_path, "Annotation")
     response.update(calc_response)
     return response, code
+
+
+class AnnotationParams:
+    def __init__(self, dataFile, sheetName, dir, annotation, source=False):
+        self.dir = dir
+        self.data_file=dataFile
+        if not sheetName:
+            sheetName = Path(dataFile).name
+        self.sheet_name=sheetName
+        self.annotation_path = os.path.join(dir, annotation)
+        self.data_path = os.path.join(dir, dataFile)
+        self.sheet = Sheet(self.data_path, self.sheet_name)
+        if source:
+            with open(self.annotation_path, 'r') as f:
+                self.annotation=json.load(f)
+
+
+@app.route('/api/annotation/copy', methods=['POST'])
+@json_response
+def upload_annotation_for_copying():
+    project = get_project()
+
+    source_params = AnnotationParams(source=True, **(request.get_json()["source"]))
+    destination_params = AnnotationParams(**(request.get_json()["destination"]))
+    try:
+        processed_annotation = copy_annotation(source_params.annotation, source_params.sheet.data, destination_params.sheet.data)
+    except:
+        processed_annotation = []
+    with open(destination_params.annotation_path, 'w') as f:
+        f.write(json.dumps(processed_annotation, cls=NumpyEncoder))
+
+    project.add_annotation_file(destination_params.annotation_path, destination_params.data_path, destination_params.sheet_name)
+    response = dict(project = get_project_dict(project), annotation=processed_annotation)
+    return response, 200
+
+
+
 
 
 @app.route('/api/set_qnode', methods=['POST'])

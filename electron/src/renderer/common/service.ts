@@ -393,10 +393,21 @@ class RequestService {
       const response = await backendGet(`/query_node/${id[0].toLocaleUpperCase() + id.slice(1)}?${this.getDataFileParams()}`) as QNode;
       return response;
     } catch (error) {
-      if (error.errorCode === 404) {
+      if ((error as ErrorMessage).errorCode === 404) {
         return;
       }
     }
+  }
+
+  public async copyAnnotation(data: any) {
+    const [startIndex, endIndex] = this.getIndex();
+    const dir = this.getProjectFolder().replace("project_folder=", '');
+    data.source.dir = dir;
+    data.destination.dir = dir;
+    const response = await backendPost(
+      `/annotation/copy?${this.getProjectFolder()}&map_start=${startIndex}&map_end=${endIndex}&data_start=${startIndex}&data_end=${endIndex}`,
+      data) as ResponseWithQNodeLayerDTO;
+    console.log(response);
   }
 
 
@@ -409,7 +420,7 @@ class RequestService {
     try {
       return await func();
     } catch (error) {
-      component.setState({ errorMessage: error });
+      component.setState({ errorMessage: error as ErrorMessage });
       throw error;
     }
   }
