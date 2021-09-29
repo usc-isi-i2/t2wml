@@ -288,7 +288,9 @@ def guess_annotation_blocks_for_causx():
     project = get_project()
     calc_params = get_calc_params(project)
     suggest_annotations(calc_params)
-    return get_mapping()
+    response=dict()
+    response["annotations"], response["yamlContent"] = get_annotations(calc_params)
+    return response, 200
 
 
 @app.route('/api/causx/project/settings', methods=['PUT', 'GET']) #V
