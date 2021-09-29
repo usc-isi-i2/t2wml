@@ -541,6 +541,23 @@ def causx_upload_project():
     response["filepath"]=filemap["data"]
     return response, 200
 
+@app.route('/api/causx/upload/spreadsheet', methods=['POST'])
+@json_response
+def causx_upload_spreadsheet():
+    project = get_project()
+    in_file=causx_get_file([".csv", ".xlsx"])
+
+    folder = Path(project.directory)
+    shorter_name = Path(in_file.filename).name
+    filename = secure_filename(shorter_name)
+    file_path = folder/filename
+    in_file.save(str(file_path))
+
+    file_path = project.add_data_file(file_path)
+    response =dict()
+    response["data_file"]= file_path
+    response["sheet_names"]=project.data_files[file_path]["val_arr"]
+    return response, 200
 
 
 
