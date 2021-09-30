@@ -1,4 +1,4 @@
-name: Create Windows Service
+name: Create Windows gevents Backend
 on:
   push:
     tags:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   windows:
-    name: Create the Windows Service
+    name: Create the Windows gevents Backend
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -36,7 +36,7 @@ jobs:
           CI: false   # Otherwise React stops on warnings
           CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
         run: |
-          pyinstaller  --clean --noupx t2wml-service.spec
+          pyinstaller  --clean --noupx t2wml-gevents.spec
       - name: Get the version
         id: get_version
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
@@ -46,9 +46,9 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: backend/dist/t2wml-service.exe
-          asset_name: t2wml-service-${{ steps.get_version.outputs.VERSION }}.exe
+          file: backend/dist/t2wml-gevents.exe
+          asset_name: t2wml-causx-gevents-${{ steps.get_version.outputs.VERSION }}.exe
           tag: ${{ github.ref }}
           overwrite: true
-          body: "Windows Setup"
+          body: "Windows gevents Causx Backend"
 
