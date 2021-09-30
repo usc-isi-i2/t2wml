@@ -11,7 +11,7 @@ import jwt
 from io import BytesIO
 from pathlib import Path
 from flask import request
-from t2wml.input_processing.annotation_parsing import create_nodes_from_selection
+from t2wml.api import create_nodes_from_selection
 from werkzeug.utils import secure_filename
 from app_config import app, BASEDIR, NumpyEncoder
 from t2wml.project import Project, FileNotPresentInProject, InvalidProjectDirectory
@@ -95,19 +95,16 @@ def get_project_dict(project):
 
 
 def json_response(func):
+    '''
+    a function decorator to help standardize creation of json response
+    '''
     def wrapper(*args, **kwargs):
-        #new_cookie=None
-        #if not request.cookies.get("user-id"):
-        #    request.cookies=dict(request.cookies)
-        #    new_cookie=str(uuid.uuid4())
-        #    request.cookies["user-id"]=new_cookie
         try:
             data, code = func(*args, **kwargs)
         except WebException as e:
             data = {"error": e.error_dict}
             code = e.code
         except Exception as e:
-            #print(e)
             if "Permission denied" in str(e):
                 e = web_exceptions.FileOpenElsewhereError(
                     "Check whether a file you are trying to edit is open elsewhere on your computer: "+str(e))
@@ -123,8 +120,6 @@ def json_response(func):
         finally:
             response=make_response(data)
             response.status_code=code
-            #if new_cookie:
-            #    response.set_cookie("user-id", new_cookie)
             return response, code
 
     wrapper.__name__ = func.__name__  # This is required to avoid issues with flask
