@@ -51,7 +51,7 @@ Each sheet can be assigned an annotation file (actually, each sheet can be assig
 Within t2wml-api, there is one module for creating a suggested annotation from a spreadsheet (input_processing/annotation_suggesting) and another module for translating annotation files to t2wml-compatible yaml files (input_processing/annotation_parsing). 
 
 
-## Putting it all together
+### Putting it all together
 
 Given a spreadsheet, the pipeline is:
 * Stage one: suggested annotation -> node creation -> any additional annotating -> additional node creation.
@@ -59,6 +59,13 @@ Given a spreadsheet, the pipeline is:
 
 (in practice, the annotation parsing -> output steps are repeated to create the preview during each step of stage one, but only on a selection of cells rather than the entire sheet)
 
-### How the data flows through the system
+## How the data flows through the system
 
+In the t2wml-server, there are an additional two classes aside from those already discussed above
+
+The first is `CalcParams`: 
+
+The CalcParams class holds all the information related to a given request to pass between the various functions. It holds a reference to the current project, the selected data file and sheet, the selected annotation file, as well as the optional parameters specifying start and end rows of what to fetch. It handles fetching the Wikifier class (wrapper for ItemTable) for the given sheet.
+
+The second is the `WebDictionaryProvider`. This is the web-specific child class of `WikidataProvider`
 
