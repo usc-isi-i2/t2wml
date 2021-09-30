@@ -1,0 +1,25 @@
+annotations: []
+cache_id: null
+data_files:
+  BCcountries.xlsx:
+    selected: B-countries
+    val_arr:
+    - B-countries
+    - C-countries
+  countries with ID.csv:
+    selected: countries with ID.csv
+    val_arr:
+    - countries with ID.csv
+  horizontal data.xlsx:
+    selected: Sheet1
+    val_arr:
+    - Sheet1
+description: ''
+entity_files: []
+handle_calendar: leave
+sparql_endpoint: https://query.wikidata.org/bigdata/namespace/wdq/sparql
+title: copy-anno
+url: ''
+warn_for_empty_cells: false
+yaml_files: []
+yaml_sheet_associations: {}

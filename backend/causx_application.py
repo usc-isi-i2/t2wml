@@ -20,13 +20,14 @@ from t2wml.spreadsheets.utilities import PandasLoader
 from t2wml.api import annotation_suggester, get_Pnode, get_Qnode, t2wml_settings, Wikifier
 from copy_annotations.copy_annotations import copy_annotation
 from t2wml_web import ( get_kg, autocreate_items, set_web_settings,
-                        get_layers, get_annotations, get_table, save_annotations,
-                       get_project_instance, get_qnodes_layer,
+                        get_annotations, get_table, save_annotations,get_project_instance,
                        suggest_annotations,  update_t2wml_settings, get_entities)
 import web_exceptions
-from causx.causx_utils import AnnotationNodeGenerator, causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, create_fidil_json, get_causx_partial_csv, causx_create_canonical_spreadsheet, get_causx_tags, preload, upload_fidil_json
+from causx.causx_utils import causx_get_variable_dict, causx_get_variable_metadata, causx_set_variable, create_fidil_json, get_causx_partial_csv, causx_create_canonical_spreadsheet, include_base_causx_tags, upload_fidil_json
+from causx.causx_utils import causx_get_layers as get_layers
+from causx.causx_utils import causx_get_qnodes_layer as get_qnodes_layer
 from causx.wikification import wikify_countries
-from utils import create_user_wikification
+from utils import create_user_wikification, get_tuple_selection
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
 from global_settings import global_settings
@@ -136,6 +137,20 @@ def get_annotation_name(calc_params):
     os.makedirs(Path(calc_params.project.directory)/"annotations", exist_ok=True)
     return annotation_path
 
+def get_range_params():
+    start_end_kwargs = {}
+    for key in ["data_start", "map_start"]:#, "part_start"]:
+        start_end_kwargs[key] = int(request.args.get(key, 0))
+    for key in ["data_end", "map_end"]:
+        end = int(request.args.get(key, 0))
+        if end == 0:
+            end = None
+        start_end_kwargs[key] = end
+    #start_end_kwargs["part_end"] = int(request.args.get("part_end", 30))
+    start_end_kwargs["part_count"] = int(request.args.get("part_count", 100))
+    return start_end_kwargs
+
+
 def get_calc_params(project, data_required=True):
     try:
         try:
@@ -155,16 +170,7 @@ def get_calc_params(project, data_required=True):
         else:
             return None
 
-    start_end_kwargs = {}
-    for key in ["data_start", "map_start"]:#, "part_start"]:
-        start_end_kwargs[key] = int(request.args.get(key, 0))
-    for key in ["data_end", "map_end"]:
-        end = int(request.args.get(key, 0))
-        if end == 0:
-            end = None
-        start_end_kwargs[key] = end
-    #start_end_kwargs["part_end"] = int(request.args.get("part_end", 30))
-    start_end_kwargs["part_count"] = int(request.args.get("part_count", 100))
+    start_end_kwargs=get_range_params()
     calc_params = CalcParams(project, data_file, sheet_name, **start_end_kwargs)
 
     calc_params._annotation_path = get_annotation_name(calc_params)
@@ -172,18 +178,12 @@ def get_calc_params(project, data_required=True):
     return calc_params
 
 
-def get_mapping(preload=False):
+def get_mapping():
     project = get_project()
     calc_params = get_calc_params(project)
     response = dict(project=get_project_dict(project))
     response["annotations"], response["yamlContent"] = get_annotations(
             calc_params)
-
-    if preload:
-        try:
-            preload(calc_params)
-        except Exception as e:
-            pass
     get_layers(response, calc_params)
     return response, 200
 
@@ -199,6 +199,18 @@ def is_alive2():
 @app.route('/api/causx/token', methods=['GET'])
 def get_token():
     return {"token": encode_auth_token()}, 200
+
+
+@app.route('/api/causx/table', methods=['GET'])
+@json_response
+def causx_get_data():
+    project = get_project()
+    calc_params = get_calc_params(project)
+    response = dict()
+    response["table"] = get_table(calc_params)
+    calc_response, code = get_mapping()
+    response.update(calc_response)
+    return response, code
 
 
 @app.route('/api/causx/project/entities', methods=['GET']) #V
@@ -219,8 +231,8 @@ def create_auto_nodes_for_causx():
     project = get_project()
     calc_params = get_calc_params(project)
     selection = request.get_json()['selection']
-    selection = (selection["x1"]-1, selection["y1"] -
-                 1), (selection["x2"]-1, selection["y2"]-1)
+    selection = get_tuple_selection(selection)
+
     is_property = request.get_json()['is_property']
     data_type = request.get_json().get("data_type", None)
     autocreate_items(calc_params, selection, is_property, data_type)
@@ -249,6 +261,10 @@ def suggest_annotation_block_for_causx():
     project = get_project()
     calc_params = get_calc_params(project)
     block = request.get_json()["selection"]
+    if not isinstance(block, dict): #the rare reverse selection!
+        (x1, y1), (x2, y2) = block
+        block = {"x1": x1+1, "x2": x2+1, "y1": y1+1, "y2": y2+1}
+
     annotation = request.get_json()["annotations"]
 
     response = {  # fallback response
@@ -272,7 +288,9 @@ def guess_annotation_blocks_for_causx():
     project = get_project()
     calc_params = get_calc_params(project)
     suggest_annotations(calc_params)
-    return get_mapping()
+    response=dict()
+    response["annotations"], response["yamlContent"] = get_annotations(calc_params)
+    return response, 200
 
 
 @app.route('/api/causx/project/settings', methods=['PUT', 'GET']) #V
@@ -334,14 +352,16 @@ def delete_wikification_for_causx():
     if not selection:
         raise web_exceptions.InvalidRequestException('No selection provided')
 
+    selection = get_tuple_selection(selection)
+
 
     value = request.get_json().get('value', None)
     #context = request.get_json().get("context", "")
 
-    filepath, exists=project.get_wikifier_file(calc_params.sheet)
+    filepath, exists=project.get_wikifier_file(calc_params.sheet.data_file_path)
     if exists:
         wikifier = Wikifier.load_from_file(filepath)
-        wikifier.delete_wikification(selection, value, context="")
+        wikifier.delete_wikification(selection, value, context="", sheet=calc_params.sheet)
         wikifier.save_to_file(filepath)
 
     response = dict(project=get_project_dict(project))
@@ -403,6 +423,7 @@ def create_qnode_for_causx():
 
     selection = request_json.get("selection", None)
     if selection:
+        selection = get_tuple_selection(selection)
         calc_params = get_calc_params(project)
         context = request.get_json().get("context", "")
         (col1, row1), (col2, row2) = selection
@@ -439,16 +460,16 @@ def causx_get_file(allowed_extensions):
 def causx_wikify_for_causx():
     project = get_project()
     selection = request.get_json()["selection"]
+    selection = get_tuple_selection(selection)
+
     overwrite_existing = request.get_json().get("overwrite", False)
     #context = request.get_json()["context"]
     calc_params = get_calc_params(project)
 
     cell_qnode_map, problem_cells = wikify_countries(calc_params, selection)
     project.add_df_to_wikifier_file(calc_params.sheet, cell_qnode_map, overwrite_existing)
-
     #auto-create nodes for anything that failed to wikify
-    tuple_selection = ((selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1))
-    create_nodes_from_selection(tuple_selection, project, calc_params.sheet, calc_params.wikifier)
+    create_nodes_from_selection(selection, project, calc_params.sheet, calc_params.wikifier)
 
     calc_params = get_calc_params(project)
     response = dict(project=get_project_dict(project))
@@ -482,7 +503,10 @@ def causx_upload_data():
     sheet_name = project.data_files[file_path]["val_arr"][0]
     project.save()
     response["sheetName"] = sheet_name
-    calc_params = CalcParams(project, file_path, sheet_name)
+
+    start_end_kwargs=get_range_params()
+    calc_params = CalcParams(project, file_path, sheet_name, **start_end_kwargs)
+
     response["table"] = get_table(calc_params)
     project.title=Path(file_path).stem
     project.save()
@@ -493,7 +517,7 @@ def causx_upload_data():
 @json_response
 def causx_upload_project():
     #upload a project zip and load it as the active project
-    project = get_project()
+    project_folder = get_project_folder()
     in_file = causx_get_file([".t2wmlz", ".zip"])
     with tempfile.TemporaryDirectory() as tmpdirname:
         file_path = Path(tmpdirname) / secure_filename(Path(in_file.filename).name)
@@ -503,11 +527,12 @@ def causx_upload_project():
             for file in zf.namelist():
                 if ".." in file or file=="filemap.json":
                     continue
-                zf.extract(file, path=project.directory)
+                zf.extract(file, path=project_folder)
 
-
+    project = get_project()
     sheet_name=filemap["sheet"]
-    calc_params=CalcParams(project, filemap["data"], sheet_name, annotation_path=filemap["annotation"])
+    start_end_kwargs=get_range_params()
+    calc_params=CalcParams(project, filemap["data"], sheet_name, annotation_path=filemap["annotation"], **start_end_kwargs)
     response=dict()
 
     response["table"] = get_table(calc_params)
@@ -518,6 +543,23 @@ def causx_upload_project():
     response["filepath"]=filemap["data"]
     return response, 200
 
+@app.route('/api/causx/upload/spreadsheet', methods=['POST'])
+@json_response
+def causx_upload_spreadsheet():
+    project = get_project()
+    in_file=causx_get_file([".csv", ".xlsx"])
+
+    folder = Path(project.directory)
+    shorter_name = Path(in_file.filename).name
+    filename = secure_filename(shorter_name)
+    file_path = folder/filename
+    in_file.save(str(file_path))
+
+    file_path = project.add_data_file(file_path)
+    response =dict()
+    response["data_file"]= file_path
+    response["sheet_names"]=project.data_files[file_path]["val_arr"]
+    return response, 200
 
 
 
@@ -552,7 +594,20 @@ def causx_upload_annotation():
         f.write(json.dumps(processed_annotation, cls=NumpyEncoder))
 
     project.add_annotation_file(calc_params.annotation_path, calc_params.data_path, calc_params.sheet_name)
-    preload(calc_params)
+
+    country_selections=[]
+    for block in processed_annotation:
+        if block["role"]=="mainSubject":
+            country_selections.append(block["selection"])
+
+    for selection in country_selections:
+        selection = get_tuple_selection(selection)
+        cell_qnode_map, problem_cells = wikify_countries(calc_params, selection)
+        project.add_df_to_wikifier_file(calc_params.sheet, cell_qnode_map)
+        #auto-create nodes for anything that failed to wikify
+        create_nodes_from_selection(selection, project, calc_params.sheet, calc_params.wikifier)
+
+    calc_params = get_calc_params(project)
     response, code = get_mapping()
     response["project"]=get_project_dict(project)
     return response, code
@@ -606,7 +661,6 @@ def causx_save_zip_results():
     calc_params = get_calc_params(project)
 
     annotation_path=calc_params.annotation_path
-    preload(calc_params)
 
     kg = get_kg(calc_params)
 
@@ -635,7 +689,7 @@ def causx_get_an_entity(id):
     entities_dict=causx_get_variable_dict(project)
     entity=entities_dict.get(id, None)
     if entity:
-        entity["tags"]=get_causx_tags(entity.get("tags", {}))
+        entity["tags"]=include_base_causx_tags(entity.get("tags", {}))
         entity['id'] = id
         return dict(entity=entity), 200
     else:
@@ -668,8 +722,6 @@ def download_results_for_causx(filetype):
     project = get_project()
     calc_params = get_calc_params(project)
     annotation_path = calc_params.annotation_path
-    ang = AnnotationNodeGenerator.load_from_path(annotation_path, project)
-    ang.preload(calc_params.sheet, calc_params.wikifier)
     kg = get_kg(calc_params)
     data = kg.get_output(filetype, calc_params.project)
     stream = BytesIO(data.encode('utf-8'))

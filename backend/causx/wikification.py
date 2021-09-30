@@ -182,7 +182,7 @@ class DatamartCountryWikifier:
         return df_rows, failed_to_wikify_cache
 
     def wikify_region(self, selection, sheet, wikifier=None):
-        (start_col, start_row), (end_col, end_row) = (selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1)
+        (start_col, start_row), (end_col, end_row) = selection
         end_col += 1
         end_row += 1
 

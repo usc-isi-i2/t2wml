@@ -11,6 +11,7 @@ import { remote, shell } from 'electron';
 import RenameFile from "@/renderer/project/sidebar/file-tree/rename-file";
 import { Spinner } from "react-bootstrap";
 import { defaultYamlContent } from "../../default-values";
+import CopyAnnotationMenu from "./copy-annotation-menu";
 
 
 type TreeProps = {}; // An empty interfaces causes an error
@@ -19,6 +20,7 @@ interface TreeState {
   showRenameFile: boolean;
   clickedNode?: NodeProps;
   showSpinner: boolean;
+  showCopyAnnotationMenu: boolean;
 }
 
 
@@ -32,6 +34,7 @@ class FileTree extends Component<TreeProps, TreeState> {
     this.state = {
       files: [],
       showRenameFile: false,
+      showCopyAnnotationMenu: false,
       clickedNode: undefined,
       showSpinner: false,
     };
@@ -54,20 +57,20 @@ class FileTree extends Component<TreeProps, TreeState> {
     }
   }
 
-  async callGetTable(){
+  async callGetTable() {
     wikiStore.table.showSpinner = true;
     wikiStore.yaml.showSpinner = true;
-    try{
+    try {
       await this.requestService.getTable();
-    }finally{
+    } finally {
       wikiStore.table.showSpinner = false;
       wikiStore.yaml.showSpinner = false;
     }
     wikiStore.partialCsv.showSpinner = true;
-    try{
+    try {
       await this.requestService.getPartialCsv();
     }
-    finally{
+    finally {
       wikiStore.partialCsv.showSpinner = false;
     }
   }
@@ -139,10 +142,10 @@ class FileTree extends Component<TreeProps, TreeState> {
     let filename = this.state.clickedNode!.label;
 
     if (currentFilesService.currentState.mappingFile == filename &&
-      currentFilesService.getAnnotationsLength()<2){
+      currentFilesService.getAnnotationsLength() < 2) {
       alert("Cannot remove only annotation on sheet while in annotation mode. Clearing annotation instead.")
       const sheetName = this.state.clickedNode!.parentNode!.label;
-      const dataFile=this.state.clickedNode!.parentNode!.parentNode!.label;
+      const dataFile = this.state.clickedNode!.parentNode!.parentNode!.label;
       const createData = {
         "title": filename,
         "sheetName": sheetName,
@@ -156,7 +159,7 @@ class FileTree extends Component<TreeProps, TreeState> {
 
     let updateTree = false;
     if (currentFilesService.currentState.dataFile == filename || currentFilesService.currentState.mappingFile == filename) {
-      updateTree=true;
+      updateTree = true;
     }
 
 
@@ -165,13 +168,13 @@ class FileTree extends Component<TreeProps, TreeState> {
     const data = { "file_name": filename, "delete": deleteFromFs };
     try {
       await this.requestService.removeOrDeleteFile(wikiStore.project.projectDTO!.directory, data);
-      if (updateTree){
-        if (currentFilesService.currentState.dataFile == filename){
+      if (updateTree) {
+        if (currentFilesService.currentState.dataFile == filename) {
           currentFilesService.getDefaultFiles(wikiStore.project.projectDTO!);
-        } else{ //mapping file
+        } else { //mapping file
           currentFilesService.setMappingFiles();
         }
-         //do we need this in order to be able to call get table?
+        //do we need this in order to be able to call get table?
         await this.callGetTable()
       }
     } catch (error) {
@@ -182,45 +185,45 @@ class FileTree extends Component<TreeProps, TreeState> {
   }
 
   async addYaml(clickedNode: NodeProps) {
-      const sheetName = clickedNode!.label;
-      const dataFile= clickedNode!.parentNode!.label;
-      const title = "yamls/" + sheetName + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5) +".yaml"
-      try {
-        // send request
-        const data = {
-          "yaml": defaultYamlContent,
-          "title": title,
-          "sheetName": sheetName,
-          "dataFile":dataFile,
-        };
+    const sheetName = clickedNode!.label;
+    const dataFile = clickedNode!.parentNode!.label;
+    const title = "yamls/" + sheetName + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5) + ".yaml"
+    try {
+      // send request
+      const data = {
+        "yaml": defaultYamlContent,
+        "title": title,
+        "sheetName": sheetName,
+        "dataFile": dataFile,
+      };
 
-        const filename = await this.requestService.saveYaml(data);
-        this.changeYaml(filename, sheetName, dataFile)
-      } catch (error) {
-        console.log(error);
-      }
+      const filename = await this.requestService.saveYaml(data);
+      this.changeYaml(filename, sheetName, dataFile)
+    } catch (error) {
+      console.log(error);
+    }
 
 
   }
 
   async addAnnotation(clickedNode: NodeProps) {
     const sheetName = clickedNode!.label;
-    const dataFile= clickedNode!.parentNode!.label;
-    const title = "annotations/" + sheetName + "_"+ Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 4) +".yaml"
+    const dataFile = clickedNode!.parentNode!.label;
+    const title = "annotations/" + sheetName + "_" + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 4) + ".yaml"
     try {
       // send request
       const data = {
         "title": title,
         "sheetName": sheetName,
-        "dataFile":dataFile,
+        "dataFile": dataFile,
       };
-        const filename = await this.requestService.createAnnotation(data)
-        this.changeAnnotation(filename, clickedNode!.label, clickedNode!.parentNode!.label)
-      } catch (error) {
-        console.log(error);
-      } finally {
-        this.setState({ showSpinner: false });
-  }
+      const filename = await this.requestService.createAnnotation(data)
+      this.changeAnnotation(filename, clickedNode!.label, clickedNode!.parentNode!.label)
+    } catch (error) {
+      console.log(error);
+    } finally {
+      this.setState({ showSpinner: false });
+    }
   }
 
   async addExistingYaml(clickedNode: NodeProps) {
@@ -239,7 +242,7 @@ class FileTree extends Component<TreeProps, TreeState> {
           "title": result.filePaths[0],
           "sheetName": clickedNode!.label,
           "dataFile": clickedNode!.parentNode!.label,
-          "type":"yaml"
+          "type": "yaml"
         };
 
         const filename = await this.requestService.addExistingMapping(data);
@@ -249,6 +252,26 @@ class FileTree extends Component<TreeProps, TreeState> {
         console.log(error);
       }
 
+    }
+  }
+
+  async copyExistingAnnotation(clickedNode: NodeProps) {
+    try {
+      const data = {
+        // "title": '',
+        "sheetDestName": clickedNode!.label,
+        "sheetSourceName": '',
+        "dataFile": clickedNode!.parentNode!.label,
+        "type": "annotation"
+      };
+
+      const filename = await this.requestService.addExistingMapping(data)
+      this.changeAnnotation(filename, clickedNode!.label, clickedNode!.parentNode!.label)
+
+    } catch (error) {
+      console.log(error);
+    } finally {
+      this.setState({ showSpinner: false, showCopyAnnotationMenu: true });
     }
   }
 
@@ -264,10 +287,10 @@ class FileTree extends Component<TreeProps, TreeState> {
     if (!result.canceled && result.filePaths) {
       try {
         const data = {
-          "title":result.filePaths[0],
+          "title": result.filePaths[0],
           "sheetName": clickedNode!.label,
           "dataFile": clickedNode!.parentNode!.label,
-          "type":"annotation"
+          "type": "annotation"
         };
 
         const filename = await this.requestService.addExistingMapping(data)
@@ -278,7 +301,7 @@ class FileTree extends Component<TreeProps, TreeState> {
       } finally {
         this.setState({ showSpinner: false });
       }
-  }
+    }
   }
 
 
@@ -304,22 +327,24 @@ class FileTree extends Component<TreeProps, TreeState> {
         menu.append(new MenuItem({ label: 'Add empty annotation file', click: () => this.addAnnotation(node) }));
         menu.append(new MenuItem({ label: 'Add empty yaml file', click: () => this.addYaml(node) }));
         menu.append(new MenuItem({ label: 'Load existing annotation file', click: () => this.addExistingAnnotation(node) }));
+        menu.append(new MenuItem({ label: 'Copy existing annotation file', click: () => this.copyExistingAnnotation(node) }));
         menu.append(new MenuItem({ label: 'Load existing yaml file', click: () => this.addExistingYaml(node) }));
         break;
       }
-    case 'SingleSheetDataFile': {
-      const sheetNode = node.childNodes[0]
-      menu.append(new MenuItem({ label: 'Open in filesystem', click: () => this.openFile() }));
-      menu.append(new MenuItem({ label: 'Rename', click: () => this.renameNode() }));
-      menu.append(new MenuItem({ label: 'Remove from project', click: () => this.deleteFile(false) }));
-      menu.append(new MenuItem({ label: 'Delete from project and filesystem', click: () => this.deleteFile(true) }));
-      menu.append(new MenuItem({ type: 'separator' }));
-      menu.append(new MenuItem({ label: 'Add empty annotation file', click: () => this.addAnnotation(sheetNode) }));
-      menu.append(new MenuItem({ label: 'Add empty yaml file', click: () => this.addYaml(sheetNode) }));
-      menu.append(new MenuItem({ label: 'Load existing annotation file', click: () => this.addExistingAnnotation(sheetNode) }));
-      menu.append(new MenuItem({ label: 'Load existing yaml file', click: () => this.addExistingYaml(sheetNode) }));
-      break;
-    }
+      case 'SingleSheetDataFile': {
+        const sheetNode = node.childNodes[0]
+        menu.append(new MenuItem({ label: 'Open in filesystem', click: () => this.openFile() }));
+        menu.append(new MenuItem({ label: 'Rename', click: () => this.renameNode() }));
+        menu.append(new MenuItem({ label: 'Remove from project', click: () => this.deleteFile(false) }));
+        menu.append(new MenuItem({ label: 'Delete from project and filesystem', click: () => this.deleteFile(true) }));
+        menu.append(new MenuItem({ type: 'separator' }));
+        menu.append(new MenuItem({ label: 'Add empty annotation file', click: () => this.addAnnotation(sheetNode) }));
+        menu.append(new MenuItem({ label: 'Add empty yaml file', click: () => this.addYaml(sheetNode) }));
+        menu.append(new MenuItem({ label: 'Load existing annotation file', click: () => this.addExistingAnnotation(node) }));
+        menu.append(new MenuItem({ label: 'Copy existing annotation file', click: () => this.copyExistingAnnotation(sheetNode) }));
+        menu.append(new MenuItem({ label: 'Load existing yaml file', click: () => this.addExistingYaml(sheetNode) }));
+        break;
+      }
       default: {
         menu.append(new MenuItem({ type: 'separator' }));
       }
@@ -338,6 +363,7 @@ class FileTree extends Component<TreeProps, TreeState> {
         {
           id: filename + parentNode.id,
           label: filename,
+          dataFile: df,
           childNodes: [] as NodeProps[],
           type: type,
           parentNode: parentNode,
@@ -356,13 +382,14 @@ class FileTree extends Component<TreeProps, TreeState> {
     if (!project || !project.data_files) { return files; }
     for (const df of Object.keys(project.data_files).sort()) {
       const sheet_arr = project.data_files[df].val_arr;
-      let dataType= "DataFile"
-      if (sheet_arr.length<2){
-        dataType="SingleSheetDataFile"
+      let dataType = "DataFile"
+      if (sheet_arr.length < 2) {
+        dataType = "SingleSheetDataFile"
       }
       const dataNode = {
         id: df,
         label: df,
+        dataFile: df,
         childNodes: [],
         type: dataType,
         parentNode: undefined,
@@ -375,6 +402,7 @@ class FileTree extends Component<TreeProps, TreeState> {
         const sheetNode = {
           id: sheetName + df,
           label: sheetName,
+          dataFile: df,
           childNodes: [],
           type: "Sheet",
           parentNode: dataNode,
@@ -423,6 +451,8 @@ class FileTree extends Component<TreeProps, TreeState> {
 
   render() {
 
+    const { showCopyAnnotationMenu } = this.state;
+
     return (
       <Fragment>
         {this.state.clickedNode ?
@@ -435,6 +465,11 @@ class FileTree extends Component<TreeProps, TreeState> {
             handleRenameFile={(name) => this.handleRenameFile(name)}
             cancelRenameFile={() => this.cancelRenameFile()}
           /> : null}
+        <CopyAnnotationMenu
+          handleOnCopy={() => this.handleOnCopy()}
+          handleOnCancel={() => this.setState({ showCopyAnnotationMenu: false})}
+          showCopyAnnotationMenu={showCopyAnnotationMenu}
+        />
         {/* loading spinner */}
         <div className="mySpinner truncate" hidden={!this.state.showSpinner}>
           <Spinner animation="border" />
@@ -447,6 +482,7 @@ class FileTree extends Component<TreeProps, TreeState> {
               label={fileNode.label}
               childNodes={fileNode.childNodes}
               type={fileNode.type}
+              dataFile={fileNode.dataFile}
               parentNode={fileNode.parentNode}
               rightClick={fileNode.rightClick}
               bolded={fileNode.bolded}
@@ -456,6 +492,11 @@ class FileTree extends Component<TreeProps, TreeState> {
         </ul>
       </Fragment>
     )
+  }
+
+  handleOnCopy(): void {
+    console.log("handleOnCopy")
+    this.setState({ showCopyAnnotationMenu: false });
   }
 }
 

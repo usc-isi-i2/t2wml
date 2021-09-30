@@ -1,3 +1,4 @@
+import json
 from flask.helpers import send_file
 import pandas as pd
 import os
@@ -6,16 +7,18 @@ import requests
 from io import BytesIO
 from pathlib import Path
 from flask import request
+from t2wml.spreadsheets.sheet import Sheet
 from t2wml.wikification.utility_functions import dict_to_kgtk, kgtk_to_dict
-from causx.wikification import wikify_countries  # temporary?
+from causx.wikification import wikify_countries
+from copy_annotations.copy_annotations import copy_annotation
 import web_exceptions
-from app_config import app
+from app_config import NumpyEncoder, app
 from t2wml.api import add_entities_from_file, annotation_suggester, get_Pnode, get_Qnode, t2wml_settings, Wikifier
 from t2wml_web import (create_zip, get_kg, autocreate_items, get_kgtk_download_and_variables,
                        set_web_settings, get_layers, get_annotations, get_table, save_annotations,
                        get_project_instance, create_api_project, get_partial_csv, get_qnodes_layer,
                        suggest_annotations, update_entities, update_t2wml_settings, get_entities)
-from utils import (file_upload_validator, get_empty_layers,
+from utils import (file_upload_validator, get_empty_layers, get_tuple_selection,
                    get_yaml_content, save_yaml, create_user_wikification)
 from web_exceptions import WebException, make_frontend_err_dict
 from calc_params import CalcParams
@@ -85,6 +88,19 @@ def update_calc_params_mapping_files(project, calc_params, mapping_file, mapping
     if mapping_type == "Yaml":
         calc_params._yaml_path = mapping_file
 
+def get_range_params():
+    start_end_kwargs = {}
+    for key in ["data_start", "map_start"]:#, "part_start"]:
+        start_end_kwargs[key] = int(request.args.get(key, 0))
+    for key in ["data_end", "map_end"]:
+        end = int(request.args.get(key, 0))
+        if end == 0:
+            end = None
+        start_end_kwargs[key] = end
+    #start_end_kwargs["part_end"] = int(request.args.get("part_end", 30))
+    start_end_kwargs["part_count"] = int(request.args.get("part_count", 100))
+    return start_end_kwargs
+
 
 def get_calc_params(project, data_required=True, mapping_type=None, mapping_file=None):
     try:
@@ -105,17 +121,7 @@ def get_calc_params(project, data_required=True, mapping_type=None, mapping_file
         else:
             return None
 
-    start_end_kwargs = {}
-    for key in ["data_start", "map_start"]:#, "part_start"]:
-        start_end_kwargs[key] = int(request.args.get(key, 0))
-    for key in ["data_end", "map_end"]:
-        end = int(request.args.get(key, 0))
-        if end == 0:
-            end = None
-        start_end_kwargs[key] = end
-
-    #start_end_kwargs["part_end"] = int(request.args.get("part_end", 30))
-    start_end_kwargs["part_count"] = int(request.args.get("part_count", 100))
+    start_end_kwargs=get_range_params()
 
     calc_params = CalcParams(
         project, data_file, sheet_name, **start_end_kwargs)
@@ -193,42 +199,6 @@ def partial_csv():
                                       firstRowIndex=0,
                                       cells=[["subject", "property", "value"]])
     return response, 200
-
-
-@app.route('/api/project/download/<filetype>/<filename>/all', methods=['GET'])
-@app.route('/api/project/download/<filetype>/<filename>', methods=['GET'])
-def download_results(filetype, filename):
-    """
-    return as attachment
-    """
-    mimetype_dict = {
-        "tsv": "text/tab-separated-values",
-        "csv": "text/csv",
-        "json": "application/json"
-    }
-    attachment_filename = filename
-    project = get_project()
-    if filetype == "csv":
-        from t2wml.settings import t2wml_settings
-        t2wml_settings.no_wikification = True
-
-    if str(request.url_rule)[-3:] == "all":
-        binary_stream = BytesIO()
-        create_zip(project, filetype, binary_stream)
-        binary_stream.seek(0)
-        return send_file(binary_stream, attachment_filename=attachment_filename, as_attachment=True, mimetype='application/zip'), 200
-
-    else:
-        calc_params = get_calc_params(project)
-        if not calc_params.yaml_path and not calc_params.annotation_path:
-            raise web_exceptions.CellResolutionWithoutYAMLFileException(
-                "Cannot download report without uploading mapping file first")
-
-        kg = get_kg(calc_params)
-        data = kg.get_output(filetype, calc_params.project)
-        stream = BytesIO(data.encode('utf-8'))
-        stream.seek(0)
-        return send_file(stream, attachment_filename=attachment_filename, as_attachment=True, mimetype=mimetype_dict[filetype]), 200
 
 
 @app.route('/api/project/export/<filetype>/all', methods=['POST'])
@@ -315,7 +285,10 @@ def upload_data_file():
     save_annotations(project, [], os.path.join(
         annotations_path), data_file, sheet_name)
 
-    calc_params = CalcParams(project, data_file, sheet_name, None)
+    start_end_kwargs=get_range_params()
+    calc_params = CalcParams(
+        project, data_file, sheet_name, **start_end_kwargs)
+
 
     response["table"] = get_table(calc_params)
     # this will just return empty layers and any wikification if it exists
@@ -347,12 +320,14 @@ def upload_entities():
 @json_response
 def causx_wikify():
     project = get_project()
-    region = request.get_json()["selection"]
+    selection = request.get_json()["selection"]
+    selection = get_tuple_selection(selection)
+
     overwrite_existing = request.get_json().get("overwrite", False)
     #context = request.get_json()["context"]
     calc_params = get_calc_params(project)
 
-    cell_qnode_map, problem_cells = wikify_countries(calc_params, region)
+    cell_qnode_map, problem_cells = wikify_countries(calc_params, selection)
     project.add_df_to_wikifier_file(
         calc_params.sheet, cell_qnode_map, overwrite_existing)
 
@@ -398,8 +373,8 @@ def call_wikifier_service():
     calc_params = get_calc_params(project)
     overwrite_existing = request.get_json().get("overwrite", False)
     selection = request.get_json()['selection']
-    selection = (selection["x1"]-1, selection["y1"] -
-                 1), (selection["x2"]-1, selection["y2"]-1)
+
+    selection = get_tuple_selection(selection)
 
     wiki_dict, entities_dict, problem_cells = wikify_selection(calc_params, selection)
     t2wml_settings.wikidata_provider.cache.update(entities_dict)
@@ -427,8 +402,7 @@ def create_auto_nodes():
     project = get_project()
     calc_params = get_calc_params(project)
     selection = request.get_json()['selection']
-    selection = (selection["x1"]-1, selection["y1"] -
-                 1), (selection["x2"]-1, selection["y2"]-1)
+    selection = get_tuple_selection(selection)
     is_property = request.get_json()['is_property']
     data_type = request.get_json().get("data_type", None)
     autocreate_items(calc_params, selection, is_property, data_type)
@@ -502,6 +476,43 @@ def upload_annotation():
     return response, code
 
 
+class AnnotationParams:
+    def __init__(self, dataFile, sheetName, dir, annotation, source=False):
+        self.dir = dir
+        self.data_file=dataFile
+        if not sheetName:
+            sheetName = Path(dataFile).name
+        self.sheet_name=sheetName
+        self.annotation_path = os.path.join(dir, annotation)
+        self.data_path = os.path.join(dir, dataFile)
+        self.sheet = Sheet(self.data_path, self.sheet_name)
+        if source:
+            with open(self.annotation_path, 'r') as f:
+                self.annotation=json.load(f)
+
+
+@app.route('/api/annotation/copy', methods=['POST'])
+@json_response
+def upload_annotation_for_copying():
+    project = get_project()
+
+    source_params = AnnotationParams(source=True, **(request.get_json()["source"]))
+    destination_params = AnnotationParams(**(request.get_json()["destination"]))
+    try:
+        processed_annotation = copy_annotation(source_params.annotation, source_params.sheet.data, destination_params.sheet.data)
+    except:
+        processed_annotation = []
+    with open(destination_params.annotation_path, 'w') as f:
+        f.write(json.dumps(processed_annotation, cls=NumpyEncoder))
+
+    project.add_annotation_file(destination_params.annotation_path, destination_params.data_path, destination_params.sheet_name)
+    response = dict(project = get_project_dict(project), annotation=processed_annotation)
+    return response, 200
+
+
+
+
+
 @app.route('/api/set_qnode', methods=['POST'])
 @json_response
 def set_qnodes():
@@ -514,6 +525,8 @@ def set_qnodes():
     value = request.get_json()['value']
     context = request.get_json().get("context", "")
     selection = request.get_json()['selection']
+    selection = get_tuple_selection(selection)
+
 
     if not selection:
         raise web_exceptions.InvalidRequestException('No selection provided')
@@ -541,11 +554,13 @@ def delete_wikification():
     selection = request.get_json()['selection']
     if not selection:
         raise web_exceptions.InvalidRequestException('No selection provided')
+    selection = get_tuple_selection(selection)
+
 
     value = request.get_json().get('value', None)
     #context = request.get_json().get("context", "")
 
-    filepath, exists=project.get_wikifier_file(calc_params.sheet)
+    filepath, exists=project.get_wikifier_file(calc_params.sheet.data_file_path)
     if exists:
         wikifier = Wikifier.load_from_file(filepath)
         wikifier.delete_wikification(selection, value, context="", sheet=calc_params.sheet)
@@ -610,6 +625,7 @@ def create_qnode():
 
     selection = request_json.get("selection", None)
     if selection:
+        selection = get_tuple_selection(selection)
         calc_params = get_calc_params(project)
         context = request.get_json().get("context", "")
         value = request_json.pop("value")
@@ -707,7 +723,13 @@ def guess_block_type_role():
     project = get_project()
     calc_params = get_calc_params(project)
     block = request.get_json()["selection"]
+    if not isinstance(block, dict): #the rare reverse selection!
+        (x1, y1), (x2, y2) = block
+        block = {"x1": x1+1, "x2": x2+1, "y1": y1+1, "y2": y2+1}
+
     annotation = request.get_json()["annotations"]
+
+
 
     response = {  # fallback response
         # drop metadata

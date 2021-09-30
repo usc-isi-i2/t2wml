@@ -13,48 +13,159 @@ from t2wml.wikification.utility_functions import dict_to_kgtk
 from causx.wikification import DatamartCountryWikifier
 from causx.cameos import cameos
 from causx.coords import coords
-from t2wml_web import get_kg
+from t2wml_web import get_kg, get_layers, get_qnodes_layer
 
 factor_classes = set([
+    "AffinityGroups",
     "AgriculturalIndustry",
     "AirPollutionLevels",
     "AirTransportation",
     "AlternativeEnergyIndustry",
+    "ArmedForces",
+    "AveragePopulationAge",
+    "BasicNeeds",
+    "BusinessAndIndustryInfluence",
+    "CentralOrLocalGovernment",
+    "CivilMilitaryOperations",
+    "CommunicationRestrictions",
+    "Consumption",
     "Corruption",
     "CriminalActivities",
+    "DefenseInformation",
+    "Distribution",
+    "Economic",
     "EconomicProduction-GDP",
+    "EconomicSanctions",
+    "EconomicServicesProduction",
     "EducationAvailability",
+    "EmergencyFacilityAvailability",
     "EmploymentLevel",
+    "EnvironmentConditions",
+    "EthnicTensions",
+    "EthnicTensionsInGovt",
+    "ExtraJudicialActivity",
     "FoodAndNutritionLevel",
     "ForeignArmsTrade",
     "ForeignInvestment",
     "FreedomOfExpression",
+    "FreedomOfReligiousExpression",
     "GovernmentAbilityToAddressBasicNeeds",
+    "GovernmentBuildings",
     "GovernmentEffectiveness",
+    "GovernmentPolicyActivity",
     "GovernmentStability",
     "GovernmentTransparency",
     "GroundTransportation",
+    "Habitability",
     "HealthcareAvailability",
+    "HumanTrafficking",
+    "IllicitTrade",
+    "IncomeInequality",
+    "IndustrialEmploymentRate",
+    "Industry",
+    "Informal",
+    "Information",
+    "Infrastructure",
+    "Institutions",
+    "InsurgentsOrSeparatistsActivities",
+    "InternallyDisplacedPersons",
+    "InternalSecurity",
     "InternationalTrade",
+    "InternetServiceAvailability",
     "JudicialActivity",
+    "Leadership",
+    "LegislativeActivity",
+    "LogisticsReadiness",
     "ManufacturingIndustry",
+    "MassCommunication",
+    "Military",
+    "MilitaryActivity",
+    "MilitaryAirActivity",
+    "MilitaryAirCapability",
+    "MilitaryAirReadiness",
+    "MilitaryC2Capability",
+    "MilitaryCBRNECapability",
+    "MilitaryCBRNEReadiness",
+    "MilitaryConflict",
+    "MilitaryCyberActivity",
+    "MilitaryCyberCapability",
+    "MilitaryCyberReadiness",
+    "MilitaryDeployment",
+    "MilitaryGroundActivity",
+    "MilitaryGroundCapability",
+    "MilitaryGroundReadiness",
+    "Military-IndustrialBase",
+    "MilitaryInfluenceOnGovernment",
+    "MilitaryInformationEnvironmentActivity",
+    "MilitaryIntelligenceActivity",
+    "MilitaryIntelligenceCapability",
+    "MilitaryIntelligenceReadiness",
+    "MilitaryLawEnforcement",
+    "MilitaryLogisticsCapability",
+    "MilitaryNavalActivity",
+    "MilitaryNavalCapability",
+    "MilitaryNavalReadiness",
+    "MilitaryReadiness",
+    "MilitaryRecruitment",
+    "MilitaryResearchAndDevelopment",
+    "MilitarySpaceActivity",
+    "MilitarySpaceCapability",
+    "MilitarySpaceReadiness",
+    "MilitarySpecialOperationsActivity",
+    "MilitarySpecialOperationsCapability",
+    "MilitarySpecialOperationsReadiness",
     "MilitarySpending",
+    "MilitaryTraining",
+    "MilitaryWMDActivity",
     "MiningIndustry",
+    "NationalArmsProduction",
+    "NationalInformation",
+    "NonMilitaryInternalSecurityActivity",
+    "NonMilitaryInternalSecurityCapability",
+    "NonMilitaryInternalSecurityReadiness",
+    "PeacekeepingActivity",
     "PetroleumIndustry",
+    "Political",
+    "PoliticalFrictionOrTension",
+    "PoliticalOrganizations",
     "PopulaceEducationLevel",
+    "PopulaceSupportForGovernment",
+    "PopulaceSupportForMilitary",
+    "PopulaceSupportForPolice",
+    "PopulationGrowth",
     "PovertyRate",
     "PowerAvailability",
+    "Production",
     "ProvisionOfAidOrSupport",
+    "PublicFacilities",
     "Refugees",
+    "Relations",
+    "ReligiousSites",
+    "ReligiousTensionsInGovt",
+    "ReligiousTensionsInPopulation",
+    "Sanctions",
     "SanitaryConditions",
+    "SecurityForceAssistance",
     "SecuritySafetyLevel",
     "ServicesIndustry",
+    "Social",
+    "SocialCohesion",
+    "StrategicCommunications",
+    "Sustainment",
+    "SustenanceManagement",
+    "TerrorismFinancing",
+    "TerroristActivities",
+    "Transportation",
     "TransportationInfrastructure",
+    "UnregulatedEconomy",
+    "Utilities",
     "UtilitiesInfrastructure",
+    "WasteServices",
     "WaterAvailability",
     "WaterTransportation",
     "WealthInequality",
-  ])
+    "WMDCapabilityPursuit"
+])
 
 def clean_id(input):
     if not input:
@@ -73,126 +184,6 @@ def error_with_func(func=None):
         except Exception as e:
             raise ValueError(f"Error returned from {function_name}: {str(e)}")
     return wrapper
-
-
-
-class AnnotationNodeGenerator:
-    def __init__(self, annotation, project):
-        self.annotation=annotation
-        self.project=project
-
-    @error_with_func
-    def _get_units(self, region):
-        unit=region.matches.get("unit")
-        if unit:
-            units=set()
-            for row in range(unit.row_args[0], unit.row_args[1]+1):
-                    for col in range(unit.col_args[0], unit.col_args[1]+1):
-                        units.add((row, col))
-            return list(units)
-        return []
-
-    @error_with_func
-    def _get_properties(self, region):
-        range_property = region.matches.get("property")
-        if range_property:
-            range_properties=set()
-            for row in range(range_property.row_args[0], range_property.row_args[1]+1):
-                for col in range(range_property.col_args[0], range_property.col_args[1]+1):
-                    range_properties.add((row, col))
-            return list(range_properties), region.type
-        return [], None
-
-    @error_with_func
-    def get_custom_properties_and_qnodes(self):
-        custom_properties=list()
-        custom_items=set()
-
-        data_region=self.annotation.data_annotations
-        qualifier_regions=self.annotation.qualifier_annotations
-
-        #check all properties
-        custom_properties.append(self._get_properties(data_region))
-        for qualifier_region in qualifier_regions:
-            custom_properties.append(self._get_properties(qualifier_region))
-
-        #check all units
-        custom_items.update(self._get_units(data_region))
-        for qualifier_region in qualifier_regions:
-            custom_items.update(self._get_units(qualifier_region))
-
-        return custom_properties, list(custom_items)
-
-    @error_with_func
-    def wikify_countries(self, sheet, wikifier):
-        try:
-            df = pd.DataFrame([])
-        except:
-            raise ValueError("83")
-        try:
-            subject_region=self.annotation.subject_annotations
-        except:
-            raise ValueError("89")
-
-        country_selections=[]
-
-        if subject_region:
-            if isinstance(subject_region, list):
-                subject_region=subject_region[0]
-            #check all main subject
-            country_selections.append(subject_region.selection)
-            dcw=DatamartCountryWikifier()
-            df, problem_cells = dcw.wikify_region(subject_region.selection, sheet, wikifier)
-
-
-        #check anything whose type is wikibaseitem
-        for block in self.annotation.annotations_array:
-            type=block.type
-            if type in ["wikibaseitem", "WikibaseItem", "country", "Country"]:
-                country_selections.append(subject_region.selection)
-                df2, problem_cells2 = dcw.wikify_region(block.selection, sheet, wikifier)
-                df = pd.concat([df, df2], ignore_index=True)
-                problem_cells += problem_cells2
-
-        #anything that didn't successfully get country-wikified, auto-generate nodes for:
-        for selection in country_selections:
-            tuple_selection = ((selection["x1"]-1, selection["y1"]-1), (selection["x2"]-1, selection["y2"]-1))
-            create_nodes_from_selection(tuple_selection, self.project, sheet, wikifier)
-
-        if not df.empty:
-                self.project.add_df_to_wikifier_file(sheet, df, True)
-                wikifier.add_dataframe(df)
-
-    @error_with_func
-    def preload(self, sheet, wikifier):
-        if self.annotation.data_annotations:
-            self.annotation.initialize()
-            self.wikify_countries(sheet, wikifier)
-            properties, items = self.get_custom_properties_and_qnodes()
-            create_nodes(items, self.project, sheet, wikifier)
-            for property_indices, data_type in properties:
-                if property_indices:
-                    create_nodes(property_indices, self.project, sheet, wikifier, True, data_type)
-            self.project.save()
-
-    @classmethod
-    @error_with_func
-    def load_from_path(cls, annotation_path, project):
-        an=Annotation.load(project.get_full_path(annotation_path))
-        return cls(an, project)
-
-    @classmethod
-    @error_with_func
-    def load_from_array(cls, annotation_nodes_array, project):
-        an = Annotation(annotation_nodes_array)
-        return cls(an, project)
-
-@error_with_func
-def preload(calc_params):
-    ang=AnnotationNodeGenerator.load_from_path(calc_params.annotation_path, calc_params.project)
-    ang.preload(calc_params.sheet, calc_params.wikifier)
-    calc_params.project.save()
-
 
 
 @error_with_func
@@ -391,7 +382,7 @@ def causx_get_variable_dict(project):
     return entity_dict
 
 
-def get_causx_tags(old_tags=None, new_tags=None):
+def include_base_causx_tags(old_tags=None, new_tags=None):
     tags_dict={"FactorClass":"","Relevance":"","Normalizer":"","Units":"","DocID":""}
     if old_tags:
         tags_dict.update(old_tags)
@@ -406,7 +397,7 @@ def causx_set_variable(project, id, updated_fields):
 
     if variable:
         new_tags = updated_fields.get("tags", {})
-        tags = get_causx_tags(new_tags=new_tags)
+        tags = include_base_causx_tags(new_tags=new_tags)
         filepath=variable_dict['filepath']['value']
         variable.update(updated_fields)
         variable["tags"]=tags
@@ -512,3 +503,24 @@ def upload_fidil_json(calc_params):
         fidil_endpoint = "http://icm-provider:8080/fidil/structured/datasets/upload"
     response = requests.post(fidil_endpoint, json=fidil_json)
     return response.status_code
+
+
+
+def causx_get_layers(response, calc_params):
+    get_layers(response, calc_params)
+    response["layers"] = causx_edit_qnode_layer(calc_params, response["layers"])
+
+def causx_get_qnodes_layer(calc_params):
+    layers = get_qnodes_layer(calc_params)
+    layers = causx_edit_qnode_layer(calc_params, layers)
+    return layers
+
+def causx_edit_qnode_layer(calc_params, layers):
+    qnode_entries=layers["qnode"]["entries"]
+    variable_dict=causx_get_variable_dict(calc_params.project)
+    for entry in qnode_entries:
+        id = entry["id"]
+        variable=variable_dict.get(id, None)
+        if variable:
+            entry["tags"]=include_base_causx_tags(variable.get("tags", {}))
+    return layers

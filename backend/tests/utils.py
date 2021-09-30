@@ -30,19 +30,22 @@ class BaseClass:
         if isinstance(input1, dict):
             assert input1.keys()==input2.keys()
             for key in input1:
+                if key in ["id", "link", "links"]:
+                    continue
                 self.recurse_lists_and_dicts(input1[key], input2[key])
-
         elif isinstance(input1, list):
             assert len(input1)==len(input2)
             for index, thing in enumerate(input1):
                 self.recurse_lists_and_dicts(input1[index], input2[index])
-
-        assert input1==input2
+        else:
+            assert input1==input2
 
     def compare_jsons(self, data, expected_key):
         expected_data=self.expected_results_dict[expected_key]
         assert data.keys()==expected_data.keys()
         for key in data:
+            if key in ["id", "link", "links"]:
+                continue
             try:
                 assert data[key]==expected_data[key]
             except AssertionError as e:
@@ -101,23 +104,7 @@ def load_yaml_file(client, project_folder, filename, data_file, sheet_name):
         )
     return response
 
-def load_wikifier_file(client, project_folder, filename, data_file=None, sheet_name=None):
-    url=url_builder('/api/wikifier', project_folder, data_file, sheet_name)
-    response=client.post(url,
-            json=dict(
-            filepath=filename
-            )
-        )
-    return response
 
-def load_item_file(client, project_folder, filename, data_file=None, sheet_name=None):
-    url=url_builder('/api/project/entities', project_folder, data_file, sheet_name)
-    response=client.post(url,
-            json=dict(
-            filepath=filename
-            )
-        )
-    return response
 
 def get_yaml_calculation(client, project_folder, data_file, sheet_name, yaml_file=None):
     url=url_builder('/api/mapping', project_folder, data_file, sheet_name, yaml_file)
