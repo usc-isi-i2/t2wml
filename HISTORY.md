@@ -1,6 +1,13 @@
 T2WML Standalone Server App History
 ===================================
 
+Changes in version 2.11.3:
+------------------------
+* t2wml-api 0.6.4
+* more flexible endpoints for selections
+* added some causx endpoints
+* added many more tests
+
 Changes in version 2.11.2:
 ------------------------
 * t2wml-api 0.6.3
