@@ -4,7 +4,7 @@ import re
 import numpy as np
 import pandas as pd
 import zipfile
-from t2wml.input_processing.annotation_parsing import create_nodes_from_selection
+from t2wml.api import create_nodes_from_selection
 from t2wml.mapping.canonical_spreadsheet import get_cells_and_columns
 from t2wml.api import (t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper,
                        kgtk_to_dict, dict_to_kgtk, Annotation, block_finder, Project)
