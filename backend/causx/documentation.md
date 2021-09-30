@@ -59,6 +59,5 @@ Given a spreadsheet, the pipeline is:
 
 (in practice, the annotation parsing -> output steps are repeated to create the preview during each step of stage one, but only on a selection of cells rather than the entire sheet)
 
-### How the data flows through the system
-
+### Uploading a file
 
