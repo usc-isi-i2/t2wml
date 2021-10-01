@@ -132,17 +132,25 @@ def get_annotation_name(calc_params):
     os.makedirs(Path(calc_params.project.directory)/"annotations", exist_ok=True)
     return annotation_path
 
+def undefined_work_around(key, default):
+        val = request.args.get(key, default)
+        if str(val)=="undefined":
+            val=default
+        return val
+
+
 def get_range_params():
     start_end_kwargs = {}
     for key in ["data_start", "map_start"]:#, "part_start"]:
-        start_end_kwargs[key] = int(request.args.get(key, 0))
+
+        start_end_kwargs[key] = int(undefined_work_around(key, 0))
     for key in ["data_end", "map_end"]:
-        end = int(request.args.get(key, 0))
+        end = int(undefined_work_around(key, 0))
         if end == 0:
             end = None
         start_end_kwargs[key] = end
     #start_end_kwargs["part_end"] = int(request.args.get("part_end", 30))
-    start_end_kwargs["part_count"] = int(request.args.get("part_count", 100))
+    start_end_kwargs["part_count"] = int(undefined_work_around("part_count"), 100))
     return start_end_kwargs
 
 
