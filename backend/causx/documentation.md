@@ -61,11 +61,25 @@ Given a spreadsheet, the pipeline is:
 
 ## How the data flows through the system
 
+### Additional data classes
+
 In the t2wml-server, there are an additional two classes aside from those already discussed above
 
 The first is `CalcParams`: 
 
 The CalcParams class holds all the information related to a given request to pass between the various functions. It holds a reference to the current project, the selected data file and sheet, the selected annotation file, as well as the optional parameters specifying start and end rows of what to fetch. It handles fetching the Wikifier class (wrapper for ItemTable) for the given sheet.
 
-The second is the `WebDictionaryProvider`. This is the web-specific child class of `WikidataProvider`
+A CalcParams instance is created for almost every request (except some that don't do any calculation) and then passed as an argument to subsequent functions.
+
+The second is the `WebDictionaryProvider`. This is the web-specific child class of `WikidataProvider`. It loads the contents of `project_entity_file.json` and also has access to a preloaded list of all wikidata properties (in the case of causx this really only relevant for "P585").
+
+As a result of problems with the entity dictionary not updating as expected between requests, right now the WebDictionaryProvider is reloaded from file for every single request.
+
+The WebDictionaryProvider instance is saved to a global dictionary in the t2wml-api (`t2wml_settings`) and is accessed by functions in the t2wml-api via import. **This has the potential to cause issues when multiple users are accessing the backend at the same time**
+
+### Setting up a request
+
+When any request except `is-alive` and GET `token` is received, the first step is getting the `Project` instance, using the token in the Authentication header. If a project directory hasn't yet been created for that token, it is created at this point. This is also when the `WebDictionary` instance is set up and passed to the t2wml-api global variable. 
+
+After getting the project instance, the next step for most requests is creating the `CalcParams` object for that request, using the fetched project as well as parameters passed in the request url like `data_file`, `sheet_name`, and range arguments. For now, because causx supports only one annotation per sheet, the annotation file name is automatically generated from the datafile/sheet names, and does not need to be passed as a parameter. (if support for multiple annotations on a sheet is added this will need to be changed to match the non-causx backend) 
 
