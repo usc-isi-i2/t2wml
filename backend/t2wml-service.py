@@ -6,8 +6,7 @@ virtualenv env-service
 pip install -r requirements.txt
 pip install --upgrade pyinstaller
 pip install pywin32
-pip install waitress
-pip install requests
+pip install gevent
 pip install -e ../../t2wml-api
 # Build:
 pyinstaller  --clean --noupx t2wml-service.spec
@@ -26,7 +25,9 @@ dist\t2wml-service.exe stop
 dist\t2wml-service.exe remove
 """
 
-import time
+from gevent import monkey
+monkey.patch_all()
+
 import ctypes
 import sys
 import win32serviceutil  # ServiceFramework and commandline helper
@@ -36,16 +37,30 @@ import win32event
 from waitress import serve
 import socket
 import threading
+from gevent.pywsgi import WSGIServer
+import os
+import sys
 
 from causx_application import app
-class WaitressService(threading.Thread):
+class t2wmlService(threading.Thread):
 
     def __init__(self):
         threading.Thread.__init__(self)
 
     def run(self):
         print('thread start\n')
-        serve(app, host='localhost', port=13000, trusted_proxy='localhost')
+        key_file = os.environ.get('T2WML_SSL_KEY')
+        cert_file = os.environ.get('T2WML_SSL_CERT')
+        sys.stderr = open('d:\\temp\\t2wml-service.log', 'a')
+
+        if key_file is None or cert_file is None:
+            print('Not using SSL', file=sys.stderr)
+            http_server = WSGIServer(('localhost', 13000), app)
+        else:
+            print('Using SSL - certificate from %s, key from %s' % (cert_file, key_file), file=sys.stderr)
+            http_server = WSGIServer(('localhost', 13000), app, keyfile=key_file, certfile=cert_file)
+
+        http_server.serve_forever()
         print('thread done\n')
 
     def get_id(self):
@@ -90,7 +105,7 @@ class MyServiceFramework(win32serviceutil.ServiceFramework):
         servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,
                             servicemanager.PYS_SERVICE_STARTED,
                             (self._svc_name_, ''))
-        self.service_impl = WaitressService()
+        self.service_impl = t2wmlService()
         self.ReportServiceStatus(win32service.SERVICE_RUNNING)
         # Run the service
         self.service_impl.start()
