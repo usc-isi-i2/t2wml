@@ -150,7 +150,7 @@ def get_range_params():
             end = None
         start_end_kwargs[key] = end
     #start_end_kwargs["part_end"] = int(request.args.get("part_end", 30))
-    start_end_kwargs["part_count"] = int(undefined_work_around("part_count"), 100))
+    start_end_kwargs["part_count"] = int(undefined_work_around("part_count", 100))
     return start_end_kwargs
 
 
