@@ -1,17 +1,8 @@
-from collections import defaultdict
-import os
 import pandas as pd
 import numpy as np
 import requests
 from io import StringIO
-##
-import logging
-import numpy as np
-from functools import partial
-import rltk.similarity as sim
-from abc import ABC, abstractmethod
 from t2wml.spreadsheets.conversions import to_excel
-from t2wml.wikification.country_wikifier_cache import countries
 
 
 def wikify_selection(calc_params, selection, url="https://dsbox02.isi.edu:8888/wikifier/wikify"):

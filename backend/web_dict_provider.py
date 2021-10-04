@@ -4,6 +4,7 @@ from pathlib import Path
 from t2wml.api import add_entities_from_file
 from t2wml.wikification.preloaded_properties import preloaded_properties
 from t2wml.wikification.wikidata_provider import FallbackSparql
+from causx.country_entities import country_entities
 from app_config import DEFAULT_SPARQL_ENDPOINT
 
 
@@ -44,7 +45,8 @@ class WebDictionaryProvider(FallbackSparql):
             user_dict = self.cache.get(wikidata_property, {}) #a workaround for as long as we support tags on wikidata properties...
             property_dict.update(user_dict)
             return property_dict
-
+        if wikidata_property in country_entities:
+            return country_entities[wikidata_property]
         try:
             property_dict=self.cache[wikidata_property]
             return property_dict

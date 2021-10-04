@@ -84,6 +84,7 @@ def get_project():
         p.save()
 
     project = get_project_instance(project_folder)
+    project.sparql_endpoint = "DO NOT QUERY"
     return project
 
 
