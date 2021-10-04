@@ -80,7 +80,7 @@ def get_project():
     try:
         Project.load(project_folder)
     except FileNotPresentInProject:
-        p=Project(project_folder, title="Causx")
+        p=Project(project_folder, title="Causx", sparql_endpoint = "DO NOT QUERY")
         p.save()
 
     project = get_project_instance(project_folder)

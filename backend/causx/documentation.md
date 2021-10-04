@@ -85,8 +85,6 @@ After getting the project instance, the next step for most requests is creating 
 
 ### Full description of flow through the basic functions
 
->how does the data flow through the system from uploading/dropping in a file to generating the FIDIL file.
-
 ##### Part One: Setting up the annotation
 
 1. `api/causx/token` - gets the session token for the project
@@ -113,6 +111,8 @@ which produces a preview of the results - we'll discuss this more in part three
 10. repeat steps 8-10 as necessary
     
 ##### Part Two: Editing properties and tags
+
+1. 
 
 
 ##### Part Three: Getting the output
