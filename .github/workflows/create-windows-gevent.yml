@@ -27,7 +27,7 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller pywin32 semver requests
           pip uninstall -y typing typing-extensions
-          pip install waitress
+          pip install gevent
       - name: Create installer
         working-directory: backend
         env:  # Replace unicode characters with ?
