@@ -34,7 +34,7 @@ Information about wikification/entities is stored in two files:
 Each spreadsheet has a separate wikifier file, which lists wikification per cell (row, column, sheet).
 Thw wikifier file path is based on the spreadsheet name, and is stored in a sub-directory, `wikifiers`, within the project directory. It is a json file. (In previous versions it was a csv file, and there is still code for backwards compatibility for converting from one to the other)
 
-Entity files are shared between all sheets in the project. Theoretically a project can have many entity files. In causx, it is always `project_entity_file.json` and always located in the top level of the project directory.
+Entity files are shared between all sheets in the project. Theoretically a project can have many entity files. In causx, it is always `project_entity_file.json` and always located in the top level of the project directory. (Please note that the property entries in this dictionary have a field "url". In causx this field is always empty)
 
 There are multiple sections of code devoted to automatically generating wikifier files, and updating entries in the entity file. In the t2wml-server, the module causx/wikification.py attempts to wikify country cells to existing country definitions. Any country cells which fail to be wikified there, as well as all property cells, are sent to the t2wml-api module input_processing/node_creation to have custom nodes created for them. Editing of the created nodes is mostly handled in the t2wml-server causx/causx_utils.py
 
@@ -110,11 +110,31 @@ which produces a preview of the results - we'll discuss this more in part three
 9. `/api/causx/auto_wikinodes` - triggered by the frontend. creates custom nodes for properties, which are then added to the project's wikifier file for that data file. they are also added to the WebDictionaryProvider.
 10. repeat steps 8-10 as necessary
     
-##### Part Two: Editing properties and tags
+##### Part Two: Editing properties, project settings, etc
 
-1. 
+1. `api/causx/entity/<entity-id>` - allows editing a property's fields. In causx this is mostly editing tags. **(currently for some reason it is not possible to edit properties attached directly to a block without a property block of their own, this is a frontend issue not a backend one)**
+    - property fields are stored in `project_entity_file.json` and loaded into the WebDictionaryProvider with each request. 
+    - the endpoint edits the file to include any updated fields as well as updating WebDictionaryProvider
+    - it returns the qnode layer
+2. `api/causx/project/settings` - allows editing the project's title, description, and data source url
+
+Note that all requests returning the qnode layer include an additional step of fetching any tags available from the `project_entity_file.json`
 
 
 ##### Part Three: Getting the output
 
+One of the download options is not like the others = Saved project (.t2wmlz) saves the project state and its files and returns them as a zipped folder.
+
+The other three options:
+
+`/api/causx/download_zip_results`
+`/api/causx/project/fidil_json`
+`/api/causx/project/download/tsv`
+
+All do the same basic pathway:
+
+1. using the `CalcParams` instance, create a `KnowledgeGraph`
+2. Using the statements from the KnowledgeGraph, create the output in the desired format
+
+The only variation is the code for creating the format.
 
