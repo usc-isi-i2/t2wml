@@ -71,7 +71,7 @@ The CalcParams class holds all the information related to a given request to pas
 
 A CalcParams instance is created for almost every request (except some that don't do any calculation) and then passed as an argument to subsequent functions.
 
-The second is the `WebDictionaryProvider`. This is the web-specific child class of `WikidataProvider`. It loads the contents of `project_entity_file.json` and also has access to a preloaded list of all wikidata properties (in the case of causx this really only relevant for "P585").
+The second is the `WebDictionaryProvider`. This is the web-specific child class of `WikidataProvider`. It loads the contents of `project_entity_file.json` and also has access to a preloaded list of all wikidata properties (in the case of causx this really only relevant for "P585"), as well as preloaded countries.
 
 As a result of problems with the entity dictionary not updating as expected between requests, right now the WebDictionaryProvider is reloaded from file for every single request.
 
@@ -82,4 +82,39 @@ The WebDictionaryProvider instance is saved to a global dictionary in the t2wml-
 When any request except `is-alive` and GET `token` is received, the first step is getting the `Project` instance, using the token in the Authentication header. If a project directory hasn't yet been created for that token, it is created at this point. This is also when the `WebDictionary` instance is set up and passed to the t2wml-api global variable. 
 
 After getting the project instance, the next step for most requests is creating the `CalcParams` object for that request, using the fetched project as well as parameters passed in the request url like `data_file`, `sheet_name`, and range arguments. For now, because causx supports only one annotation per sheet, the annotation file name is automatically generated from the datafile/sheet names, and does not need to be passed as a parameter. (if support for multiple annotations on a sheet is added this will need to be changed to match the non-causx backend) 
+
+### Full description of flow through the basic functions
+
+>how does the data flow through the system from uploading/dropping in a file to generating the FIDIL file.
+
+##### Part One: Setting up the annotation
+
+1. `api/causx/token` - gets the session token for the project
+2. `api/causx/upload/data` - uploads the data file. **this is likely to be replaced by api/causx/upload/spreadsheet**, as we add support for multiple sheets/files
+    - saves the file to the filesystem **will need to be changed if we are working without filesysten**
+    - adds it to the project's t2wml.project file
+    - sends back the file parameters to be used for future requests as well as some of the rows from the table for display
+3. `/api/causx/annotation/guess-blocks`
+    - sends the CalcParams object with the file paramters to the block_finder function in the t2wml-api
+    - saves the annotations to the annotation file **right now it does not also save to project, because, as noted above, with only single-annotation support, it is sufficient to have it match the sheet name. this is important to change if multi-annotation support is added**
+    - returns the annotations (a json dictionary). It also currently returns `yamlContent`, **this should be removed as it is irrelevant to causx**
+4. upon receiving the annotation from guess-blocks the frontend triggers a request to `api/causx/partialcsv`,
+which produces a preview of the results - we'll discuss this more in part three
+5. `api/causx/wikify_region`- wikifies the countries. (this is also auto-triggered by the frontend from suggest-annotations. It should also be triggered when selecting a subject region manually, or when selecting a qualifier whose type is country-- **the latter appears not to be implemented yet**)
+    - sends a selection of cells and the CalcParams object to the wikify_countries function
+    - wikify_countries returns a pandas dataframe
+    - this is then added to the project's wikifier file for that data file.
+    - additional custom nodes are created for any cells that failed to wikify for a country
+    - these, too, are then added to the project's wikifier file for that data file. they are also added to the WebDictionaryProvider
+    - the CalcParams object is recreated so its wikifier won't be out of date (**this step may not be necessary**)
+    - a response is returned with the updated wikification (qnodes layer) information for the spreadsheet
+8. `/api/causx/annotation`  - at this point it is necessary to add a property, because properties are not auto-suggested. This endpoint saves the annotation to a file and adds it to the project. This same endpoint is used for any additional annotations added or edited, eg adding a qualifier.
+9. `/api/causx/auto_wikinodes` - triggered by the frontend. creates custom nodes for properties, which are then added to the project's wikifier file for that data file. they are also added to the WebDictionaryProvider.
+10. repeat steps 8-10 as necessary
+    
+##### Part Two: Editing properties and tags
+
+
+##### Part Three: Getting the output
+
 
