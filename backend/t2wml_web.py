@@ -5,10 +5,10 @@ import numpy as np
 import pandas as pd
 import zipfile
 from t2wml.api import create_nodes_from_selection
-from t2wml.mapping.canonical_spreadsheet import get_cells_and_columns
+from t2wml.outputs.canonical_spreadsheet import get_cells_and_columns
 from t2wml.api import (t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper,
                        kgtk_to_dict, dict_to_kgtk, Annotation, block_finder, Project)
-from t2wml.mapping.kgtk import get_all_variables
+from t2wml.outputs.kgtk import get_all_variables
 from t2wml.mapping.statement_mapper import PartialAnnotationMapper
 from calc_params import CalcParams
 from app_config import CACHE_FOLDER

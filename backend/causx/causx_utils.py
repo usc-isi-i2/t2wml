@@ -5,7 +5,7 @@ import requests
 from io import StringIO
 import pandas as pd
 import hashlib
-from t2wml.mapping.datamart_edges import clean_id as _clean_id
+from t2wml.outputs.datamart_edges import clean_id as _clean_id
 from t2wml.mapping.statement_mapper import PartialAnnotationMapper
 from t2wml.api import kgtk_to_dict, t2wml_settings, KnowledgeGraph
 from t2wml.wikification.utility_functions import dict_to_kgtk
