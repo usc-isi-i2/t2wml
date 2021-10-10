@@ -13,7 +13,9 @@ DATADIR = os.path.join(home_dir, ".t2wml")
 if not os.path.exists(DATADIR):
     os.makedirs(DATADIR)
 
-
+BASEDIR = os.path.abspath(os.path.dirname(__file__))
+if BASEDIR not in sys.path:
+    sys.path.append(BASEDIR)  # when running migrate, needed to not get import errors
 
 
 app = Flask(__name__, static_folder=None)
