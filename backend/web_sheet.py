@@ -3,7 +3,10 @@ from pathlib import Path
 import pandas as pd
 from t2wml.spreadsheets.utilities import PandasLoader
 from t2wml.api import Sheet as ApiSheet
-from app_config import CACHE_FOLDER, app
+from app_config import DATADIR, app
+
+CACHE_FOLDER = os.path.join(DATADIR, "cache")
+Path(CACHE_FOLDER).mkdir(parents=True, exist_ok=True)
 
 df_cache = {"cache":{}}
 

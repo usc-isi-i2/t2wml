@@ -1,6 +1,5 @@
 from pathlib import Path
 from t2wml.api import SpreadsheetFile, Wikifier
-from caching import CacheHolder
 from web_sheet import Sheet
 
 class CalcParams:
@@ -44,11 +43,7 @@ class CalcParams:
             self._sheet= Sheet(self.data_path, self.sheet_name)
         return self._sheet
 
-    @property
-    def cache(self):
-        return None #we are getting rid of caching until we've figured out a better way of determining when a project has changed
-        if self.yaml_path:
-            return CacheHolder(self.project, self.data_path, self.sheet_name, self.yaml_path)
+
 
     @property
     def wikifier(self):

@@ -22,7 +22,7 @@ Example:
  * Mydata.xlsx, Sheet1 
  * Mydata.csv, Mydata.csv        
 
-if the app config settings set `USE_CACHE` to `True`: after a sheet is loaded from file, the pandas dataframe is saved as a python pickle object for faster future loads in the app's `CACHE_FOLDER`
+if the app config settings set `USE_CACHE` to `True`: after a sheet is loaded from file, the pandas dataframe is saved as a python pickle object for faster future loads in the app's DATA_DIR in folder 'cache'
 
 ### Wikification/Entities
 

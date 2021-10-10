@@ -166,11 +166,13 @@ factor_classes = set([
 ])
 
 def clean_id(input):
+    """the original clean_id function raises an error for empty IDs, which we don't want here"""
     if not input:
         return ""
     return _clean_id(input)
 
 def error_with_func(func=None):
+    """wrapper function for debugging purposes only"""
     def wrapper(*args, **kwargs):
         try:
             function_name = func.__func__.__qualname__
@@ -184,7 +186,7 @@ def error_with_func(func=None):
     return wrapper
 
 
-@error_with_func
+#@error_with_func
 def try_get_description(input):
     provider = t2wml_settings.wikidata_provider
     if not input:
@@ -199,7 +201,7 @@ def try_get_description(input):
     return ""
 
 
-@error_with_func
+#@error_with_func
 def try_get_label(input):
     provider = t2wml_settings.wikidata_provider
     if not input:
@@ -213,8 +215,22 @@ def try_get_label(input):
             pass
     return input
 
-@error_with_func
+#@error_with_func
 def get_cells_and_columns(statements, project):
+    """[summary]
+
+    Args:
+        statements ([type]): [description]
+        project ([type]): [description]
+
+    Raises:
+        ValueError: [description]
+        ValueError: [description]
+        ValueError: [description]
+
+    Returns:
+        [type]: [description]
+    """
     column_titles=["dataset_id", "variable_id", "variable", "main_subject", "main_subject_id", "value",
                     "time","time_precision",
                     "country","country_id","country_cameo", "region_coordinate",
@@ -287,7 +303,7 @@ def get_cells_and_columns(statements, project):
     column_titles+=new_columns
     return column_titles, dict_values
 
-@error_with_func
+#@error_with_func
 def causx_create_canonical_spreadsheet(statements, project):
     column_titles, dict_values = get_cells_and_columns(statements, project)
 
@@ -310,10 +326,18 @@ def causx_create_canonical_spreadsheet(statements, project):
     string_stream.close()
     return output
 
-@error_with_func
+#@error_with_func
 def df_to_table(df, columns):
-    #df.replace(to_replace=[None], value="", inplace=True)
-    #df = df[columns] # sort the columns
+    """convert dataframe to table for frontend
+
+    Args:
+        df (Dataframe): dataframe to be converted
+        columns (list): [description]
+
+    Returns:
+        [type]: [description]
+    """
+
     df = df.filter(columns)
     df.drop(['variable_id', 'main_subject_id', 'stated_in', 'stated_in_id', 'admin1', 'admin2', 'admin3'], axis=1, errors='ignore')
     nan_value = float("NaN")
@@ -325,8 +349,21 @@ def df_to_table(df, columns):
     return dict(dims=dims, firstRowIndex=0, cells=cells)
 
 
-@error_with_func
+#@error_with_func
 def get_causx_partial_csv(calc_params):
+    """[summary]
+
+    Args:
+        calc_params ([type]): [description]
+
+    Raises:
+        ValueError: [description]
+        ValueError: [description]
+        ValueError: [description]
+
+    Returns:
+        [type]: [description]
+    """
     count = calc_params.part_count
 
     columns = ["dataset_id", "variable", "main_subject", "value",
@@ -374,28 +411,47 @@ def get_causx_partial_csv(calc_params):
 
 
 def causx_get_variable_dict(project):
+    """get all of the entities in a given project (for tag management purposes)"""
     entity_dict={}
     for entity_file in project.entity_files:
         entity_dict.update(kgtk_to_dict(project.get_full_path(entity_file)))
     return entity_dict
 
 
-def include_base_causx_tags(old_tags=None, new_tags=None):
+def include_base_causx_tags(tags):
+    """we want to include certain tags no matter what, so add them in here
+
+    Args:
+        tags (dict): any existing tags
+
+    Returns:
+        dict: any existing tags, and empty tags for the required tags that aren't present
+    """
     tags_dict={"FactorClass":"","Relevance":"","Normalizer":"","Units":"","DocID":""}
-    if old_tags:
-        tags_dict.update(old_tags)
-    if new_tags:
-        tags_dict.update(new_tags)
+    tags_dict.update(tags)
     return tags_dict
 
 
 def causx_set_variable(project, id, updated_fields):
+    """[summary]
+
+    Args:
+        project ([type]): [description]
+        id ([type]): [description]
+        updated_fields ([type]): [description]
+
+    Raises:
+        ValueError: [description]
+
+    Returns:
+        [type]: [description]
+    """
     variable_dict=causx_get_variable_dict(project)
     variable=variable_dict.get(id, None)
 
     if variable:
         new_tags = updated_fields.get("tags", {})
-        tags = include_base_causx_tags(new_tags=new_tags)
+        tags = include_base_causx_tags(new_tags)
         filepath=variable_dict['filepath']['value']
         variable.update(updated_fields)
         variable["tags"]=tags
@@ -409,6 +465,15 @@ def causx_set_variable(project, id, updated_fields):
 
 
 def causx_get_variable_metadata(calc_params, statements):
+    """[summary]
+
+    Args:
+        calc_params ([type]): [description]
+        statements ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     properties=set()
     for statement in statements.values():
         property = statement.get("property", None)
@@ -433,6 +498,8 @@ def causx_get_variable_metadata(calc_params, statements):
 
 
 def create_fidil_json(calc_params):
+    """creates the fidil json
+    """
     kg = get_kg(calc_params)
     statements=kg.statements
     time_series = dict()
@@ -485,6 +552,7 @@ def create_fidil_json(calc_params):
 
 
 def upload_fidil_json(calc_params):
+    """upload fidil json to provided endpoint"""
     fidil_json = create_fidil_json(calc_params)
     fidil_endpoint = os.environ.get("FIDIL_UPLOAD_ENDPOINT")
     if not fidil_endpoint:
@@ -495,15 +563,18 @@ def upload_fidil_json(calc_params):
 
 
 def causx_get_layers(response, calc_params):
+    """causx version of the function, to enable updating qnode layer with tags"""
     get_layers(response, calc_params)
     response["layers"] = causx_edit_qnode_layer(calc_params, response["layers"])
 
 def causx_get_qnodes_layer(calc_params):
+    """causx version of the function, to enable updating qnode layer with tags"""
     layers = get_qnodes_layer(calc_params)
     layers = causx_edit_qnode_layer(calc_params, layers)
     return layers
 
 def causx_edit_qnode_layer(calc_params, layers):
+    """for qnodes in qnode layer, make sure to also add any tags that exist  + default tags"""
     qnode_entries=layers["qnode"]["entries"]
     variable_dict=causx_get_variable_dict(calc_params.project)
     for entry in qnode_entries:

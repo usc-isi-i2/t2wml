@@ -11,7 +11,6 @@ from t2wml.api import (t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMap
 from t2wml.outputs.kgtk import get_all_variables
 from t2wml.mapping.statement_mapper import PartialAnnotationMapper
 from calc_params import CalcParams
-from app_config import CACHE_FOLDER
 from web_dict_provider import WebDictionaryProvider, add_entities_from_project
 from utils import get_empty_layers
 from wikidata_utils import get_labels_and_descriptions, get_qnode_url, QNode
@@ -31,8 +30,6 @@ def get_project_instance(project_folder):
 
 
 def set_web_settings():
-    if not os.path.isdir(CACHE_FOLDER):
-        os.makedirs(CACHE_FOLDER, exist_ok=True)
     t2wml_settings.wikidata_provider = WebDictionaryProvider()
 
 
@@ -56,10 +53,6 @@ def autocreate_items(calc_params, selection, is_property=False, data_type=None):
 def get_kg(calc_params, start=0, end=None):
     wikifier = calc_params.wikifier
     annotation = calc_params.annotation_path
-    if calc_params.cache and not annotation:
-        kg = calc_params.cache.load_kg()
-        if kg:
-            return kg
     if annotation:
         cell_mapper = AnnotationMapper(calc_params.annotation_path)
     else:
