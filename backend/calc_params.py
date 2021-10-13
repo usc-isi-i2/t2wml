@@ -44,7 +44,6 @@ class CalcParams:
         return self._sheet
 
 
-
     @property
     def wikifier(self):
         wikifier_file, exists = self.project.get_wikifier_file(self.sheet.data_file_path)
