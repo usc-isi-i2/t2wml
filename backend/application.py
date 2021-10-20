@@ -163,7 +163,8 @@ def get_calc_params(project, data_required=True, mapping_type=None, mapping_file
 @json_response
 def get_mapping(mapping_file=None, mapping_type=None):
     """get mapping-related layers (and qnode layer) for request
-    /api/annotation/guess-blocks, /api/table, /api/annotation, /api/yaml/save all also use this function
+    this function is also used by the following endpoints:
+    /api/annotation/guess-blocks, /api/table, /api/annotation, /api/yaml/save
     """
     project = get_project()
     calc_params = get_calc_params(project)
@@ -599,6 +600,8 @@ def set_qnodes():
 @app.route('/api/delete_wikification', methods=['POST'])
 @json_response
 def delete_wikification():
+    """delete wikification from a selection on the sheet
+    returns qnode layer"""
     project = get_project()
     calc_params = get_calc_params(project)
     sheet_name = calc_params.sheet.name
@@ -628,6 +631,7 @@ def delete_wikification():
 @app.route('/api/create_node', methods=['POST'])
 @json_response
 def create_qnode():
+    """create a custom qnode"""
     project = get_project()
     request_json = request.get_json()
     try:
