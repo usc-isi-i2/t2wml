@@ -33,6 +33,7 @@ set_web_settings()
 
 
 def get_project_folder():
+    """convenience function for getting project folder from request parameters"""
     try:
         project_folder = request.args['project_folder']
         return project_folder
@@ -42,12 +43,15 @@ def get_project_folder():
 
 
 def get_project():
+    """convenience function for getting project instance using request parameters"""
     project_folder = get_project_folder()
     project = get_project_instance(project_folder)
     return project
 
 
 def get_project_dict(project):
+    """because the frontend expects global settings (which aren't part of project class) as
+    part of the project dict, this convenience function updates the project dict accordingly"""
     return_dict = {}
     return_dict.update(project.__dict__)
     return_dict.update(global_settings.__dict__)
@@ -55,6 +59,8 @@ def get_project_dict(project):
 
 
 def json_response(func):
+    """a wrapping function that centralizes handling requests
+    (mostly by standardizing return of any errors)"""
     def wrapper(*args, **kwargs):
         try:
             data, return_code = func(*args, **kwargs)
@@ -83,12 +89,14 @@ def json_response(func):
 
 
 def update_calc_params_mapping_files(project, calc_params, mapping_file, mapping_type):
+    """convenience function for updating mapping file in calc_params"""
     if mapping_type == "Annotation":
         calc_params._annotation_path = mapping_file
     if mapping_type == "Yaml":
         calc_params._yaml_path = mapping_file
 
 def get_range_params():
+    """convenience function for fetching range parameters from request"""
     start_end_kwargs = {}
     for key in ["data_start", "map_start"]:#, "part_start"]:
         start_end_kwargs[key] = int(request.args.get(key, 0))
@@ -103,6 +111,20 @@ def get_range_params():
 
 
 def get_calc_params(project, data_required=True, mapping_type=None, mapping_file=None):
+    """convenience function for building CalcParams instance for a request
+
+    Args:
+        project (Project): the project for the request (fetched separately)
+        data_required (bool, optional): are data params required for the request? if so, raise an error if not present. Defaults to True.
+        mapping_type (string, optional): "Annotation" or "Yaml". Defaults to None.
+        mapping_file (string, optional): relative path from project directory to mapping file. Defaults to None.
+
+    Raises:
+        web_exceptions.InvalidRequestException: missing data file or missing sheet
+
+    Returns:
+        CalcParams: instance of CalcParams matching the request params
+    """
     try:
         try:
             data_file = request.args['data_file']
@@ -140,6 +162,9 @@ def get_calc_params(project, data_required=True, mapping_type=None, mapping_file
 @app.route('/api/mapping', methods=['GET'])
 @json_response
 def get_mapping(mapping_file=None, mapping_type=None):
+    """get mapping-related layers (and qnode layer) for request
+    /api/annotation/guess-blocks, /api/table, /api/annotation, /api/yaml/save all also use this function
+    """
     project = get_project()
     calc_params = get_calc_params(project)
     # if redirecting from a save:
@@ -161,6 +186,7 @@ def get_mapping(mapping_file=None, mapping_type=None):
 @app.route('/api/table', methods=['GET'])
 @json_response
 def get_data():
+    """gets the tableDTO and also attempts to fetch layers"""
     project = get_project()
     data_file = request.args.get('data_file')
     if not data_file:
@@ -178,6 +204,8 @@ def get_data():
 @app.route('/api/annotation/guess-blocks', methods=['GET'])
 @json_response
 def guess_all_annotation_blocks():
+    """gets a guessed annotation for table, saves annotation file to FS and project,
+    and attempts to return layers"""
     project = get_project()
     calc_params = get_calc_params(project)
     suggest_annotations(calc_params)
@@ -187,6 +215,8 @@ def guess_all_annotation_blocks():
 @app.route('/api/partialcsv', methods=['GET'])
 @json_response
 def partial_csv():
+    """fetch partial csv
+    (no type validation, attempts to fetch main subject even without variable+property)"""
     project = get_project()
     calc_params = get_calc_params(project)
     response = dict()
@@ -206,7 +236,7 @@ def partial_csv():
 @json_response
 def export_results(filetype):
     """
-    save to filesystem
+    save results in format <filetype> to filesystem
     """
     project = get_project()
     if filetype == "csv":
@@ -235,6 +265,7 @@ def export_results(filetype):
 @app.route('/api/project/datamart', methods=['GET'])
 @json_response
 def load_to_datamart():
+    """currently this endpoint is mostly defunct"""
     project = get_project()
     calc_params = get_calc_params(project)
     download_output, variables = get_kgtk_download_and_variables(
@@ -264,8 +295,7 @@ def load_to_datamart():
 @json_response
 def upload_data_file():
     """
-    This function uploads the data file.
-    :return:
+    save data_file to project directory and to project class, return table DTO
     """
     project = get_project()
 
@@ -300,6 +330,9 @@ def upload_data_file():
 @app.route('/api/project/entities', methods=['POST'])
 @json_response
 def upload_entities():
+    """save entities file to project directory and project class,
+    load entities into web_dictionary_provider,
+    return qnodes layer"""
     project = get_project()
 
     file_path = file_upload_validator({".tsv"})
@@ -319,6 +352,10 @@ def upload_entities():
 @app.route('/api/web/wikify_region', methods=['POST'])  # V
 @json_response
 def causx_wikify():
+    """for convenience, replicate access to the causx country-specific wikifier
+    (we frwuently need it in the desktop version as well, particularly with annotation suggestion)
+    wikifies cells in "selection" and saves them to the wikifier,
+    returns qnode layer"""
     project = get_project()
     selection = request.get_json()["selection"]
     selection = get_tuple_selection(selection)
@@ -346,8 +383,10 @@ def causx_wikify():
 @json_response
 def upload_wikifier_output():
     """
-    This function uploads the wikifier output
-    :return:
+    This function uploads a wikifier file.
+    It essentially allow backwards-compatible support for projects
+    where an old-style wikifier file is still used
+    returns qnode layer
     """
     project = get_project()
 
@@ -366,7 +405,9 @@ def upload_wikifier_output():
 @json_response
 def call_wikifier_service():
     """
-    This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
+    This function calls the wikifier service to wikifiy a region,
+    and deletes/updates wiki region file's results
+    returns qnode layer
     :return:
     """
     project = get_project()
@@ -396,8 +437,9 @@ def call_wikifier_service():
 @json_response
 def create_auto_nodes():
     """
-    This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
-    :return:
+    Creates auto-nodes (Ie PCustomNode-label, QCustomNode-label) for the `selection`
+    if `is_property` is True then `data_type` must be provided
+    returns qnode layer
     """
     project = get_project()
     calc_params = get_calc_params(project)
@@ -414,6 +456,8 @@ def create_auto_nodes():
 @app.route('/api/yaml/save', methods=['POST'])
 @json_response
 def upload_yaml():
+    """save a yaml file string to a file without generating layers.
+    used for creating yaml files or for saving them when switching tabs"""
     project = get_project()
     dataFile = request.get_json()["dataFile"]
     sheet_name = request.get_json()["sheetName"]
@@ -428,8 +472,7 @@ def upload_yaml():
 @json_response
 def apply_yaml():
     """
-    This function uploads and processes the yaml file
-    :return:
+    Save a yaml file string to a file and generate layers using that yaml file
     """
     project = get_project()
     calc_params = get_calc_params(project)
@@ -447,7 +490,9 @@ def apply_yaml():
 
 @app.route('/api/annotation/create', methods=['POST'])
 @json_response
-def save_annotation():
+def upload_annotation():
+    """save an annotation to a file without generating layers.
+    used for creating annotation files"""
     project = get_project()
     dataFile = request.get_json()["dataFile"]
     sheet_name = request.get_json()["sheetName"]
@@ -462,7 +507,10 @@ def save_annotation():
 
 @app.route('/api/annotation', methods=['POST'])
 @json_response
-def upload_annotation():
+def apply_annotation():
+    """
+    Save an annotation to a file and generate layers using that annotation
+    """
     project = get_project()
     calc_params = get_calc_params(project)
     title = request.get_json()["title"]
@@ -475,8 +523,10 @@ def upload_annotation():
     response.update(calc_response)
     return response, code
 
+################# Copying annotations
 
-class AnnotationParams:
+class CopyAnnotationParams:
+    """class used solely for copying annotations"""
     def __init__(self, dataFile, sheetName, dir, annotation, source=False):
         self.dir = dir
         self.data_file=dataFile
@@ -494,10 +544,13 @@ class AnnotationParams:
 @app.route('/api/annotation/copy', methods=['POST'])
 @json_response
 def upload_annotation_for_copying():
+    """copy an annotation from source params (sheet, annotation) to destination,
+    including adjusting to fit destination sheet, saving to filesystem, and adding to project
+    returns project dictionary containing new annotation file"""
     project = get_project()
 
-    source_params = AnnotationParams(source=True, **(request.get_json()["source"]))
-    destination_params = AnnotationParams(**(request.get_json()["destination"]))
+    source_params = CopyAnnotationParams(source=True, **(request.get_json()["source"]))
+    destination_params = CopyAnnotationParams(**(request.get_json()["destination"]))
     try:
         processed_annotation = copy_annotation(source_params.annotation, source_params.sheet.data, destination_params.sheet.data)
     except:
@@ -510,7 +563,7 @@ def upload_annotation_for_copying():
     return response, 200
 
 
-
+###########################################
 
 
 @app.route('/api/set_qnode', methods=['POST'])
@@ -637,11 +690,12 @@ def create_qnode():
     return response, 200
 
 
-# Small getters that return small things and *should* be cheap operations
+###### Small getters that return small things and *should* be cheap operations
 
 @app.route('/api/project', methods=['GET'])
 @json_response
 def get_project_files():
+    """returns project"""
     project = get_project()
     response = dict(project=get_project_dict(project))
     return response, 200
@@ -652,8 +706,7 @@ def get_project_files():
 @json_response
 def create_project():
     """
-    This route creates a project
-    :return:
+    creates and returns project in provided folder
     """
     project_folder = get_project_folder()
     # check we're not overwriting existing project
@@ -671,12 +724,13 @@ def create_project():
     response = dict(project=get_project_dict(project))
     return response, 201
 
-# all it returns is a project
+
 
 
 @app.route('/api/files/add_mapping', methods=['POST'])
 @json_response
 def add_existing_mapping_file_to_project():
+    """returns project"""
     project = get_project()
     dataFile = request.get_json()["dataFile"]
     sheet_name = request.get_json()["sheetName"]
@@ -694,22 +748,23 @@ def add_existing_mapping_file_to_project():
     response = dict(project=get_project_dict(project), filename=filename)
     return response, 200
 
-# returns entity dict
+
 
 
 @app.route('/api/project/entities', methods=['GET'])
 @json_response
 def get_project_entities():
+    """returns entities"""
     project = get_project()
     response = get_entities(project)
     return response, 200
 
-# returns the same as get entities
 
 
 @app.route('/api/project/entities', methods=['PUT'])
 @json_response
 def edit_entities():
+    """returns entities"""
     project = get_project()
     entity_file = request.get_json()["entity_file"]
     updated_entries = request.get_json()["updated_entries"]
@@ -720,6 +775,7 @@ def edit_entities():
 @app.route('/api/annotation/suggest', methods=['PUT'])
 @json_response
 def guess_block_type_role():
+    """returns a single annotation block"""
     project = get_project()
     calc_params = get_calc_params(project)
     block = request.get_json()["selection"]
@@ -749,6 +805,7 @@ def guess_block_type_role():
 @app.route('/api/project/globalsettings', methods=['PUT', 'GET'])
 @json_response
 def update_global_settings():
+    """returns global settings dictionary"""
     if request.method == 'PUT':
         new_global_settings = dict()
         datamart_api = request.get_json().get("datamartApi", None)
@@ -765,7 +822,7 @@ def update_global_settings():
 def update_settings():
     """
     This function updates the settings from GUI
-    :return:
+    returns project including settings and global settings
     """
     project = get_project()
     if request.method == 'PUT':
@@ -811,6 +868,8 @@ def update_settings():
 @app.route('/api/qnodes', methods=['GET'])
 @json_response
 def get_qnodes():
+    """query the isi endpoint for properties or items matching the query string
+    returns query results"""
     q = request.args.get('q')
     if not q:
         raise web_exceptions.InvalidRequestException("No search parameter set")
@@ -860,6 +919,8 @@ def get_qnodes():
 @app.route('/api/query_node/<id>', methods=['GET'])
 @json_response
 def query_qnode(id):
+    """query the existing database and fallback to sparql for the label and description of a qnode
+    returns dictionary for the qnode"""
     project = get_project()
     calc_params = get_calc_params(project)
     response = get_labels_and_descriptions(t2wml_settings.wikidata_provider, [
@@ -875,6 +936,8 @@ def query_qnode(id):
 @app.route('/api/files/rename', methods=['POST'])
 @json_response
 def rename_file():
+    """rename a file in the project
+    returns project dictionary with renamed file"""
     project = get_project()
 
     old_name = request.get_json()["old_name"]
@@ -890,6 +953,8 @@ def rename_file():
 @app.route('/api/files/delete', methods=['POST'])
 @json_response
 def delete_file():
+    """delete a file from the project (and, optionally, from the file system)
+    returns a project dictionary with the file deleted"""
     project = get_project()
 
     file_name = request.get_json()["file_name"]

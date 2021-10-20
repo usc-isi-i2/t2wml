@@ -106,11 +106,11 @@ which produces a preview of the results - we'll discuss this more in part three
     - these, too, are then added to the project's wikifier file for that data file. they are also added to the WebDictionaryProvider
     - the CalcParams object is recreated so its wikifier won't be out of date (**this step may not be necessary**)
     - a response is returned with the updated wikification (qnodes layer) information for the spreadsheet
-8. `/api/causx/annotation`  - at this point it is necessary to add a property, because properties are not auto-suggested. This endpoint saves the annotation to a file and adds it to the project. This same endpoint is used for any additional annotations added or edited, eg adding a qualifier.
-9. `/api/causx/auto_wikinodes` - triggered by the frontend. creates custom nodes for properties, which are then added to the project's wikifier file for that data file. they are also added to the WebDictionaryProvider.
-10. repeat steps 8-10 as necessary
+6. `/api/causx/annotation`  - at this point it is necessary to add a property, because properties are not auto-suggested. This endpoint saves the annotation to a file and adds it to the project. This same endpoint is used for any additional annotations added or edited, eg adding a qualifier.
+7. `/api/causx/auto_wikinodes` - triggered by the frontend. creates custom nodes for properties, which are then added to the project's wikifier file for that data file. they are also added to the WebDictionaryProvider.
+8. repeat steps 6-7 as necessary
     
-##### Part Two: Editing properties, project settings, etc
+##### Optional: Editing properties, project settings, etc
 
 1. `api/causx/entity/<entity-id>` - allows editing a property's fields. In causx this is mostly editing tags. **(currently for some reason it is not possible to edit properties attached directly to a block without a property block of their own, this is a frontend issue not a backend one)**
     - property fields are stored in `project_entity_file.json` and loaded into the WebDictionaryProvider with each request. 
@@ -121,7 +121,7 @@ which produces a preview of the results - we'll discuss this more in part three
 Note that all requests returning the qnode layer include an additional step of fetching any tags available from the `project_entity_file.json`
 
 
-##### Part Three: Getting the output
+##### Part Two: Getting the output
 
 One of the download options is not like the others = Saved project (.t2wmlz) saves the project state and its files and returns them as a zipped folder.
 
