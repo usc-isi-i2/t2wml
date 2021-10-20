@@ -188,6 +188,7 @@ def error_with_func(func=None):
 
 #@error_with_func
 def try_get_description(input):
+    """try to get description but otherwise default to empty string"""
     provider = t2wml_settings.wikidata_provider
     if not input:
         return ""
@@ -203,6 +204,7 @@ def try_get_description(input):
 
 #@error_with_func
 def try_get_label(input):
+    """try checking if a string is an ID and has a label"""
     provider = t2wml_settings.wikidata_provider
     if not input:
         return input
@@ -217,19 +219,7 @@ def try_get_label(input):
 
 #@error_with_func
 def get_cells_and_columns(statements, project):
-    """[summary]
-
-    Args:
-        statements ([type]): [description]
-        project ([type]): [description]
-
-    Raises:
-        ValueError: [description]
-        ValueError: [description]
-        ValueError: [description]
-
-    Returns:
-        [type]: [description]
+    """get the column titles and the row values for a causx table
     """
     column_titles=["dataset_id", "variable_id", "variable", "main_subject", "main_subject_id", "value",
                     "time","time_precision",
@@ -305,6 +295,7 @@ def get_cells_and_columns(statements, project):
 
 #@error_with_func
 def causx_create_canonical_spreadsheet(statements, project):
+    """create canonical spreadsheet for download"""
     column_titles, dict_values = get_cells_and_columns(statements, project)
 
     string_stream = StringIO("", newline="")
@@ -332,10 +323,10 @@ def df_to_table(df, columns):
 
     Args:
         df (Dataframe): dataframe to be converted
-        columns (list): [description]
+        columns (list): column titles
 
     Returns:
-        [type]: [description]
+        dict: tableDTO
     """
 
     df = df.filter(columns)
@@ -351,18 +342,8 @@ def df_to_table(df, columns):
 
 #@error_with_func
 def get_causx_partial_csv(calc_params):
-    """[summary]
-
-    Args:
-        calc_params ([type]): [description]
-
-    Raises:
-        ValueError: [description]
-        ValueError: [description]
-        ValueError: [description]
-
-    Returns:
-        [type]: [description]
+    """causx-specific partial csv. returns all expected headings,
+    attempts to fill in information available even if valid statements not present yet
     """
     count = calc_params.part_count
 
@@ -433,18 +414,7 @@ def include_base_causx_tags(tags):
 
 
 def causx_set_variable(project, id, updated_fields):
-    """[summary]
-
-    Args:
-        project ([type]): [description]
-        id ([type]): [description]
-        updated_fields ([type]): [description]
-
-    Raises:
-        ValueError: [description]
-
-    Returns:
-        [type]: [description]
+    """update fields for a given variable and save
     """
     variable_dict=causx_get_variable_dict(project)
     variable=variable_dict.get(id, None)
@@ -465,14 +435,7 @@ def causx_set_variable(project, id, updated_fields):
 
 
 def causx_get_variable_metadata(calc_params, statements):
-    """[summary]
-
-    Args:
-        calc_params ([type]): [description]
-        statements ([type]): [description]
-
-    Returns:
-        [type]: [description]
+    """get variable metadata used when saving zip results
     """
     properties=set()
     for statement in statements.values():
