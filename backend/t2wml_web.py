@@ -5,19 +5,19 @@ import numpy as np
 import pandas as pd
 import zipfile
 from t2wml.api import create_nodes_from_selection
-from t2wml.mapping.canonical_spreadsheet import get_cells_and_columns
+from t2wml.outputs.canonical_spreadsheet import get_cells_and_columns
 from t2wml.api import (t2wml_settings, KnowledgeGraph, YamlMapper, AnnotationMapper,
                        kgtk_to_dict, dict_to_kgtk, Annotation, block_finder, Project)
-from t2wml.mapping.kgtk import get_all_variables
+from t2wml.outputs.kgtk import get_all_variables
 from t2wml.mapping.statement_mapper import PartialAnnotationMapper
 from calc_params import CalcParams
-from app_config import CACHE_FOLDER
 from web_dict_provider import WebDictionaryProvider, add_entities_from_project
 from utils import get_empty_layers
 from wikidata_utils import get_labels_and_descriptions, get_qnode_url, QNode
 
 
 def create_api_project(project_folder, title, description, url):
+    """create a Project class instance and save it"""
     api_proj = Project(project_folder, title=title,
                        description=description, url=url)
     api_proj.save()
@@ -25,18 +25,19 @@ def create_api_project(project_folder, title, description, url):
 
 
 def get_project_instance(project_folder):
+    """get a project instance, and update t2wml settings to match"""
     project = Project.load(project_folder)
     update_t2wml_settings(project)
     return project
 
 
 def set_web_settings():
-    if not os.path.isdir(CACHE_FOLDER):
-        os.makedirs(CACHE_FOLDER, exist_ok=True)
+    """change settings wikidata provider to WebDictionaryProvider"""
     t2wml_settings.wikidata_provider = WebDictionaryProvider()
 
 
 def update_t2wml_settings(project):
+    """update settings to match those of project"""
     t2wml_settings.update_from_dict(**project.__dict__)
 
     # update wikidata provider ONLY if necessary
@@ -49,17 +50,17 @@ def update_t2wml_settings(project):
 
 
 def autocreate_items(calc_params, selection, is_property=False, data_type=None):
+    """just a function that calls the auto create function from api"""
     create_nodes_from_selection(selection, calc_params.project,
                                 calc_params.sheet, calc_params.wikifier, is_property, data_type)
 
 
 def get_kg(calc_params, start=0, end=None):
+    """get a KnowledgeGraph using calc_params
+    start and end are row indices to only generate knowledge graph for those rows
+    (if left as default, all rows will be generated)"""
     wikifier = calc_params.wikifier
     annotation = calc_params.annotation_path
-    if calc_params.cache and not annotation:
-        kg = calc_params.cache.load_kg()
-        if kg:
-            return kg
     if annotation:
         cell_mapper = AnnotationMapper(calc_params.annotation_path)
     else:
@@ -71,6 +72,9 @@ def get_kg(calc_params, start=0, end=None):
 
 
 def get_kgtk_download_and_variables(calc_params, validate_for_datamart=False):
+    """get kgtk file download, and the variables used to create it.
+    if validate_for_datamart is true, variables whose type is not quantity will raise an error
+    """
     kg = get_kg(calc_params)
     download_output = kg.get_output("tsv", calc_params.project)
     variables = get_all_variables(
@@ -79,6 +83,8 @@ def get_kgtk_download_and_variables(calc_params, validate_for_datamart=False):
 
 
 def get_qnodes_layer(calc_params):
+    """get the qnodes layer - labels, descriptions, IDs, for any cells that are wikified
+    """
     start = calc_params.map_start
     end = calc_params.map_end
 
@@ -119,11 +125,13 @@ def get_qnodes_layer(calc_params):
 
 
 def indexer(cell):
+    """utility function to return cells in the format the frontend expects"""
     col, row = (cell)
     return [row, col]
 
 
 def get_cleaned(calc_params):
+    """fetch the results from the cleaned layer (old and new values)"""
     sheet=calc_params.sheet
     cleaned_data = sheet.cleaned_data
     cleanedLayer = dict(layerType="cleaned", entries=[])
@@ -141,7 +149,9 @@ def get_cleaned(calc_params):
 
 
 def get_cell_qnodes(statement, qnodes):
-    # get cell qnodes
+    """a given statement can contain qnodes as a value for various fields
+    this function aggregates a dictionary of them (with values set to None, initially)
+    it doesn't return the dictionary, it modifies it in-place"""
     for outer_key, outer_value in statement.items():
         if outer_key == "qualifier":
             for qual_dict in outer_value:
@@ -154,6 +164,7 @@ def get_cell_qnodes(statement, qnodes):
 
 
 def get_yaml_layers(calc_params):
+    """get the mapping-related (yaml or annotation) layers: error, statement, cleaned"""
     start = calc_params.map_start
     end = calc_params.map_end
 
@@ -249,6 +260,7 @@ def get_yaml_layers(calc_params):
 
 
 def get_table(calc_params):
+    """get the tableDTO"""
     first_index = calc_params.data_start
     last_index = calc_params.data_end
 
@@ -277,7 +289,7 @@ def get_table(calc_params):
 
 
 def get_layers(response, calc_params):
-    # convenience function for code that repeats three times
+    """convenience function for code that repeats three times, gets all layers"""
     response["layers"] = get_empty_layers()
 
     try:
@@ -294,6 +306,8 @@ def get_layers(response, calc_params):
 
 
 def get_annotations(calc_params):
+    """get annotations array and yaml content.
+    if provided a path to non-existent file, create an empty annotation there"""
     annotations_path = calc_params.annotation_path
     try:
         dga = Annotation.load(annotations_path)
@@ -312,6 +326,7 @@ def get_annotations(calc_params):
 
 
 def suggest_annotations(calc_params):
+    """get a suggested annotation, save it to a file, return it"""
     annotations_path = calc_params.annotation_path
     dga = Annotation(block_finder(calc_params.sheet))
     if annotations_path:
@@ -320,6 +335,7 @@ def suggest_annotations(calc_params):
 
 
 def save_annotations(project, annotation, annotations_path, data_path, sheet_name):
+    """save annotations to a file and add to project"""
     # temporary fix until we fix in frontend:
     for block in annotation:
         if block["role"] in ["qualifier", "dependentVar"]:
@@ -335,6 +351,7 @@ def save_annotations(project, annotation, annotations_path, data_path, sheet_nam
 
 
 def get_entities(project: Project):
+    """get all entities in a project's entity_files"""
     entity_dict = {}
     for file in project.entity_files:
         full_path = project.get_full_path(file)
@@ -344,6 +361,7 @@ def get_entities(project: Project):
 
 
 def update_entities(project, entity_file, updated_entries):
+    """update an entity in the project's entity files"""
 
     entities = get_entities(project)[entity_file]
     for entry, new_vals in updated_entries.items():
@@ -356,6 +374,7 @@ def update_entities(project, entity_file, updated_entries):
 
 
 def get_partial_csv(calc_params):
+    """fetch the partial csv"""
     wikifier = calc_params.wikifier
     cell_mapper = PartialAnnotationMapper(calc_params.annotation_path)
     kg = KnowledgeGraph.generate(cell_mapper, calc_params.sheet, wikifier, count=calc_params.part_count)
@@ -382,6 +401,7 @@ def get_partial_csv(calc_params):
 
 
 def create_zip(project, filetype, filestream):
+    """create a zip of results (in given filetype) for all files/sheets/mappings in project"""
     with zipfile.ZipFile(filestream, mode='w', compression=zipfile.ZIP_DEFLATED) as zf:
         internalErrors = []
         for filename, df in project.annotations.items():

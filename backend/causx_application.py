@@ -46,9 +46,10 @@ except:
 
 
 def encode_auth_token():
-    """
-    Generates the Auth Token
-    :return: string
+    """Generates the auth token
+
+    Returns:
+        str: encoded token
     """
     payload = {
             'iat': datetime.datetime.utcnow(),
@@ -62,11 +63,20 @@ def encode_auth_token():
 
 
 def decode_auth_token(auth_token):
+    """decodes provided token into session-specific project directory
+
+    Args:
+        auth_token (json token): token from request
+
+    Returns:
+        str: project ID used for making project dir
+    """
     payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'), algorithms=['HS256'])
     return payload['sub']
 
 
 def get_project_folder():
+    """use the Authentication header to get (or create, as necessary) the project folder"""
     auth_header=request.headers.get("Authentication")
     request_folder=decode_auth_token(auth_header)
     base_dir=app.config["PROJECTS_DIR"]
@@ -76,6 +86,7 @@ def get_project_folder():
 
 
 def get_project():
+    """get or create the project instance"""
     project_folder = get_project_folder()
     try:
         Project.load(project_folder)
@@ -89,6 +100,8 @@ def get_project():
 
 
 def get_project_dict(project):
+    """because the frontend expects global settings (which aren't part of project class) as
+    part of the project dict, this convenience function updates the project dict accordingly"""
     return_dict = {}
     return_dict.update(project.__dict__)
     return_dict.update(global_settings.__dict__)
@@ -96,9 +109,9 @@ def get_project_dict(project):
 
 
 def json_response(func):
-    '''
-    a function decorator to help standardize creation of json response
-    '''
+    """a wrapping function that centralizes handling requests
+    (mostly by standardizing return of any errors)"""
+
     def wrapper(*args, **kwargs):
         try:
             data, code = func(*args, **kwargs)
@@ -127,6 +140,8 @@ def json_response(func):
     return wrapper
 
 def get_annotation_name(calc_params):
+    """get the name of an annotation file for a specific sheet (only one annotation per sheet)
+    creates the directory for it as necessary"""
     data_file=calc_params.data_path
     sheet_name=calc_params.sheet_name
     annotation_path = "annotations/" + Path(data_file).stem + "_" + Path(sheet_name).stem + ".annotation"
@@ -134,13 +149,15 @@ def get_annotation_name(calc_params):
     return annotation_path
 
 def undefined_work_around(key, default):
-        val = request.args.get(key, default)
-        if str(val)=="undefined":
-            val=default
-        return val
+    """convenience function for range params, that sets them to default if they are undefined"""
+    val = request.args.get(key, default)
+    if str(val)=="undefined":
+        val=default
+    return val
 
 
 def get_range_params():
+    """convenience function for fetching range parameters from request"""
     start_end_kwargs = {}
     for key in ["data_start", "map_start"]:#, "part_start"]:
 
@@ -156,6 +173,17 @@ def get_range_params():
 
 
 def get_calc_params(project, data_required=True):
+    """convenience function for building CalcParams instance for a request
+
+    Args:
+        project (Project): the project for the request (fetched separately)
+        data_required (bool, optional): are data params required for the request? if so, raise an error if not present. Defaults to True.
+    Raises:
+        web_exceptions.InvalidRequestException: missing data file or missing sheet
+
+    Returns:
+        CalcParams: instance of CalcParams matching the request params
+    """
     try:
         try:
             data_file = request.args['data_file']
@@ -183,6 +211,10 @@ def get_calc_params(project, data_required=True):
 
 
 def get_mapping():
+    """get mapping-related layers (and qnode layer) for request
+    this function is also used by the following endpoints:
+    /api/causx/table, /api/causx/annotation, /api/causx/upload/annotation
+    """
     project = get_project()
     calc_params = get_calc_params(project)
     response = dict(project=get_project_dict(project))
@@ -202,12 +234,14 @@ def is_alive2():
 
 @app.route('/api/causx/token', methods=['GET'])
 def get_token():
+    """request to get token for session"""
     return {"token": encode_auth_token()}, 200
 
 
 @app.route('/api/causx/table', methods=['GET'])
 @json_response
 def causx_get_data():
+    """gets the tableDTO and also attempts to fetch layers"""
     project = get_project()
     calc_params = get_calc_params(project)
     response = dict()
@@ -220,6 +254,7 @@ def causx_get_data():
 @app.route('/api/causx/project/entities', methods=['GET']) #V
 @json_response
 def get_project_entities_for_causx():
+    """returns entities"""
     project = get_project()
     response = get_entities(project)
     return response, 200
@@ -229,8 +264,9 @@ def get_project_entities_for_causx():
 @json_response
 def create_auto_nodes_for_causx():
     """
-    This function calls the wikifier service to wikifiy a region, and deletes/updates wiki region file's results
-    :return:
+    Creates auto-nodes (Ie PCustomNode-label, QCustomNode-label) for the `selection`
+    if `is_property` is True then `data_type` must be provided
+    returns qnode layer
     """
     project = get_project()
     calc_params = get_calc_params(project)
@@ -248,6 +284,9 @@ def create_auto_nodes_for_causx():
 @app.route('/api/causx/annotation', methods=['POST'])
 @json_response
 def upload_annotation_for_causx():
+    """
+    Save an annotation to a file and generate layers using that annotation
+    """
     project = get_project()
     calc_params = get_calc_params(project)
     annotation = request.get_json()["annotations"]
@@ -261,7 +300,8 @@ def upload_annotation_for_causx():
 
 @app.route('/api/causx/annotation/suggest', methods=['PUT'])
 @json_response
-def suggest_annotation_block_for_causx():
+def guess_block_parts_for_causx():
+    """returns a single annotation block"""
     project = get_project()
     calc_params = get_calc_params(project)
     block = request.get_json()["selection"]
@@ -289,6 +329,8 @@ def suggest_annotation_block_for_causx():
 @app.route('/api/causx/annotation/guess-blocks', methods=['GET']) #V
 @json_response
 def guess_annotation_blocks_for_causx():
+    """gets a guessed annotation for table, saves annotation file to FS and project,
+    and attempts to return layers"""
     project = get_project()
     calc_params = get_calc_params(project)
     suggest_annotations(calc_params)
@@ -302,7 +344,7 @@ def guess_annotation_blocks_for_causx():
 def update_settings_for_causx():
     """
     This function updates the settings from GUI
-    :return:
+    returns project including settings and global settings
     """
     project = get_project()
     if request.method == 'PUT':
@@ -347,6 +389,8 @@ def update_settings_for_causx():
 @app.route('/api/causx/delete_wikification', methods=['POST'])
 @json_response
 def delete_wikification_for_causx():
+    """delete wikification from a selection on the sheet
+    returns qnode layer"""
     project = get_project()
     calc_params = get_calc_params(project)
     sheet_name = calc_params.sheet.name
@@ -377,6 +421,7 @@ def delete_wikification_for_causx():
 @app.route('/api/causx/create_node', methods=['POST'])
 @json_response
 def create_qnode_for_causx():
+    """create a custom qnode"""
     project = get_project()
     request_json = request.get_json()
     try:
@@ -441,6 +486,7 @@ def create_qnode_for_causx():
 
 
 def causx_get_file(allowed_extensions):
+    """helper function for verifying files"""
     if 'file' not in request.files:
         raise web_exceptions.NoFilePartException(
             "Missing 'file' parameter in the file upload request")
@@ -462,6 +508,8 @@ def causx_get_file(allowed_extensions):
 @app.route('/api/causx/wikify_region', methods=['POST']) #V
 @json_response
 def causx_wikify_for_causx():
+    """wikify a region: first through the country wikifier
+    and then through automatic node creation for the remainder"""
     project = get_project()
     selection = request.get_json()["selection"]
     selection = get_tuple_selection(selection)
@@ -488,6 +536,8 @@ def causx_wikify_for_causx():
 @app.route('/api/causx/upload/data', methods=['POST'])
 @json_response
 def causx_upload_data():
+    """upload a data file, save to fs, add to filesystem,
+    return tableDTO"""
     project = get_project()
     in_file=causx_get_file([".csv", ".xlsx", ".t2wmlz"])
     if Path(in_file.filename).suffix == ".t2wmlz": #redirect
@@ -520,6 +570,7 @@ def causx_upload_data():
 @app.route('/api/causx/upload/project', methods=['POST'])
 @json_response
 def causx_upload_project():
+    """upload a t2wmlz or zip project file and load it as the current project"""
     #upload a project zip and load it as the active project
     project_folder = get_project_folder()
     in_file = causx_get_file([".t2wmlz", ".zip"])
@@ -550,6 +601,8 @@ def causx_upload_project():
 @app.route('/api/causx/upload/spreadsheet', methods=['POST'])
 @json_response
 def causx_upload_spreadsheet():
+    """upload a data file, save to filesystem, add to project
+    return data file path parameter and the sheet names"""
     project = get_project()
     in_file=causx_get_file([".csv", ".xlsx"])
 
@@ -570,6 +623,8 @@ def causx_upload_spreadsheet():
 @app.route('/api/causx/upload/annotation', methods=['POST'])
 @json_response
 def causx_upload_annotation():
+    """upload a t2wmlz file but use it to generate an annotation for the current file
+    TO DO: handle entity definitions in the t2wmlz file being copied over to current file"""
     #upload a project zip, extract the annotation file, and apply it to the current project
     project = get_project()
     in_file = causx_get_file([".t2wmlz", ".zip"])
@@ -620,7 +675,7 @@ def causx_upload_annotation():
 @app.route('/api/causx/download_project', methods=['GET'])
 @json_response
 def causx_download_project():
-    #download a .t2wmlz file with the files needed to restore current project state
+    """download a .t2wmlz file with the files needed to restore current project state"""
     project = get_project()
     calc_params = get_calc_params(project)
     attachment_filename = project.title + "_" + Path(calc_params.data_path).stem +"_"+ Path(calc_params.sheet_name).stem +".t2wmlz"
@@ -645,6 +700,9 @@ def causx_download_project():
 @app.route('/api/causx/partialcsv', methods=['GET'])
 @json_response
 def causx_partial_csv():
+    """fetch partial csv
+    (no type validation, attempts to fetch main subject even without variable+property)"""
+
     project = get_project()
     calc_params = get_calc_params(project)
     response = dict()
@@ -655,7 +713,7 @@ def causx_partial_csv():
 @json_response
 def causx_save_zip_results():
     '''
-    returns:
+    returns zip file containing:
     canonical.csv
     dataset-metadata.json
     variable-metadata.json
@@ -689,6 +747,7 @@ def causx_save_zip_results():
 @app.route('/api/causx/entity/<id>', methods=['GET'])
 @json_response
 def causx_get_an_entity(id):
+    """get ane entity by its ID including tags"""
     project = get_project()
     entities_dict=causx_get_variable_dict(project)
     entity=entities_dict.get(id, None)
@@ -702,6 +761,7 @@ def causx_get_an_entity(id):
 @app.route('/api/causx/entity/<id>', methods=['PUT'])
 @json_response
 def causx_edit_an_entity(id):
+    """edit an entity including editing tags"""
     project = get_project()
     updated_entry = request.get_json()["updated_entry"]
     entity = causx_set_variable(project, id, updated_entry)
