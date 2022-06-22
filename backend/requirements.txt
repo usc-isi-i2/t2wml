@@ -1,6 +1,6 @@
 Flask==1.1.2
 Flask-Cors==3.0.9
-numpy==1.19.1
+numpy==1.22.0
 mip==1.13.0
 pandas==1.2.2
 pytest==6.2.4
